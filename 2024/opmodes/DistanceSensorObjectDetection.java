@@ -8,6 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import team25core.DeadReckonPath;
 import team25core.DeadReckonTask;
+import team25core.DistanceSensorTask;
 import team25core.FourWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
@@ -25,6 +26,8 @@ public class DistanceSensorObjectDetection extends Robot {
 
     private FourWheelDirectDrivetrain drivetrain;
 
+    private DistanceSensorTask distanceTask;
+    private final static String TAG = "PROP";
     private DistanceSensor rightSensor;
     private DistanceSensor leftSensor;
     private Telemetry.Item tagIdTlm;
@@ -48,6 +51,23 @@ public class DistanceSensorObjectDetection extends Robot {
             RobotLog.i("Completed path segment %d", ((DeadReckonTask.DeadReckonEvent)e).segment_num);
         }
     }
+    public void detectProp() {
+        RobotLog.ii(TAG, "Setup detectProp");
+        distanceTask = new DistanceSensorTask(this, rightSensor, leftSensor, telemetry) {
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DistanceSensorEvent event = (DistanceSensorEvent) e;
+                switch (event.kind) {
+                    case LEFT_DISTANCE:
+                        RobotLog.ii(TAG, " left distance %d", event.distance);
+                        break;
+                    case RIGHT_DISTANCE:
+                        RobotLog.ii(TAG, " right distance %d", event.distance);
+                        break;
+                }
+            }
+        };
+    }
 
 
     public void init()
@@ -64,6 +84,7 @@ public class DistanceSensorObjectDetection extends Robot {
         // instantiating FourWheelDirectDrivetrain
         drivetrain = new FourWheelDirectDrivetrain(frontRight, backRight, frontLeft, backLeft);
 
+        detectProp();
         //sets motors position to 0
         drivetrain.resetEncoders();
 
@@ -83,13 +104,13 @@ public class DistanceSensorObjectDetection extends Robot {
     public void start()
     {
         whereAmI.setValue("in Start");
-        while(true){
-            leftDistance = leftSensor.getDistance(DistanceUnit.CM);
-            rightDistance = rightSensor.getDistance(DistanceUnit.CM);
-            rightSensorTlm.setValue(rightDistance);
-            leftSensorTlm.setValue(leftDistance);
-        }
-
+//        while(true){
+//            leftDistance = leftSensor.getDistance(DistanceUnit.CM);
+//            rightDistance = rightSensor.getDistance(DistanceUnit.CM);
+//            rightSensorTlm.setValue(rightDistance);
+//            leftSensorTlm.setValue(leftDistance);
+// }
+        addTask(distanceTask);
     }
 
     public void initPaths() {
