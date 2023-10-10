@@ -39,6 +39,8 @@ public class DistanceSensorObjectDetection extends Robot {
     double rightDistance;
     double leftDistance;
 
+    double minDistance;
+    double maxDistance;
 
     @Override
     public void handleEvent(RobotEvent e)
@@ -53,17 +55,19 @@ public class DistanceSensorObjectDetection extends Robot {
     }
     public void detectProp() {
         RobotLog.ii(TAG, "Setup detectProp");
-        distanceTask = new DistanceSensorTask(this, rightSensor, leftSensor, telemetry) {
+        distanceTask = new DistanceSensorTask(this, rightSensor, leftSensor, telemetry, 0, 26, 10 ,
+       6,false) {
             @Override
             public void handleEvent(RobotEvent e) {
                 DistanceSensorEvent event = (DistanceSensorEvent) e;
                 switch (event.kind) {
                     case LEFT_DISTANCE:
-                        RobotLog.ii(TAG, " left distance %d", event.distance);
+                        //RobotLog.ii(TAG, " left distance %d", event.distance);
                         break;
                     case RIGHT_DISTANCE:
-                        RobotLog.ii(TAG, " right distance %d", event.distance);
+                        //RobotLog.ii(TAG, " right distance %d", event.distance);
                         break;
+
                 }
             }
         };
