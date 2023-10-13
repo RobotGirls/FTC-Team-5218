@@ -1,23 +1,20 @@
 package opmodes;
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-import team25core.DeadReckonPath;
 import team25core.DeadReckonTask;
 import team25core.DistanceSensorTask;
 import team25core.FourWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import team25core.DistanceSensorCriteria;
-import team25core.vision.apriltags.AprilTagDetectionTask;
 
-@Autonomous(name = "DistanceSensorProp")
-public class DistanceSensorObjectDetection extends Robot {
+@Autonomous(name = "DistanceSensorPropFalse")
+public class DistanceSensorObjectDetectionTrue extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -35,6 +32,8 @@ public class DistanceSensorObjectDetection extends Robot {
     private Telemetry.Item leftSensorTlm;
 
     private Telemetry.Item locationTlm;
+
+
     private Telemetry.Item whereAmI;
     private Telemetry.Item eventTlm;
 
@@ -57,8 +56,9 @@ public class DistanceSensorObjectDetection extends Robot {
     }
     public void detectProp() {
         RobotLog.ii(TAG, "Setup detectProp");
-        distanceTask = new DistanceSensorTask(this, rightSensor, leftSensor, telemetry, 25, 38, 15 ,
-       9,false) {
+        distanceTask = new DistanceSensorTask(this, rightSensor, leftSensor, telemetry,
+                25, 48, 15 ,
+       9,true) {
             @Override
             public void handleEvent(RobotEvent e) {
                 DistanceSensorEvent event = (DistanceSensorEvent) e;
@@ -66,13 +66,18 @@ public class DistanceSensorObjectDetection extends Robot {
                     case LEFT_DISTANCE:
                         //RobotLog.ii(TAG, " left distance %d", event.distance);
                         locationTlm.setValue("right");
+                        //call paths in here
                         break;
                     case RIGHT_DISTANCE:
                         //RobotLog.ii(TAG, " right distance %d", event.distance);
                         locationTlm.setValue("left");
+
+                        //call path in her
                         break;
                     case UNKNOWN:
                         locationTlm.setValue("middle");
+                        //call path in here
+
                         break;
 
                 }
@@ -108,6 +113,7 @@ public class DistanceSensorObjectDetection extends Robot {
         rightSensorTlm = telemetry.addData("rightSensor", "none");
         leftSensorTlm = telemetry.addData("leftSensor", "none");
         locationTlm = telemetry.addData("prop position", "none");
+
 
         initPaths();
     }
