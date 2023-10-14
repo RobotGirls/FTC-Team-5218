@@ -111,7 +111,7 @@ public class CenterStageRightAuto2 extends Robot {
         rigCenterPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT,10 , 0.5);
         rigCenterPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
         rigCenterPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT,20 , 0.5);
-        rigCenterPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
+        //rigCenterPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
 
     }
 }
