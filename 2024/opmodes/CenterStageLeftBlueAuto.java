@@ -129,24 +129,23 @@ public class CenterStageLeftBlueAuto extends Robot {
         rightPropPath.stop();
 
 
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, 0.5);
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 11, 0.5);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, -0.5);
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, -0.5);
 
         leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, 0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 4, 0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 7, -0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 11, 0.5);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 9, -0.5);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, -0.5);
 
-        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, 0.5);
-        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8, -0.5);
-        middlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
+        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 17, 0.5);
+        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12, -0.5);
+        middlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
-
     }
 }
 
