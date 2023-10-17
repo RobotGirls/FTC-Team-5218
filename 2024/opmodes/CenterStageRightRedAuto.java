@@ -126,11 +126,6 @@ public class CenterStageRightRedAuto extends Robot {
     public void start()
     {
         whereAmI.setValue("in Start");
-//        while(true){
-//            leftDistance = leftSensor.getDistance(DistanceUnit.CM);
-//            rightDistance = rightSensor.getDistance(DistanceUnit.CM);
-//            rightSensorTlm.setValue(rightDistance);
-//            leftSensorTlm.setValue(leftDistance);
         driveToProp(middlePropPath);
     }
 
