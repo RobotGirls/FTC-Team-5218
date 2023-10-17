@@ -72,6 +72,9 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private static final double ALIGNER_FRONT = .6;
     private static final double ALIGNER_BACK = .2;
 
+    private static final int HANGING_FULLY_EXTENDED = 2000;
+    private static final int HANGING_FULLY_RETRACTED = 0;
+
     //arm is 5, cone is 3
 
 
@@ -79,6 +82,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     private DcMotor liftMotor;
     // private DcMotor intakeMotor;
+
+    private DcMotor hangingMotor;
 
     private Servo coneServo;
     private Servo junctionAligner;
@@ -120,6 +125,11 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         junctionAligner.setPosition(.2);
         armServo.setPosition(ARM_FRONT);
 
+        // the motor must be at its set position zero, at the beginning of the opmode
+        hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        // the brake allows the motor to hold its position when power is not currently being applied
+        hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -138,8 +148,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         // more investigation
         drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
 
-        liftMotorTask = new OneWheelDriveTask(this, liftMotor, true);
-        liftMotorTask.slowDown(false);
+        // liftMotorTask = new OneWheelDriveTask(this, liftMotor, true);
+        // liftMotorTask.slowDown(false);
     }
 
     public void initIMU()
@@ -185,7 +195,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         });
 
         //Gamepad 2
-        this.addTask(liftMotorTask);
+        //this.addTask(liftMotorTask);
 
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_2) {
             //@Override
@@ -193,30 +203,17 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
 
                 switch (gamepadEvent.kind) {
-
-                    case BUTTON_X_DOWN:
-                        //position 0
-                        armServo.setPosition(ARM_FRONT);
-                        break;
-                    case BUTTON_B_DOWN:
-                        //position 1
-                        armServo.setPosition(ARM_BACK);
+                    case BUTTON_Y_DOWN:
+                        // set arm to extend to its highest capacity to lift robot
+                        hangingMotor.setTargetPosition(HANGING_FULLY_EXTENDED);
+                        // encoder allows you to know how much the motor has spun (distance)
+                        hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                         break;
                     case BUTTON_A_DOWN:
-                        //position 1
-                        coneServo.setPosition(CONE_GRAB);
-                        break;
-                    case BUTTON_Y_DOWN:
-                        //position 0 (original pos)
-                        coneServo.setPosition(CONE_RELEASE);
-                        break;
-                    case LEFT_TRIGGER_DOWN:
-                        //position 1
-                        junctionAligner.setPosition(ALIGNER_FRONT);
-                        break;
-                    case RIGHT_TRIGGER_DOWN:
-                        //position 0 (original pos)
-                        junctionAligner.setPosition(ALIGNER_BACK);
+                        // set arm to extend to its highest capacity to lift robot
+                        hangingMotor.setTargetPosition(HANGING_FULLY_RETRACTED);
+                        // encoder allows you to know how much the motor has spun (distance)
+                        hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                         break;
                     default:
                         buttonTlm.setValue("Not Moving");
