@@ -14,8 +14,8 @@ import team25core.FourWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "CenterStageRedLeftAutoDS")
-public class CenterStageBlueRightAutoDS extends Robot {
+@Autonomous(name = "CSRedLeftAutoDS1")
+public class CenterStageBlueRightAutoDS1 extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -63,8 +63,8 @@ public class CenterStageBlueRightAutoDS extends Robot {
     }
     public void driveToProp(DeadReckonPath propPath)
     {
-        whereAmI.setValue("in driveToSignalZone");
-        RobotLog.i("drives straight onto the launch line");
+        whereAmI.setValue("in driveToProp");
+        RobotLog.i("drives straight to the prop lines");
 
         this.addTask(new DeadReckonTask(this, propPath, drivetrain){
             @Override
@@ -72,7 +72,7 @@ public class CenterStageBlueRightAutoDS extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE)
                 {
-                    RobotLog.i("finished parking");
+                    RobotLog.i("finished driving up to prop line");
                     detectProp();
 
                 }
@@ -81,8 +81,8 @@ public class CenterStageBlueRightAutoDS extends Robot {
     }
 
     public void driveToMiddleProp(DeadReckonPath propPath) {
-        whereAmI.setValue("in driveToSignalZone");
-        RobotLog.i("drives straight onto the launch line");
+        whereAmI.setValue("in driveToMiddleProp");
+        RobotLog.i("drives straight onto the middle line");
 
         this.addTask(new DeadReckonTask(this, propPath, drivetrain) {
             @Override
@@ -98,8 +98,8 @@ public class CenterStageBlueRightAutoDS extends Robot {
     }
 
     public void driveToRightProp(DeadReckonPath propPath) {
-        whereAmI.setValue("in driveToSignalZone");
-        RobotLog.i("drives straight onto the launch line");
+        whereAmI.setValue("in driveToRightProp");
+        RobotLog.i("drives straight onto the right line");
 
         this.addTask(new DeadReckonTask(this, propPath, drivetrain) {
             @Override
@@ -117,7 +117,7 @@ public class CenterStageBlueRightAutoDS extends Robot {
 
     public void driveToLeftProp(DeadReckonPath propPath) {
         whereAmI.setValue("in driveToLeftProp");
-        RobotLog.i("drives straight onto the line");
+        RobotLog.i("drives straight onto the left line");
 
         this.addTask(new DeadReckonTask(this, propPath, drivetrain) {
             @Override
@@ -134,7 +134,7 @@ public class CenterStageBlueRightAutoDS extends Robot {
 
     public void driveAwayFromMiddleProp(DeadReckonPath driveFromPropPath) {
         whereAmI.setValue("in driveAwayFromProp");
-        RobotLog.i("drive from the prop to park");
+        RobotLog.i("drive from the middle prop to park");
 
         this.addTask(new DeadReckonTask(this, driveFromPropPath, drivetrain) {
             @Override
@@ -182,7 +182,7 @@ public class CenterStageBlueRightAutoDS extends Robot {
 
     public void detectProp() {
         RobotLog.ii(TAG, "Setup detectProp");
-        distanceTask = new DistanceSensorTask(this, rightSensor, leftSensor, telemetry, 22, 35, 15 ,
+        distanceTask = new DistanceSensorTask(this, rightSensor, leftSensor, telemetry, 20, 33, 15 ,
        9,false) {
             @Override
             public void handleEvent(RobotEvent e) {
@@ -220,6 +220,16 @@ public class CenterStageBlueRightAutoDS extends Robot {
 
         rightSensor = hardwareMap.get(DistanceSensor.class, "rightSensor");
         leftSensor = hardwareMap.get(DistanceSensor.class, "leftSensor");
+
+        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // instantiating FourWheelDirectDrivetrain
         drivetrain = new FourWheelDirectDrivetrain(frontRight, backRight, frontLeft, backLeft);
