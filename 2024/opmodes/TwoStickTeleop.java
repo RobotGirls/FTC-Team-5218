@@ -80,7 +80,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     private BNO055IMU imu;
 
-    private DcMotor liftMotor;
+    // private DcMotor liftMotor;
     // private DcMotor intakeMotor;
 
     private DcMotor hangingMotor;
@@ -91,7 +91,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     private boolean currentlySlow = false;
 
-    private OneWheelDriveTask liftMotorTask;
+    // private OneWheelDriveTask liftMotorTask;
 
     MecanumFieldCentricDriveScheme scheme;
 
@@ -105,11 +105,11 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     @Override
     public void init() {
-
+        // TODO need to add hangingMotor to hardware map
         super.init();
 
         //mechanisms
-        liftMotor = hardwareMap.get(DcMotor.class,"liftMotor");
+        // liftMotor = hardwareMap.get(DcMotor.class,"liftMotor");
 
         coneServo = hardwareMap.servo.get("coneServo");
         junctionAligner = hardwareMap.servo.get("junctionAligner");
@@ -130,7 +130,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         // the brake allows the motor to hold its position when power is not currently being applied
         hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
