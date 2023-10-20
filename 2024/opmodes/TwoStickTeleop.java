@@ -72,7 +72,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private static final double ALIGNER_FRONT = .6;
     private static final double ALIGNER_BACK = .2;
 
-    private static final int HANGING_FULLY_EXTENDED = 2000;
+    private static final int HANGING_FULLY_EXTENDED = 9856; 
     private static final int HANGING_FULLY_RETRACTED = 0;
 
     //arm is 5, cone is 3
@@ -105,11 +105,10 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     @Override
     public void init() {
-        // TODO need to add hangingMotor to hardware map
         super.init();
 
         //mechanisms
-        // liftMotor = hardwareMap.get(DcMotor.class,"liftMotor");
+        hangingMotor = hardwareMap.get(DcMotor.class,"hangingMotor");
 
         coneServo = hardwareMap.servo.get("coneServo");
         junctionAligner = hardwareMap.servo.get("junctionAligner");
@@ -129,8 +128,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // the brake allows the motor to hold its position when power is not currently being applied
         hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hangingMotor.setPower(0.75);
 
-        // liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -207,13 +206,13 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         // set arm to extend to its highest capacity to lift robot
                         hangingMotor.setTargetPosition(HANGING_FULLY_EXTENDED);
                         // encoder allows you to know how much the motor has spun (distance)
-                        hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                        hangingMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         break;
                     case BUTTON_A_DOWN:
                         // set arm to extend to its highest capacity to lift robot
                         hangingMotor.setTargetPosition(HANGING_FULLY_RETRACTED);
                         // encoder allows you to know how much the motor has spun (distance)
-                        hangingMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                        hangingMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         break;
                     default:
                         buttonTlm.setValue("Not Moving");
