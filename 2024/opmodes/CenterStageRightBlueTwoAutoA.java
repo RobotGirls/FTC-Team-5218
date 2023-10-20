@@ -14,7 +14,7 @@ import team25core.Robot;
 import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
-@Autonomous(name = "CenterStageRightBlueTWOAuto")
+@Autonomous(name = "NOTLM0AUTO")
 public class CenterStageRightBlueTwoAuto extends Robot {
 
     private DcMotor frontLeft;
