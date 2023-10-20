@@ -157,7 +157,7 @@ public class CenterStageRightRedAuto extends Robot {
         leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, -0.5);
 
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, -7, -0.5);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 7, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 11, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 9, -0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
