@@ -14,7 +14,7 @@ import team25core.FourWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "CSRedLeftAutoDS1")
+@Autonomous(name = "CSBlueRightAutoDS1")
 public class CenterStageBlueRightAutoDS1 extends Robot {
 
     private DcMotor frontLeft;

@@ -14,7 +14,7 @@ import team25core.FourWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "CSRedRightAutoDS1")
+@Autonomous(name = "CSRedRightAutoDS")
 public class CenterStageRedRightAutoDS1 extends Robot {
 
     private DcMotor frontLeft;
@@ -56,6 +56,8 @@ public class CenterStageRedRightAutoDS1 extends Robot {
             RobotLog.i("Completed path segment %d", ((DeadReckonTask.DeadReckonEvent)e).segment_num);
         }
     }
+
+    // drive to props for an accurate distance sensor reading
     public void driveToProp(DeadReckonPath propPath)
     {
         whereAmI.setValue("in driveToProp");
@@ -90,7 +92,6 @@ public class CenterStageRedRightAutoDS1 extends Robot {
                         driveToProp(rightPropPath);
                         break;
                     case RIGHT_DISTANCE:
-                        //RobotLog.ii(TAG, " right distance %d", event.distance);
                         locationTlm.setValue("left");
                         driveToProp(leftPropPath);
 
@@ -163,7 +164,6 @@ public class CenterStageRedRightAutoDS1 extends Robot {
         middlePropPath.stop();
         rightPropPath.stop();
 
-
         leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 11, 0.5);
         leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
         leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, 0.5);
@@ -181,6 +181,7 @@ public class CenterStageRedRightAutoDS1 extends Robot {
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12, -0.5);
         middlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
+
 
     }
 }
