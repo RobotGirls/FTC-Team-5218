@@ -57,7 +57,7 @@ public class DistanceSensorObjectDetection extends Robot {
     }
     public void detectProp() {
         RobotLog.ii(TAG, "Setup detectProp");
-        distanceTask = new DistanceSensorTask(this, rightSensor, leftSensor, telemetry, 25, 38, 15 ,
+        distanceTask = new DistanceSensorTask(this, rightSensor, leftSensor, telemetry, 10, 28, 15 ,
        9,false) {
             @Override
             public void handleEvent(RobotEvent e) {
