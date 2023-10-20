@@ -211,15 +211,12 @@ public class CenterStageLeftRedTwoAuto extends Robot {
         initPaths();
     }
 
-    public void start() {
-        whereAmI.setValue("in Start");
-//        while(true){
-//            leftDistance = leftSensor.getDistance(DistanceUnit.CM);
-//            rightDistance = rightSensor.getDistance(DistanceUnit.CM);
-//            rightSensorTlm.setValue(rightDistance);
-//            leftSensorTlm.setValue(leftDistance);
-        driveToRightProp(rightPropPath);
-    }
+
+
+            public void start() {
+                whereAmI.setValue("in Start");
+                driveToRightProp(rightPropPath);
+            }
 
     public void initPaths() {
         leftPropPath = new DeadReckonPath();
