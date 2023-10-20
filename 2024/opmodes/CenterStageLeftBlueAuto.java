@@ -83,6 +83,11 @@ public class CenterStageLeftBlueAuto extends Robot {
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         rightSensor = hardwareMap.get(DistanceSensor.class, "rightSensor");
         leftSensor = hardwareMap.get(DistanceSensor.class, "leftSensor");
@@ -115,7 +120,7 @@ public class CenterStageLeftBlueAuto extends Robot {
 //            rightDistance = rightSensor.getDistance(DistanceUnit.CM);
 //            rightSensorTlm.setValue(rightDistance);
 //            leftSensorTlm.setValue(leftDistance);
-        driveToProp(middlePropPath);
+        driveToProp(leftPropPath);
 
     }
 
@@ -129,22 +134,23 @@ public class CenterStageLeftBlueAuto extends Robot {
         rightPropPath.stop();
 
 
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 11, 0.5);
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, 0.5);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 14, 0.5);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, -0.5);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, -0.5);
 
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, 0.5);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 7, -0.5);
         leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 11, 0.5);
         leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 9, -0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, -0.5);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
 
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 17, 0.5);
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12, -0.5);
-        middlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
+        middlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
     }
 }
