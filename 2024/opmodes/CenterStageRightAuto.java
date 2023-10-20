@@ -10,11 +10,9 @@ import team25core.DeadReckonTask;
 import team25core.FourWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
-import team25core.vision.apriltags.AprilTagDetectionTask;
-// CHANGE THIS this is the name of your autonomous that will show on the phone
-@Autonomous(name = "Not an AUTO")
-// CHANGE THIS class name to something to your new class name
-public class CenterStageRightAuto2 extends Robot {
+
+@Autonomous(name = "RightRigTwoAuto")
+public class CenterStageRightAuto extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
@@ -27,8 +25,7 @@ public class CenterStageRightAuto2 extends Robot {
     private Telemetry.Item whereAmI;
     private Telemetry.Item eventTlm;
 
-   //CHANGE THIS TO WHAT YOUR PATH DOES
-    DeadReckonPath rigCenterPath;
+    DeadReckonPath rigOnePath;
 
     @Override
     public void handleEvent(RobotEvent e)
@@ -41,21 +38,17 @@ public class CenterStageRightAuto2 extends Robot {
             RobotLog.i("Completed path segment %d", ((DeadReckonTask.DeadReckonEvent)e).segment_num);
         }
     }
-    // CHANGE the method name and the path name (current method name:driveToBackDropRigCenter, current path name:rigCenterPath)
-    public void driveToBackDropRigCenter(DeadReckonPath rigCenterPath)
+    public void driveToBackDropRigOne(DeadReckonPath rigOnePath)
     {
-        // CHANGE this to the correct method name (current: ("in driveToBackDropRigCenter"))
-        whereAmI.setValue("in driveToBackDropRigCenter");
-        //CHANGE robotlog to what your robot is going to do (current:"drives to back drop")
+        whereAmI.setValue("in driveToBackDropRigOne");
         RobotLog.i("drives to back drop");
-        //CHANGE the path name (current: rigCenterPath)
-        this.addTask(new DeadReckonTask(this, rigCenterPath, drivetrain) {
+
+        this.addTask(new DeadReckonTask(this, rigOnePath, drivetrain) {
             @Override
             public void handleEvent(RobotEvent e) {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                 }
-                //CHANGE robotlog to what your robot is done doing (current:"finished driving to the mosaic")
                 RobotLog.i("finished driving to the mosaic");
 
             }
@@ -89,29 +82,22 @@ public class CenterStageRightAuto2 extends Robot {
     }
     public void start()
     {
-        //CHANGE the method name and path name(current method:driveToBackDropRigCenter, current path: rigCenterPath)
-        driveToBackDropRigCenter(rigCenterPath);
+
+        driveToBackDropRigOne(rigOnePath);
         whereAmI.setValue("in Start");
     }
     public void initPaths() {
-        //CHANGE path name (current path: rigCenterPath)
-        rigCenterPath = new DeadReckonPath();
-        //CHANGE path name (current path: rigCenterPath)
-        rigCenterPath.stop();
+        rigOnePath = new DeadReckonPath();
 
+        rigOnePath.stop();
 
-        //FOR ALL OF THE BELOW------------------------------------------------------------------
-        // CHANGE path name (current path: rigCenterPath), SegmentType, distance, speed
-        // positive speed goes foward and negative speed goes backwards
-        // SegmentType for the direction you want the robot to go
-        // distance how far
-        // delete or add segments to your desire
-        rigCenterPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, -0.5);
-        rigCenterPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, 0.5);
-        rigCenterPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT,10 , 0.5);
-        rigCenterPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
-        rigCenterPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT,20 , 0.5);
-        //rigCenterPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
+        rigOnePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -0.5);
+        rigOnePath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
+        rigOnePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
+        // rigTwoPath.addSegment(DeadReckonPath.SegmentType.TURN, 20, 0.5);
+        // rigTwoPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
+        // rigTwoPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
+       // rigTwoPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, -0.5);
 
     }
 }

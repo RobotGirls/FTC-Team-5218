@@ -12,7 +12,7 @@ import team25core.Robot;
 import team25core.RobotEvent;
 import team25core.vision.apriltags.AprilTagDetectionTask;
 // CHANGE THIS this is the name of your autonomous that will show on the phone
-@Autonomous(name = "Not an AUTO")
+@Autonomous(name = "RightCenterRigAuto")
 // CHANGE THIS class name to something to your new class name
 public class CenterStageRightAuto2 extends Robot {
 

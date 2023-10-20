@@ -13,7 +13,7 @@ import team25core.RobotEvent;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 @Autonomous(name = "NOTLM0AUTON")
-public class CenterStageRightRedAutoA extends Robot {
+public class RightRedAutoA extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
