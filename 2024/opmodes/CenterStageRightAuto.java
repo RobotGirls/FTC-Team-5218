@@ -10,8 +10,9 @@ import team25core.DeadReckonTask;
 import team25core.FourWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
+import team25core.vision.apriltags.AprilTagDetectionTask;
 
-@Autonomous(name = "RightRigTwoAuto")
+@Autonomous(name = "N0")
 public class CenterStageRightAuto extends Robot {
 
     private DcMotor frontLeft;

@@ -14,7 +14,7 @@ import team25core.Robot;
 import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
-@Autonomous(name = "CenterStageLeftRedAuto")
+@Autonomous(name = "CenterStageLeftRedAuto1")
 public class CenterStageLeftRedAuto extends Robot {
 
     private DcMotor frontLeft;
@@ -217,7 +217,7 @@ public class CenterStageLeftRedAuto extends Robot {
 
             public void start() {
                 whereAmI.setValue("in Start");
-                driveToMiddleProp(middlePropPath);
+                driveToLeftProp(leftPropPath);
             }
 
             public void initPaths() {
