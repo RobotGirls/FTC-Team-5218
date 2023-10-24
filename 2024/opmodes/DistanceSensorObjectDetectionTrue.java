@@ -57,7 +57,7 @@ public class DistanceSensorObjectDetectionTrue extends Robot {
     public void detectProp() {
         RobotLog.ii(TAG, "Setup detectProp");
         distanceTask = new DistanceSensorTask(this, rightSensor, leftSensor, telemetry,
-                10, 30, 15 ,
+                0, 3, 15 ,
        9,true) {
             @Override
             public void handleEvent(RobotEvent e) {
@@ -65,12 +65,12 @@ public class DistanceSensorObjectDetectionTrue extends Robot {
                 switch (event.kind) {
                     case LEFT_DISTANCE:
                         //RobotLog.ii(TAG, " left distance %d", event.distance);
-                        locationTlm.setValue("right");
+                        locationTlm.setValue("left");
                         //call paths in here
                         break;
                     case RIGHT_DISTANCE:
                         //RobotLog.ii(TAG, " right distance %d", event.distance);
-                        locationTlm.setValue("left");
+                        locationTlm.setValue("right");
 
                         //call path in her
                         break;

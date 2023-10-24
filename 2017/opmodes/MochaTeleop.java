@@ -157,7 +157,7 @@ public class MochaTeleop extends Robot {
             @Override
             public void handleEvent(RobotEvent e)
             {
-                LimitSwitchEvent event = (LimitSwitchEvent)e;
+                DistanceSensorEvent event = (DistanceSensorEvent)e;
 
                 if (event.kind == EventKind.CLOSED) {
                     telemetry.addData("Status (1): ", "closed");
@@ -173,7 +173,7 @@ public class MochaTeleop extends Robot {
             @Override
             public void handleEvent(RobotEvent e)
             {
-                LimitSwitchEvent event = (LimitSwitchEvent)e;
+                DistanceSensorEvent event = (LimitSwitchEvent)e;
 
                 if (event.kind == EventKind.CLOSED) {
                     telemetry.addData("Status (2): ", "closed");
