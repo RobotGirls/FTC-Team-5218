@@ -51,8 +51,7 @@ import team25core.TeleopDriveTask;
 @TeleOp(name = "TwoStickTeleop")
 //@Disabled
 public class TwoStickTeleop extends StandardFourMotorRobot {
-
-
+    
     private TeleopDriveTask drivetask;
 
     private enum Direction {
@@ -61,43 +60,19 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     }
     //added field centric
     private Telemetry.Item buttonTlm;
-    private Telemetry.Item coneTlm;
-    private static final double CONE_GRAB = 0.12;
-    private static final double CONE_RELEASE = 1.00;
-
-    private static final double ARM_FRONT = 0.875;
-    private static final double ARM_BACK = 0.089;
-    //0.0918
-
-    private static final double ALIGNER_FRONT = .6;
-    private static final double ALIGNER_BACK = .2;
 
     private static final int HANGING_FULLY_EXTENDED = 9856; 
     private static final int HANGING_FULLY_RETRACTED = 0;
 
-    //arm is 5, cone is 3
-
-
     private BNO055IMU imu;
-
-    // private DcMotor liftMotor;
-    // private DcMotor intakeMotor;
 
     private DcMotor hangingMotor;
 
-    private Servo coneServo;
-    private Servo junctionAligner;
-    private Servo armServo;
-
     private boolean currentlySlow = false;
-
-    // private OneWheelDriveTask liftMotorTask;
 
     MecanumFieldCentricDriveScheme scheme;
 
     private MechanumGearedDrivetrain drivetrain;
-
-    private static final int TICKS_PER_INCH = 79;
 
     @Override
     public void handleEvent(RobotEvent e) {
@@ -110,26 +85,20 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         //mechanisms
         hangingMotor = hardwareMap.get(DcMotor.class,"hangingMotor");
 
-        coneServo = hardwareMap.servo.get("coneServo");
-        junctionAligner = hardwareMap.servo.get("junctionAligner");
-        armServo = hardwareMap.servo.get("armServo");
-
         // using encoders to record ticks
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        coneServo.setPosition(CONE_GRAB);
-        junctionAligner.setPosition(.2);
-        armServo.setPosition(ARM_FRONT);
-
         // the motor must be at its set position zero, at the beginning of the opmode
         hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hangingMotor.setTargetPosition(0);
+        // encoder allows you to know how much the motor has spun (distance)
+        hangingMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         // the brake allows the motor to hold its position when power is not currently being applied
         hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hangingMotor.setPower(0.75);
-
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -147,8 +116,6 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         // more investigation
         drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
 
-        // liftMotorTask = new OneWheelDriveTask(this, liftMotor, true);
-        // liftMotorTask.slowDown(false);
     }
 
     public void initIMU()
@@ -170,7 +137,6 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         this.addTask(drivetask);
 
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1) {
-            //@Override
             public void handleEvent(RobotEvent e) {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
 
@@ -179,7 +145,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         // If slow, then normal speed. If fast, then slow speed of motors.
                         //pertains to slowmode
                         if (currentlySlow) {
-                            drivetask.slowDown(8.5);
+                            drivetask.slowDown(1.0);
                             currentlySlow = false;
                         } else {
                             drivetask.slowDown(0.3);
@@ -194,10 +160,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         });
 
         //Gamepad 2
-        //this.addTask(liftMotorTask);
-
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_2) {
-            //@Override
             public void handleEvent(RobotEvent e) {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
 
@@ -205,14 +168,10 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                     case BUTTON_Y_DOWN:
                         // set arm to extend to its highest capacity to lift robot
                         hangingMotor.setTargetPosition(HANGING_FULLY_EXTENDED);
-                        // encoder allows you to know how much the motor has spun (distance)
-                        hangingMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         break;
                     case BUTTON_A_DOWN:
                         // set arm to extend to its highest capacity to lift robot
                         hangingMotor.setTargetPosition(HANGING_FULLY_RETRACTED);
-                        // encoder allows you to know how much the motor has spun (distance)
-                        hangingMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                         break;
                     default:
                         buttonTlm.setValue("Not Moving");
