@@ -63,10 +63,12 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     private static final int HANGING_FULLY_EXTENDED = 9856; 
     private static final int HANGING_FULLY_RETRACTED = 0;
-
+    private static final double CLAW_OPEN = 0.5;
+    private static final double CLAW_CLOSE = 0.8;
     private BNO055IMU imu;
 
     private DcMotor hangingMotor;
+    private Servo clawServo;
 
     private boolean currentlySlow = false;
 
@@ -84,6 +86,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
         //mechanisms
         hangingMotor = hardwareMap.get(DcMotor.class,"hangingMotor");
+        clawServo = hardwareMap.servo.get("clawServo");
+
 
         // using encoders to record ticks
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -104,7 +108,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        clawServo.setPosition(CLAW_CLOSE);
         //telemetry
         buttonTlm = telemetry.addData("buttonState", "unknown");
 
@@ -165,6 +169,14 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
 
                 switch (gamepadEvent.kind) {
+                    case LEFT_TRIGGER_DOWN:
+                        //position 0
+                        clawServo.setPosition(CLAW_CLOSE);
+                        break;
+                    case RIGHT_TRIGGER_DOWN:
+                        //position 1
+                        clawServo.setPosition(CLAW_OPEN);
+                        break;
                     case BUTTON_Y_DOWN:
                         // set arm to extend to its highest capacity to lift robot
                         hangingMotor.setTargetPosition(HANGING_FULLY_EXTENDED);

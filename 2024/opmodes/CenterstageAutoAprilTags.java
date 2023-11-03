@@ -63,6 +63,8 @@ public class aprilTagsAutoTest extends Robot {
     private OneWheelDirectDrivetrain singleMotorDrivetrain;
     private DcMotor liftMotor;
     private DcMotor intakeMotor;
+    private int detectedAprilTagID;
+
 
     private FourWheelDirectDrivetrain drivetrain;
 
@@ -119,7 +121,26 @@ public class aprilTagsAutoTest extends Robot {
         whereAmI.setValue("setAprilTagDetection");
         detectionTask.init(telemetry, hardwareMap);
     }
-
+    public void delay(int seconds)
+    {
+        this.addTask(new SingleShotTimerTask(this, 1000*seconds) {
+            @Override
+            public void handleEvent (RobotEvent e){
+                SingleShotTimerEvent event = (SingleShotTimerEvent) e;
+                switch(event.kind) {
+                    case EXPIRED:
+                        if (detectedAprilTagID == SIGNAL_LEFT){
+                            driveToSignalZone(leftPath);
+                        } else if (detectedAprilTagID == SIGNAL_MIDDLE){
+                            driveToSignalZone(middlePath);
+                        } else {
+                            driveToSignalZone(rightPath);
+                        }
+                        break;
+                }
+            }
+        });
+    }
     public void driveToSignalZone(DeadReckonPath signalPath)
     {
         whereAmI.setValue("in driveToSignalZone");
