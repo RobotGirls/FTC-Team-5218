@@ -35,7 +35,7 @@ public class CenterstageAutoAprilTags extends Robot {
                         int numDetection = getNumAprilTags();
                         for (int i = 0; i<numDetection; i++){
                             getAprilTagDetections(i);
-                            
+
                         }
                         RobotLog.ii(TAG, "Object detected");
                         break;
