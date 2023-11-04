@@ -12,6 +12,10 @@ public class CenterstageAutoAprilTags extends Robot {
     private ObjectDetectionNewTask objDetectionTask;
     private final static String TAG = "Prop";
 
+    public String position = "right";
+
+    private int desireTagID;
+
     @Override
     public void handleEvent(RobotEvent e)
     {
@@ -20,8 +24,7 @@ public class CenterstageAutoAprilTags extends Robot {
          */
         //if (e instanceof DeadReckonTask.DeadReckonEvent) {
         //  RobotLog.i("Completed path segment %d", ((DeadReckonTask.DeadReckonEvent)e).segment_num);
-        //}
-    }
+        }
 
     public void findAprilTag()
     {
@@ -39,18 +42,29 @@ public class CenterstageAutoAprilTags extends Robot {
                         }
                         RobotLog.ii(TAG, "Object detected");
                         break;
+                    }
                 }
+            };
+            objDetectionTask.init(telemetry, hardwareMap);
+            objDetectionTask.rateLimit(1000); // currently calling objDetectionTask every second
+            objDetectionTask.start();
+            objDetectionTask.resumeStreaming();
+            addTask(objDetectionTask);
+        }
+        public void findDesireID()
+        {
+            if(position.equals("right")){
+                desireTagID = 3;
             }
-        };
-        objDetectionTask.init(telemetry, hardwareMap);
-        objDetectionTask.rateLimit(1000); // currently calling objDetectionTask every second
-        objDetectionTask.start();
-        objDetectionTask.resumeStreaming();
-        addTask(objDetectionTask);
-    }
+            else if(position.equals("left")){
+                desireTagID = 1;
+            }
+            else
+            {
+                desireTagID = 2;
+            }
 
-
-
+        }
     @Override
     public void init(){
 

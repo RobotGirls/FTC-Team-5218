@@ -47,6 +47,8 @@ public class CenterStageBlueLeftAutoDS1 extends Robot {
 
     double minDistance;
     double maxDistance;
+    public String position;
+
     private void delay(int delayInMsec) {
         this.addTask(new SingleShotTimerTask(this, delayInMsec) {
             @Override
@@ -107,16 +109,19 @@ public class CenterStageBlueLeftAutoDS1 extends Robot {
                 switch (event.kind) {
                     case LEFT_DISTANCE:
                         locationTlm.setValue("left");
+                        position = "left";
                         driveLeftPropPath(leftPropPath);
                         break;
                     case RIGHT_DISTANCE:
                         //RobotLog.ii(TAG, " right distance %d", event.distance);
                         locationTlm.setValue("right");
+                        position = "right";
                         driveRightPropPath(rightPropPath);
 
                         break;
                     case UNKNOWN:
                         locationTlm.setValue("middle");
+                        position = "middle";
                         driveMiddlePropPath(middlePropPath);
 
                         break;
