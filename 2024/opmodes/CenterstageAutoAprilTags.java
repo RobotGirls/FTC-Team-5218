@@ -52,7 +52,7 @@ import team25core.SingleShotTimerTask;
 
 @Autonomous(name = "aprilTagsAuto")
 //@Disabled
-public class aprilTagsAutoTest extends Robot {
+public class CenterstageAutoAprilTags extends Robot {
 
     private DcMotor frontLeft;
     private DcMotor frontRight;
