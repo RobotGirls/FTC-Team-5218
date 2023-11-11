@@ -68,6 +68,9 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     private DcMotor hangingMotor;
 
+    private DcMotor intakeMotor;
+    private DcMotor transportMotor;
+
     private boolean currentlySlow = false;
 
     MecanumFieldCentricDriveScheme scheme;
@@ -84,6 +87,9 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
         //mechanisms
         hangingMotor = hardwareMap.get(DcMotor.class,"hangingMotor");
+        intakeMotor =  hardwareMap.get(DcMotor.class,"intakeMotor");
+        transportMotor  =  hardwareMap.get(DcMotor.class,"transportMotor");
+
 
         // using encoders to record ticks
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -99,6 +105,18 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         // the brake allows the motor to hold its position when power is not currently being applied
         hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hangingMotor.setPower(0.75);
+
+        intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeMotor.setTargetPosition(0);
+        intakeMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeMotor.setPower(0.75);
+
+        transportMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        transportMotor.setTargetPosition(0);
+        transportMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        transportMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        transportMotor.setPower(0.75);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -172,6 +190,12 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                     case BUTTON_A_DOWN:
                         // set arm to extend to its highest capacity to lift robot
                         hangingMotor.setTargetPosition(HANGING_FULLY_RETRACTED);
+                        break;
+                    case BUTTON_X_DOWN:
+                        // intake pixels into robot
+                        break;
+                    case BUTTON_B_DOWN:
+                        // outtakes pixels out of robot
                         break;
                     default:
                         buttonTlm.setValue("Not Moving");
