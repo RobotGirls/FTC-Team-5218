@@ -61,28 +61,14 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     }
     //added field centric
     private Telemetry.Item buttonTlm;
-    private Telemetry.Item coneTlm;
-    private static final double CONE_GRAB = 0.12;
-    private static final double CONE_RELEASE = 1.00;
+  
 
-    private static final double ARM_FRONT = 0.875;
-    private static final double ARM_BACK = 0.089;
-    //0.0918
 
-    private static final double ALIGNER_FRONT = .6;
-    private static final double ALIGNER_BACK = .2;
-
-    //arm is 5, cone is 3
 
 
     private BNO055IMU imu;
 
     private DcMotor liftMotor;
-    // private DcMotor intakeMotor;
-
-    private Servo coneServo;
-    private Servo junctionAligner;
-    private Servo armServo;
 
     private boolean currentlySlow = false;
 
@@ -106,9 +92,6 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         //mechanisms
         liftMotor = hardwareMap.get(DcMotor.class,"liftMotor");
 
-        coneServo = hardwareMap.servo.get("coneServo");
-        junctionAligner = hardwareMap.servo.get("junctionAligner");
-        armServo = hardwareMap.servo.get("armServo");
 
         // using encoders to record ticks
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -116,9 +99,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        coneServo.setPosition(CONE_GRAB);
-        junctionAligner.setPosition(.2);
-        armServo.setPosition(ARM_FRONT);
+
 
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -194,30 +175,6 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
                 switch (gamepadEvent.kind) {
 
-                    case BUTTON_X_DOWN:
-                        //position 0
-                        armServo.setPosition(ARM_FRONT);
-                        break;
-                    case BUTTON_B_DOWN:
-                        //position 1
-                        armServo.setPosition(ARM_BACK);
-                        break;
-                    case BUTTON_A_DOWN:
-                        //position 1
-                        coneServo.setPosition(CONE_GRAB);
-                        break;
-                    case BUTTON_Y_DOWN:
-                        //position 0 (original pos)
-                        coneServo.setPosition(CONE_RELEASE);
-                        break;
-                    case LEFT_TRIGGER_DOWN:
-                        //position 1
-                        junctionAligner.setPosition(ALIGNER_FRONT);
-                        break;
-                    case RIGHT_TRIGGER_DOWN:
-                        //position 0 (original pos)
-                        junctionAligner.setPosition(ALIGNER_BACK);
-                        break;
                     default:
                         buttonTlm.setValue("Not Moving");
                         break;
