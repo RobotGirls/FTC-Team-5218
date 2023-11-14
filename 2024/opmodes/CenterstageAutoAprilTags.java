@@ -56,10 +56,7 @@ public class CenterstageAutoAprilTags extends Robot {
          */
         //if (e instanceof DeadReckonTask.DeadReckonEvent) {
         //  RobotLog.i("Completed path segment %d", ((DeadReckonTask.DeadReckonEvent)e).segment_num);
-<<<<<<< HEAD
-        //}
-=======
->>>>>>> 9edf1438b6dd5f5170907702f469b183e45ae052
+
     }
 
     public void findAprilTag() {
@@ -79,7 +76,7 @@ public class CenterstageAutoAprilTags extends Robot {
         objDetectionTask.rateLimit(1000); // currently calling objDetectionTask every second
         objDetectionTask.start();
         objDetectionTask.resumeStreaming();
-<<<<<<< HEAD
+
         objDetectionTask.setAprilTagDecimation(APRIL_TAG_DECIMATION);
         objDetectionTask.doManualExposure(EXPOSURE_MS, GAIN); // Use low exposure time to reduce motion blur
         objDetectionTask.setDesiredTagID(desiredTagID);
@@ -198,45 +195,45 @@ public class CenterstageAutoAprilTags extends Robot {
             Thread.currentThread().interrupt();
         }
     }
-
-=======
-        addTask(objDetectionTask);
-    }
-    public void findDesireID()
-    {
-        if(position.equals("right")){
-            desireTagID = 3;
-        }
-        else if(position.equals("left")){
-            desireTagID = 1;
-        }
-        else
-        {
-            desireTagID = 2;
-        }
-
-    }
->>>>>>> 9edf1438b6dd5f5170907702f469b183e45ae052
-    @Override
-    public void init(){
-        //initializes the motors for the wheels
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
-
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
-    }
-    @Override
-    public void start(){
-        findDesiredID();
-        //desiredTagID = 1;
-        findAprilTag();
-        aprilTag = findAprilTagData();
-        //AlignWhileTargetNotReach();
-
-    }
+//
+//=======
+//        addTask(objDetectionTask);
+//    }
+//    public void findDesireID()
+//    {
+//        if(position.equals("right")){
+//            desireTagID = 3;
+//        }
+//        else if(position.equals("left")){
+//            desireTagID = 1;
+//        }
+//        else
+//        {
+//            desireTagID = 2;
+//        }
+//
+//    }
+//>>>>>>> 9edf1438b6dd5f5170907702f469b183e45ae052
+//    @Override
+//    public void init(){
+//        //initializes the motors for the wheels
+//        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+//        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+//        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+//        backRight = hardwareMap.get(DcMotor.class, "backRight");
+//
+//        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+//        backLeft.setDirection(DcMotor.Direction.REVERSE);
+//        frontRight.setDirection(DcMotor.Direction.FORWARD);
+//        backRight.setDirection(DcMotor.Direction.FORWARD);
+//    }
+//    @Override
+//    public void start(){
+//        findDesiredID();
+//        //desiredTagID = 1;
+//        findAprilTag();
+//        aprilTag = findAprilTagData();
+//        //AlignWhileTargetNotReach();
+//
+//    }
 }
