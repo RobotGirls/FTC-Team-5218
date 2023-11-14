@@ -63,8 +63,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     private static final int HANGING_FULLY_EXTENDED = 9856; 
     private static final int HANGING_FULLY_RETRACTED = 0;
-    private static final double CLAW_OPEN = 0.5;
-    private static final double CLAW_CLOSE = 0.8;
+    private static final double CLAW_OPEN = 0.4;
+    private static final double CLAW_CLOSE = 0.6;
     private BNO055IMU imu;
 
     private DcMotor hangingMotor;
@@ -87,7 +87,6 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         //mechanisms
         hangingMotor = hardwareMap.get(DcMotor.class,"hangingMotor");
         clawServo = hardwareMap.servo.get("clawServo");
-
 
         // using encoders to record ticks
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
