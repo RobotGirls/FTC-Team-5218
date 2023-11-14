@@ -61,6 +61,9 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     //added field centric
     private Telemetry.Item buttonTlm;
 
+    private static final double DRONE_SET_LEFT = 0.95;
+    private static final double DRONE_SET_RIGHT = 0;
+    private static final double DRONE_RELEASE = 0.5;
     private static final int HANGING_FULLY_EXTENDED = 9856; 
     private static final int HANGING_FULLY_RETRACTED = 0;
 
@@ -72,6 +75,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     MecanumFieldCentricDriveScheme scheme;
 
+    private Servo droneServoLeft;
+    private Servo droneServoRight;
     private MechanumGearedDrivetrain drivetrain;
 
     @Override
@@ -85,11 +90,17 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         //mechanisms
         hangingMotor = hardwareMap.get(DcMotor.class,"hangingMotor");
 
+        droneServoLeft = hardwareMap.servo.get("droneServoLeft");
+        droneServoRight = hardwareMap.servo.get("droneServoRight");
+
         // using encoders to record ticks
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        droneServoLeft.setPosition(DRONE_SET_LEFT);
+        droneServoRight.setPosition(DRONE_SET_RIGHT);
 
         // the motor must be at its set position zero, at the beginning of the opmode
         hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -165,6 +176,11 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
 
                 switch (gamepadEvent.kind) {
+                    case BUTTON_X_DOWN:
+                        //position 0
+                        droneServoLeft.setPosition(DRONE_RELEASE);
+                        droneServoRight.setPosition(DRONE_RELEASE);
+                        break;
                     case BUTTON_Y_DOWN:
                         // set arm to extend to its highest capacity to lift robot
                         hangingMotor.setTargetPosition(HANGING_FULLY_EXTENDED);
