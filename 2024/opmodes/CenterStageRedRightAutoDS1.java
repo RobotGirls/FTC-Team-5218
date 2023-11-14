@@ -39,11 +39,16 @@ public class CenterStageRedRightAutoDS1 extends Robot {
     private DeadReckonPath leftPropPath;
     private DeadReckonPath middlePropPath;
     private DeadReckonPath rightPropPath;
+
+    private DeadReckonPath leftBoardParkPath;
+    private DeadReckonPath middleBoardParkPath;
+    private DeadReckonPath rightBoardParkPath;
     double rightDistance;
     double leftDistance;
 
     double minDistance;
     double maxDistance;
+    public String position;
 
     @Override
     public void handleEvent(RobotEvent e)
@@ -76,6 +81,25 @@ public class CenterStageRedRightAutoDS1 extends Robot {
             }
         });
     }
+    public void pixelBoardAlignment(DeadReckonPath pixelBoardPath)
+    {
+        whereAmI.setValue("in pixelBoardAlignment");
+        RobotLog.i("drives to correct pixel position");
+
+        this.addTask(new DeadReckonTask(this, pixelBoardPath, drivetrain){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    RobotLog.i("finished driving up to prop line");
+                    detectProp();
+
+                }
+            }
+        });
+    }
+
 
 
 
@@ -89,17 +113,21 @@ public class CenterStageRedRightAutoDS1 extends Robot {
                 switch (event.kind) {
                     case LEFT_DISTANCE:
                         locationTlm.setValue("left");
+                        position.equals("left");
                         driveToProp(leftPropPath);
+                        pixelBoardAlignment(leftBoardParkPath);
                         break;
                     case RIGHT_DISTANCE:
                         locationTlm.setValue("right");
+                        position.equals("right");
                         driveToProp(rightPropPath);
-
+                        pixelBoardAlignment(rightBoardParkPath);
                         break;
                     case UNKNOWN:
                         locationTlm.setValue("middle");
+                        position.equals("middle");
                         driveToProp(middlePropPath);
-
+                        pixelBoardAlignment(middleBoardParkPath);
                         break;
 
                 }
@@ -160,9 +188,17 @@ public class CenterStageRedRightAutoDS1 extends Robot {
         middlePropPath = new DeadReckonPath();
         rightPropPath= new DeadReckonPath();
 
+        leftBoardParkPath = new DeadReckonPath();
+        middleBoardParkPath = new DeadReckonPath();
+        rightBoardParkPath= new DeadReckonPath();
+
         leftPropPath.stop();
         middlePropPath.stop();
         rightPropPath.stop();
+
+        leftBoardParkPath.stop();
+        middleBoardParkPath.stop();
+        rightBoardParkPath.stop();
 
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 2, -0.5);
@@ -170,7 +206,9 @@ public class CenterStageRedRightAutoDS1 extends Robot {
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, 0.5);
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 0.5);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
+
 
         leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
         leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 2, 0.5);
@@ -178,13 +216,23 @@ public class CenterStageRedRightAutoDS1 extends Robot {
         leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
         leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
         leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, -0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, -0.5);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, -0.5);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
+
 
 
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 17, 0.5);
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12, -0.5);
         middlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
+        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 0.5);
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
+
+
+//        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, 0.5);
+//        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 7, 0.5);
+//        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
+//
+
 
     }
 }
