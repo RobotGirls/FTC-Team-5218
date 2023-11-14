@@ -48,6 +48,7 @@ import team25core.StandardFourMotorRobot;
 import team25core.TwoStickMechanumControlScheme;
 import team25core.TeleopDriveTask;
 
+
 @TeleOp(name = "TwoStickTeleop")
 //@Disabled
 public class TwoStickTeleop extends StandardFourMotorRobot {
@@ -70,6 +71,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     private DcMotor intakeMotor;
     private DcMotor transportMotor;
+//    private OneWheelDriveTask intakeMotorTask;
+//    private OneWheelDriveTask transportMotorTask;
 
     private boolean currentlySlow = false;
 
@@ -106,17 +109,11 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hangingMotor.setPower(0.75);
 
-        intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        intakeMotor.setTargetPosition(0);
-        intakeMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        intakeMotor.setPower(0.75);
 
-        transportMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        transportMotor.setTargetPosition(0);
-        transportMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        transportMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         transportMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        transportMotor.setPower(0.75);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -133,6 +130,13 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         // since the gamesticks were switched for some reason and we need to do
         // more investigation
         drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
+//        intakeMotorTask = new OneWheelDriveTask(this, intakeMotor, true);
+//        transportMotorTask = new OneWheelDriveTask(this, transportMotor, true);
+//        intakeMotorTask.slowDown(false);
+//        transportMotorTask.slowDown(false);
+
+
+
 
     }
 
@@ -178,6 +182,9 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         });
 
         //Gamepad 2
+//        this.addTask(intakeMotorTask);
+//        this.addTask(transportMotorTask);
+
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_2) {
             public void handleEvent(RobotEvent e) {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
@@ -191,12 +198,21 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         // set arm to extend to its highest capacity to lift robot
                         hangingMotor.setTargetPosition(HANGING_FULLY_RETRACTED);
                         break;
-                    case BUTTON_X_DOWN:
+                    case RIGHT_STICK_UP:
+                        intakeMotor.setPower(0.5);
+                        transportMotor.setPower(0.5);
                         // intake pixels into robot
                         break;
-                    case BUTTON_B_DOWN:
-                        // outtakes pixels out of robot
+                    case RIGHT_STICK_DOWN:
+                        intakeMotor.setPower(-0.5);
+                        transportMotor.setPower(-0.5);
+                        // outtake pixels into robot
                         break;
+                    case RIGHT_STICK_NEUTRAL:
+                        intakeMotor.setPower(0);
+                        transportMotor.setPower(0);
+                        // stops the transport and intake movement
+
                     default:
                         buttonTlm.setValue("Not Moving");
                         break;
