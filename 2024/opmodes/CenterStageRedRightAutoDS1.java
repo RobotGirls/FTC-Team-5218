@@ -11,6 +11,7 @@ import team25core.DeadReckonPath;
 import team25core.DeadReckonTask;
 import team25core.DistanceSensorTask;
 import team25core.FourWheelDirectDrivetrain;
+import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 
@@ -21,6 +22,9 @@ public class CenterStageRedRightAutoDS1 extends Robot {
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor backRight;
+
+    private DcMotor outtake;
+    private OneWheelDirectDrivetrain outtakeDrivetrain;
 
     private FourWheelDirectDrivetrain drivetrain;
 
@@ -39,6 +43,13 @@ public class CenterStageRedRightAutoDS1 extends Robot {
     private DeadReckonPath leftPropPath;
     private DeadReckonPath middlePropPath;
     private DeadReckonPath rightPropPath;
+    private DeadReckonPath leftPixelBoardPath;
+    private DeadReckonPath rightPixelBoardPath;
+    private DeadReckonPath middlePixelBoardPath;
+
+
+
+    private DeadReckonPath outtakePath;
 
     private DeadReckonPath leftBoardParkPath;
     private DeadReckonPath middleBoardParkPath;
@@ -49,6 +60,10 @@ public class CenterStageRedRightAutoDS1 extends Robot {
     double minDistance;
     double maxDistance;
     public String position;
+
+    public static double OUTTAKE_DISTANCE = 3;
+    public static double OUTTAKE_SPEED = 0.1;
+
 
     @Override
     public void handleEvent(RobotEvent e)
@@ -76,7 +91,6 @@ public class CenterStageRedRightAutoDS1 extends Robot {
                 {
                     RobotLog.i("finished driving up to prop line");
                     detectProp();
-
                 }
             }
         });
@@ -100,6 +114,23 @@ public class CenterStageRedRightAutoDS1 extends Robot {
         });
     }
 
+    public void moveToObjectAndReleasePixel(DeadReckonPath path)
+    {
+
+        this.addTask(new DeadReckonTask(this, path, drivetrain ){
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE)
+                {
+                    RobotLog.i("Drove to the object");
+                    whereAmI.setValue("At the object");
+                    releaseOuttake();
+
+                }
+            }
+        });
+    }
 
 
 
@@ -115,18 +146,21 @@ public class CenterStageRedRightAutoDS1 extends Robot {
                         locationTlm.setValue("left");
                         position.equals("left");
                         driveToProp(leftPropPath);
+                        releaseOuttake();
                         pixelBoardAlignment(leftBoardParkPath);
                         break;
                     case RIGHT_DISTANCE:
                         locationTlm.setValue("right");
                         position.equals("right");
                         driveToProp(rightPropPath);
+                        releaseOuttake();
                         pixelBoardAlignment(rightBoardParkPath);
                         break;
                     case UNKNOWN:
                         locationTlm.setValue("middle");
                         position.equals("middle");
                         driveToProp(middlePropPath);
+                        releaseOuttake();
                         pixelBoardAlignment(middleBoardParkPath);
                         break;
 
@@ -134,6 +168,34 @@ public class CenterStageRedRightAutoDS1 extends Robot {
             }
         };
     }
+    private void releaseOuttake() {
+        this.addTask(new DeadReckonTask(this, outtakePath, outtakeDrivetrain) {
+            @Override
+            public void handleEvent(RobotEvent e) {
+                DeadReckonEvent path = (DeadReckonEvent) e;
+                if (path.kind == EventKind.PATH_DONE) {
+                    whereAmI.setValue("released purple pixel");
+                    if(position.equals("left"))
+                    {
+                        moveToObjectAndReleasePixel(leftPixelBoardPath);
+                    }
+                    else if(position.equals("right"))
+                    {
+                        moveToObjectAndReleasePixel(rightPixelBoardPath);
+                    }
+                    else
+                    {
+                        moveToObjectAndReleasePixel(middlePixelBoardPath);
+
+                    }
+
+                }
+            }
+
+
+        });
+    }
+
 
 
     public void init()
@@ -143,6 +205,15 @@ public class CenterStageRedRightAutoDS1 extends Robot {
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
+
+        outtake = hardwareMap.get(DcMotor.class, "outtake");
+        outtake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        outtake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        outtakeDrivetrain = new OneWheelDirectDrivetrain(outtake);
+        outtakeDrivetrain.resetEncoders();
+        outtakeDrivetrain.encodersOn();
 
         rightSensor = hardwareMap.get(DistanceSensor.class, "rightSensor");
         leftSensor = hardwareMap.get(DistanceSensor.class, "leftSensor");
@@ -192,46 +263,68 @@ public class CenterStageRedRightAutoDS1 extends Robot {
         middleBoardParkPath = new DeadReckonPath();
         rightBoardParkPath= new DeadReckonPath();
 
+        leftPixelBoardPath = new DeadReckonPath();
+        rightPixelBoardPath = new DeadReckonPath();
+        middlePixelBoardPath = new DeadReckonPath();
+
+
         leftPropPath.stop();
         middlePropPath.stop();
         rightPropPath.stop();
+
+        leftPixelBoardPath.stop();
+        rightPixelBoardPath.stop();
+        middlePixelBoardPath.stop();
 
         leftBoardParkPath.stop();
         middleBoardParkPath.stop();
         rightBoardParkPath.stop();
 
+        outtakePath = new DeadReckonPath();
+        outtakePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, OUTTAKE_DISTANCE, OUTTAKE_SPEED);
+
+
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 2, -0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, 0.5);
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 0.5);
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
+
+
+        rightPixelBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
+        rightPixelBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, 0.5);
+        rightPixelBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 0.5);
+        rightPixelBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
 
 
         leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
         leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 2, 0.5);
         leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
         leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, -0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, -0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
+        leftPixelBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
+        leftPixelBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, -0.5);
+        leftPixelBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, -0.5);
+        leftPixelBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
 
 
 
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 17, 0.5);
-        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12, -0.5);
-        middlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
-        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 0.5);
-        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
+        middlePixelBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12, -0.5);
+        middlePixelBoardPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
+        middlePixelBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 0.5);
+        middlePixelBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.5);
 
 
-//        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, 0.5);
-//        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 7, 0.5);
-//        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
-//
+       leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, 0.5);
+       leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 7, 0.5);
+       leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
+
+       middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, 0.5);
+       middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, 0.5);
+       middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
+
+       rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, 0.5);
+       rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, 0.5);
+       rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
 
 
     }

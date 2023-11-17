@@ -2,7 +2,6 @@ package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -45,9 +44,6 @@ public class CenterStageBlueRightAutoDS2 extends Robot {
     private DeadReckonPath middlePropPath;
     private DeadReckonPath rightPropPath;
     private DeadReckonPath driveToLinesPath;
-    private DeadReckonPath leftBoardParkPath;
-    private DeadReckonPath middleBoardParkPath;
-    private DeadReckonPath rightBoardParkPath;
 
     double rightDistance;
     double leftDistance;
@@ -201,19 +197,16 @@ public class CenterStageBlueRightAutoDS2 extends Robot {
                     case LEFT_DISTANCE:
                         locationTlm.setValue("left");
                         driveAwayFromLeftProp(driveFromLeftPropPath);
-                        pixelBoardAlignment(leftBoardParkPath);
                         break;
                     case RIGHT_DISTANCE:
                         //RobotLog.ii(TAG, " right distance %d", event.distance);
                         locationTlm.setValue("right");
                         driveAwayFromRightProp(driveFromRightPropPath);
-                        pixelBoardAlignment(rightBoardParkPath);
 
                         break;
                     case UNKNOWN:
                         locationTlm.setValue("middle");
                         driveAwayFromMiddleProp(driveFromMiddlePropPath);
-                        pixelBoardAlignment(middleBoardParkPath);
 
                         break;
 
@@ -223,8 +216,8 @@ public class CenterStageBlueRightAutoDS2 extends Robot {
     }
 
     //creates a delay for robot task and sets telemetry to display that robot is in delay task
-    private void delay(int delayInsec) {
-        this.addTask(new SingleShotTimerTask(this, delayInsec) {
+    private void delay(int delayInMsec) {
+        this.addTask(new SingleShotTimerTask(this, delayInMsec) {
             @Override
             public void handleEvent(RobotEvent e) {
                 SingleShotTimerEvent event = (SingleShotTimerEvent) e;
@@ -236,25 +229,6 @@ public class CenterStageBlueRightAutoDS2 extends Robot {
         });
 
     }
-    public void pixelBoardAlignment(DeadReckonPath pixelBoardPath)
-    {
-        whereAmI.setValue("in pixelBoardAlignment");
-        RobotLog.i("drives to correct pixel position");
-
-        this.addTask(new DeadReckonTask(this, pixelBoardPath, drivetrain){
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE)
-                {
-                    RobotLog.i("finished driving up to prop line");
-                    detectProp();
-
-                }
-            }
-        });
-    }
-
 
 
 
@@ -265,9 +239,6 @@ public class CenterStageBlueRightAutoDS2 extends Robot {
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
-
-
-        setNoncanonicalMotorDirection();
 
         rightSensor = hardwareMap.get(DistanceSensor.class, "rightSensor");
         leftSensor = hardwareMap.get(DistanceSensor.class, "leftSensor");
@@ -302,14 +273,6 @@ public class CenterStageBlueRightAutoDS2 extends Robot {
         initPaths();
     }
 
-    public void setNoncanonicalMotorDirection()
-    {
-        // This reverses the direction of the drivetrain.
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
-    }
     public void start()
     {
         whereAmI.setValue("in Start");
@@ -322,18 +285,9 @@ public class CenterStageBlueRightAutoDS2 extends Robot {
         middlePropPath = new DeadReckonPath();
         rightPropPath = new DeadReckonPath();
 
-        leftBoardParkPath = new DeadReckonPath();
-        middleBoardParkPath = new DeadReckonPath();
-        rightBoardParkPath= new DeadReckonPath();
-
         leftPropPath.stop();
         middlePropPath.stop();
         rightPropPath.stop();
-
-
-        leftBoardParkPath.stop();
-        middleBoardParkPath.stop();
-        rightBoardParkPath.stop();
 
         driveToLinesPath = new DeadReckonPath();
         driveToLinesPath.stop();
@@ -345,9 +299,9 @@ public class CenterStageBlueRightAutoDS2 extends Robot {
         driveFromRightPropPath = new DeadReckonPath();
         driveFromRightPropPath.stop();
 
-        driveToLinesPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, -0.25);
+        driveToLinesPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 0.25);
 
-      //  leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.35);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 20, 0.35);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS,1 , 0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 32, -0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
@@ -355,7 +309,7 @@ public class CenterStageBlueRightAutoDS2 extends Robot {
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 13.5, 0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 50, 0.5);
 
-       // rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 18, 0.35);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 18, 0.35);
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 2, -0.5);
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 2, -0.5);

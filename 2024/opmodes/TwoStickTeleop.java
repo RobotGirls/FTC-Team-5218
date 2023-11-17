@@ -63,10 +63,12 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     private static final int HANGING_FULLY_EXTENDED = 9856; 
     private static final int HANGING_FULLY_RETRACTED = 0;
-
+    private static final double CLAW_OPEN = 0.4;
+    private static final double CLAW_CLOSE = 0.6;
     private BNO055IMU imu;
 
     private DcMotor hangingMotor;
+    private Servo clawServo;
 
     private boolean currentlySlow = false;
 
@@ -84,6 +86,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
         //mechanisms
         hangingMotor = hardwareMap.get(DcMotor.class,"hangingMotor");
+        clawServo = hardwareMap.servo.get("clawServo");
 
         // using encoders to record ticks
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -92,19 +95,19 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         // the motor must be at its set position zero, at the beginning of the opmode
-        hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hangingMotor.setTargetPosition(0);
-        // encoder allows you to know how much the motor has spun (distance)
-        hangingMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        // the brake allows the motor to hold its position when power is not currently being applied
-        hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hangingMotor.setPower(0.75);
+//        hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        hangingMotor.setTargetPosition(0);
+//        // encoder allows you to know how much the motor has spun (distance)
+//        hangingMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        // the brake allows the motor to hold its position when power is not currently being applied
+//        hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        hangingMotor.setPower(0.75);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
+        clawServo.setPosition(CLAW_CLOSE);
         //telemetry
         buttonTlm = telemetry.addData("buttonState", "unknown");
 
@@ -165,14 +168,22 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
 
                 switch (gamepadEvent.kind) {
-                    case BUTTON_Y_DOWN:
-                        // set arm to extend to its highest capacity to lift robot
-                        hangingMotor.setTargetPosition(HANGING_FULLY_EXTENDED);
+                    case LEFT_TRIGGER_DOWN:
+                        //position 0
+                        clawServo.setPosition(CLAW_CLOSE);
                         break;
-                    case BUTTON_A_DOWN:
-                        // set arm to extend to its highest capacity to lift robot
-                        hangingMotor.setTargetPosition(HANGING_FULLY_RETRACTED);
+                    case RIGHT_TRIGGER_DOWN:
+                        //position 1
+                        clawServo.setPosition(CLAW_OPEN);
                         break;
+//                    case BUTTON_Y_DOWN:
+//                        // set arm to extend to its highest capacity to lift robot
+//                        hangingMotor.setTargetPosition(HANGING_FULLY_EXTENDED);
+//                        break;
+//                    case BUTTON_A_DOWN:
+//                        // set arm to extend to its highest capacity to lift robot
+//                        hangingMotor.setTargetPosition(HANGING_FULLY_RETRACTED);
+//                        break;
                     default:
                         buttonTlm.setValue("Not Moving");
                         break;
