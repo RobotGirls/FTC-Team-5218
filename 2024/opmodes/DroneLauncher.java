@@ -68,18 +68,13 @@ public class DroneLauncher extends StandardFourMotorRobot {
     private static final double DRONE_SET_LEFT = 0.95;
     private static final double DRONE_SET_RIGHT = 0;
     private static final double DRONE_RELEASE = 0.5;
-    //0.0918
 
     private static final double ALIGNER_FRONT = .6;
     private static final double ALIGNER_BACK = .2;
 
-    //arm is 5, cone is 3
-
-
     private BNO055IMU imu;
 
     private DcMotor liftMotor;
-    // private DcMotor intakeMotor;
 
     private Servo droneServoLeft;
     private Servo droneServoRight;
