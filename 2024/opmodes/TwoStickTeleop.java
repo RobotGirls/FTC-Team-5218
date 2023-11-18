@@ -67,9 +67,15 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private static final int HANGING_FULLY_EXTENDED = 9856; 
     private static final int HANGING_FULLY_RETRACTED = 0;
 
+    private static final double CLAW_OPEN = 0.5;
+    private static final double CLAW_CLOSE = 0.3;
+
     private BNO055IMU imu;
 
+    private Servo clawServo;
+
     private DcMotor hangingMotor;
+    private DcMotor liftMotor;
 
     private boolean currentlySlow = false;
 
@@ -89,6 +95,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
         //mechanisms
         hangingMotor = hardwareMap.get(DcMotor.class,"hangingMotor");
+        clawServo = hardwareMap.servo.get("clawServo");
+        liftMotor = hardwareMap.get(DcMotor.class,"liftMotor");
 
         droneServoLeft = hardwareMap.servo.get("droneServoLeft");
         droneServoRight = hardwareMap.servo.get("droneServoRight");
@@ -110,11 +118,13 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         // the brake allows the motor to hold its position when power is not currently being applied
         hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hangingMotor.setPower(0.75);
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        clawServo.setPosition(CLAW_CLOSE);
 
         //telemetry
         buttonTlm = telemetry.addData("buttonState", "unknown");
@@ -176,10 +186,17 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
 
                 switch (gamepadEvent.kind) {
-                    case BUTTON_X_DOWN:
+                    case RIGHT_BUMPER_DOWN:
                         //position 0
                         droneServoLeft.setPosition(DRONE_RELEASE);
                         droneServoRight.setPosition(DRONE_RELEASE);
+                    case LEFT_TRIGGER_DOWN:
+                        // set claw's position to 0
+                        clawServo.setPosition(CLAW_CLOSE);
+                        break;
+                    case RIGHT_TRIGGER_DOWN:
+                        // set claw's position to 1
+                        clawServo.setPosition(CLAW_OPEN);
                         break;
                     case BUTTON_Y_DOWN:
                         // set arm to extend to its highest capacity to lift robot
