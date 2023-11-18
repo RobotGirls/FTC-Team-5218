@@ -77,9 +77,6 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     private DcMotor intakeMotor;
     private DcMotor transportMotor;
-//    private OneWheelDriveTask intakeMotorTask;
-//    private OneWheelDriveTask transportMotorTask;
-
     private boolean currentlySlow = false;
 
     MecanumFieldCentricDriveScheme scheme;
@@ -142,14 +139,6 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         // since the gamesticks were switched for some reason and we need to do
         // more investigation
         drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
-//        intakeMotorTask = new OneWheelDriveTask(this, intakeMotor, true);
-//        transportMotorTask = new OneWheelDriveTask(this, transportMotor, true);
-//        intakeMotorTask.slowDown(false);
-//        transportMotorTask.slowDown(false);
-
-
-
-
     }
 
     public void initIMU()
@@ -232,7 +221,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                     case LEFT_BUMPER_DOWN:
                         intakeMotor.setPower(0);
                         transportMotor.setPower(0);
-                        // intake pixels into robot
+                        // stops pixel motor
                         break;
 
                     case BUTTON_B_DOWN:
