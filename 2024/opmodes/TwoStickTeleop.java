@@ -48,6 +48,7 @@ import team25core.StandardFourMotorRobot;
 import team25core.TwoStickMechanumControlScheme;
 import team25core.TeleopDriveTask;
 
+
 @TeleOp(name = "TwoStickTeleop")
 //@Disabled
 public class TwoStickTeleop extends StandardFourMotorRobot {
@@ -77,6 +78,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private DcMotor hangingMotor;
     private DcMotor liftMotor;
 
+    private DcMotor intakeMotor;
+    private DcMotor transportMotor;
     private boolean currentlySlow = false;
 
     MecanumFieldCentricDriveScheme scheme;
@@ -95,6 +98,10 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
         //mechanisms
         hangingMotor = hardwareMap.get(DcMotor.class,"hangingMotor");
+
+        intakeMotor =  hardwareMap.get(DcMotor.class,"intakeMotor");
+        transportMotor  =  hardwareMap.get(DcMotor.class,"transportMotor");
+        
         clawServo = hardwareMap.servo.get("clawServo");
         liftMotor = hardwareMap.get(DcMotor.class,"liftMotor");
 
@@ -120,6 +127,12 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         hangingMotor.setPower(0.75);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        transportMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        transportMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -136,7 +149,6 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         // since the gamesticks were switched for some reason and we need to do
         // more investigation
         drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
-
     }
 
     public void initIMU()
@@ -181,6 +193,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         });
 
         //Gamepad 2
+
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_2) {
             public void handleEvent(RobotEvent e) {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
@@ -205,6 +218,23 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                     case BUTTON_A_DOWN:
                         // set arm to extend to its highest capacity to lift robot
                         hangingMotor.setTargetPosition(HANGING_FULLY_RETRACTED);
+                        break;
+
+                    case BUTTON_X_DOWN:
+                        intakeMotor.setPower(-1);
+                        transportMotor.setPower(1);
+                        // intake pixels into robot
+                        break;
+                    case LEFT_BUMPER_DOWN:
+                        intakeMotor.setPower(0);
+                        transportMotor.setPower(0);
+                        // stops pixel motor
+                        break;
+
+                    case BUTTON_B_DOWN:
+                        intakeMotor.setPower(1);
+                        transportMotor.setPower(-1);
+                        // outtakes pixels out of robot
                         break;
                     default:
                         buttonTlm.setValue("Not Moving");
