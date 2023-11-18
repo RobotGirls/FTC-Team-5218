@@ -45,14 +45,14 @@ import team25core.MechanumGearedDrivetrain;
 import team25core.OneWheelDriveTask;
 import team25core.RobotEvent;
 import team25core.StandardFourMotorRobot;
-import team25core.TwoStickMechanumControlScheme;
 import team25core.TeleopDriveTask;
+import team25core.TwoStickMechanumControlScheme;
 
-
-@TeleOp(name = "TwoStickTeleop")
+@TeleOp(name = "DroneLauncher")
 //@Disabled
-public class TwoStickTeleop extends StandardFourMotorRobot {
-    
+public class DroneLauncher extends StandardFourMotorRobot {
+
+
     private TeleopDriveTask drivetask;
 
     private enum Direction {
@@ -61,32 +61,32 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     }
     //added field centric
     private Telemetry.Item buttonTlm;
+    private Telemetry.Item coneTlm;
+    private static final double CONE_GRAB = 0.12;
+    private static final double CONE_RELEASE = 1.00;
 
     private static final double DRONE_SET_LEFT = 0.95;
     private static final double DRONE_SET_RIGHT = 0;
     private static final double DRONE_RELEASE = 0.5;
-    private static final int HANGING_FULLY_EXTENDED = 9856; 
-    private static final int HANGING_FULLY_RETRACTED = 0;
 
-    private static final double CLAW_OPEN = 0.5;
-    private static final double CLAW_CLOSE = 0.3;
+    private static final double ALIGNER_FRONT = .6;
+    private static final double ALIGNER_BACK = .2;
 
     private BNO055IMU imu;
 
-    private Servo clawServo;
-
-    private DcMotor hangingMotor;
     private DcMotor liftMotor;
-
-    private DcMotor intakeMotor;
-    private DcMotor transportMotor;
-    private boolean currentlySlow = false;
-
-    MecanumFieldCentricDriveScheme scheme;
 
     private Servo droneServoLeft;
     private Servo droneServoRight;
+    private boolean currentlySlow = false;
+
+    private OneWheelDriveTask liftMotorTask;
+
+    MecanumFieldCentricDriveScheme scheme;
+
     private MechanumGearedDrivetrain drivetrain;
+
+    private static final int TICKS_PER_INCH = 79;
 
     @Override
     public void handleEvent(RobotEvent e) {
@@ -94,15 +94,10 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     @Override
     public void init() {
+
         super.init();
 
         //mechanisms
-        hangingMotor = hardwareMap.get(DcMotor.class,"hangingMotor");
-
-        intakeMotor =  hardwareMap.get(DcMotor.class,"intakeMotor");
-        transportMotor  =  hardwareMap.get(DcMotor.class,"transportMotor");
-        
-        clawServo = hardwareMap.servo.get("clawServo");
         liftMotor = hardwareMap.get(DcMotor.class,"liftMotor");
 
         droneServoLeft = hardwareMap.servo.get("droneServoLeft");
@@ -117,27 +112,12 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         droneServoLeft.setPosition(DRONE_SET_LEFT);
         droneServoRight.setPosition(DRONE_SET_RIGHT);
 
-        // the motor must be at its set position zero, at the beginning of the opmode
-        hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hangingMotor.setTargetPosition(0);
-        // encoder allows you to know how much the motor has spun (distance)
-        hangingMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        // the brake allows the motor to hold its position when power is not currently being applied
-        hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hangingMotor.setPower(0.75);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        transportMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        transportMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        clawServo.setPosition(CLAW_CLOSE);
 
         //telemetry
         buttonTlm = telemetry.addData("buttonState", "unknown");
@@ -149,6 +129,9 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         // since the gamesticks were switched for some reason and we need to do
         // more investigation
         drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
+
+        liftMotorTask = new OneWheelDriveTask(this, liftMotor, true);
+        liftMotorTask.slowDown(false);
     }
 
     public void initIMU()
@@ -170,6 +153,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         this.addTask(drivetask);
 
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1) {
+            //@Override
             public void handleEvent(RobotEvent e) {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
 
@@ -178,7 +162,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         // If slow, then normal speed. If fast, then slow speed of motors.
                         //pertains to slowmode
                         if (currentlySlow) {
-                            drivetask.slowDown(1.0);
+                            drivetask.slowDown(8.5);
                             currentlySlow = false;
                         } else {
                             drivetask.slowDown(0.3);
@@ -193,56 +177,22 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         });
 
         //Gamepad 2
-//        this.addTask(intakeMotorTask);
-//        this.addTask(transportMotorTask);
+        this.addTask(liftMotorTask);
 
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_2) {
+            //@Override
             public void handleEvent(RobotEvent e) {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
 
                 switch (gamepadEvent.kind) {
-                    case RIGHT_BUMPER_DOWN:
+
+                    case BUTTON_X_DOWN:
                         //position 0
                         droneServoLeft.setPosition(DRONE_RELEASE);
                         droneServoRight.setPosition(DRONE_RELEASE);
-                    case LEFT_TRIGGER_DOWN:
-                        // set claw's position to 0
-                        clawServo.setPosition(CLAW_CLOSE);
-                        break;
-                    case RIGHT_TRIGGER_DOWN:
-                        // set claw's position to 1
-                        clawServo.setPosition(CLAW_OPEN);
-                        break;
-                    case BUTTON_Y_DOWN:
-                        // set arm to extend to its highest capacity to lift robot
-                        hangingMotor.setTargetPosition(HANGING_FULLY_EXTENDED);
-                        break;
-                    case BUTTON_A_DOWN:
-                        // set arm to extend to its highest capacity to lift robot
-                        hangingMotor.setTargetPosition(HANGING_FULLY_RETRACTED);
                         break;
 
-                    case BUTTON_X_DOWN:
-                        intakeMotor.setPower(-1);
-                        transportMotor.setPower(1);
-                        // intake pixels into robot
-                        break;
-//                    case BUTTON_X_UP:
-//                        intakeMotor.setPower(0);
-//                        transportMotor.setPower(0);
-//                        // intake pixels into robot
-//                        break;
-                    case LEFT_BUMPER_DOWN:
-                        intakeMotor.setPower(0);
-                        transportMotor.setPower(0);
-                        // stops pixel motor
-                        break;
 
-                    case BUTTON_B_DOWN:
-                        intakeMotor.setPower(1);
-                        transportMotor.setPower(-1);
-                        // outtakes pixels out of robot
-                        break;
                     default:
                         buttonTlm.setValue("Not Moving");
                         break;
