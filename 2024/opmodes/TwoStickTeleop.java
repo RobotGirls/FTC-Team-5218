@@ -193,8 +193,6 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         });
 
         //Gamepad 2
-//        this.addTask(intakeMotorTask);
-//        this.addTask(transportMotorTask);
 
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_2) {
             public void handleEvent(RobotEvent e) {
@@ -227,11 +225,6 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         transportMotor.setPower(1);
                         // intake pixels into robot
                         break;
-//                    case BUTTON_X_UP:
-//                        intakeMotor.setPower(0);
-//                        transportMotor.setPower(0);
-//                        // intake pixels into robot
-//                        break;
                     case LEFT_BUMPER_DOWN:
                         intakeMotor.setPower(0);
                         transportMotor.setPower(0);
