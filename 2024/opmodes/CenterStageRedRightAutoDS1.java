@@ -300,6 +300,7 @@ public class CenterStageRedRightAutoDS1 extends Robot {
         leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 2, 0.5);
         leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
         leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+
         leftPixelBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
         leftPixelBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, -0.5);
         leftPixelBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, -0.5);
@@ -308,6 +309,7 @@ public class CenterStageRedRightAutoDS1 extends Robot {
 
 
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 17, 0.5);
+
         middlePixelBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12, -0.5);
         middlePixelBoardPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
         middlePixelBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 15, 0.5);
