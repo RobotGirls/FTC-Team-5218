@@ -214,21 +214,28 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         // set arm to extend to its highest capacity to lift robot
                         hangingMotor.setTargetPosition(HANGING_FULLY_RETRACTED);
                         break;
-                    case RIGHT_STICK_UP:
-                        intakeMotor.setPower(0.5);
-                        transportMotor.setPower(0.5);
+
+                    case BUTTON_X_DOWN:
+                        intakeMotor.setPower(-1);
+                        transportMotor.setPower(1);
                         // intake pixels into robot
                         break;
-                    case RIGHT_STICK_DOWN:
-                        intakeMotor.setPower(-0.5);
-                        transportMotor.setPower(-0.5);
-                        // outtake pixels into robot
-                        break;
-                    case RIGHT_STICK_NEUTRAL:
+//                    case BUTTON_X_UP:
+//                        intakeMotor.setPower(0);
+//                        transportMotor.setPower(0);
+//                        // intake pixels into robot
+//                        break;
+                    case LEFT_BUMPER_DOWN:
                         intakeMotor.setPower(0);
                         transportMotor.setPower(0);
-                        // stops the transport and intake movement
+                        // intake pixels into robot
+                        break;
 
+                    case BUTTON_B_DOWN:
+                        intakeMotor.setPower(1);
+                        transportMotor.setPower(-1);
+                        // outtakes pixels out of robot
+                        break;
                     default:
                         buttonTlm.setValue("Not Moving");
                         break;
