@@ -51,11 +51,11 @@ public class CenterStageRedLeftAutoDS2 extends Robot {
     public String position;
     private DeadReckonPath outtakePath;
 
-    public static double OUTTAKE_DISTANCE = 0.2;
-    public static double OUTTAKE_SPEED = 0.1;
+    public static double OUTTAKE_DISTANCE = 2;
+    public static double OUTTAKE_SPEED = 0.7;
 
-    public static double LIFT_DISTANCE = 20;
-    public static double LIFT_SPEED = 0.1;
+    public static double LIFT_DISTANCE = 50;
+    public static double LIFT_SPEED = .6;
 
 
     private Telemetry.Item locationTlm;
@@ -246,7 +246,7 @@ public class CenterStageRedLeftAutoDS2 extends Robot {
     public void detectProp() {
         RobotLog.ii(TAG, "Setup detectProp");
         delay(3);
-        distanceTask = new DistanceSensorTask(this, rightSensor, leftSensor, telemetry, 0, 4, 8 ,
+        distanceTask = new DistanceSensorTask(this, leftSensor, rightSensor, telemetry, 0, 4, 8 ,
                 5,false) {
             @Override
             public void handleEvent(RobotEvent e) {
@@ -254,9 +254,11 @@ public class CenterStageRedLeftAutoDS2 extends Robot {
                 switch (event.kind) {
                     case LEFT_DISTANCE:
                         locationTlm.setValue("left");
+                        position ="left";
                         driveToLeftProp(leftPropPath);
                         break;
                     case RIGHT_DISTANCE:
+                        position ="right";
                         //RobotLog.ii(TAG, " right distance %d", event.distance);
                         locationTlm.setValue("right");
                         driveToRightProp(rightPropPath);
@@ -264,6 +266,7 @@ public class CenterStageRedLeftAutoDS2 extends Robot {
                         break;
                     case UNKNOWN:
                         locationTlm.setValue("middle");
+                        position ="middle";
                         driveToMiddleProp(middlePropPath);
 
                         break;
@@ -330,7 +333,7 @@ public class CenterStageRedLeftAutoDS2 extends Robot {
                 if (path.kind == EventKind.PATH_DONE)
                 {
                     RobotLog.i("liftedToBoard");
-                    delay(1);
+                    delay(6);
                     clawServo.setPosition(CLAW_RELEASE);
 
                 }
@@ -403,14 +406,21 @@ public class CenterStageRedLeftAutoDS2 extends Robot {
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        outtake = hardwareMap.get(DcMotor.class, "intake");
+        outtake = hardwareMap.get(DcMotor.class, "intakeMotor");
         outtake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         outtake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
         outtakeDrivetrain = new OneWheelDirectDrivetrain(outtake);
         outtakeDrivetrain.resetEncoders();
         outtakeDrivetrain.encodersOn();
+
+        liftMotor = hardwareMap.get(DcMotor.class, "liftMotor");
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotorDrivetrain = new OneWheelDirectDrivetrain(liftMotor);
+        liftMotorDrivetrain.resetEncoders();
+        liftMotorDrivetrain.encodersOn();
 
 
         // telemetry shown on the phone
@@ -468,7 +478,7 @@ public class CenterStageRedLeftAutoDS2 extends Robot {
         driveFromRightPropPath = new DeadReckonPath();
         driveFromRightPropPath.stop();
 
-        driveToLinesPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12, 0.25);
+        driveToLinesPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 14, 0.25);
 
         rightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS,1 , -0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, 0.5);
