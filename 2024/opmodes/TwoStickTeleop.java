@@ -215,10 +215,6 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         // set arm to extend to its highest capacity to lift robot
                         hangingMotor.setTargetPosition(HANGING_FULLY_EXTENDED);
                         break;
-                    case RIGHT_TRIGGER_DOWN:
-                        //position 1
-                        clawServo.setPosition(CLAW_OPEN);
-                        break;
 
                     case BUTTON_X_DOWN:
                         intakeMotor.setPower(-1);
