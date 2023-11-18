@@ -73,6 +73,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private Servo clawServo;
 
     private DcMotor hangingMotor;
+    private DcMotor liftMotor;
 
     private DcMotor intakeMotor;
     private DcMotor transportMotor;
@@ -100,12 +101,14 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         transportMotor  =  hardwareMap.get(DcMotor.class,"transportMotor");
         
         clawServo = hardwareMap.servo.get("clawServo");
+        liftMotor = hardwareMap.get(DcMotor.class,"liftMotor");
 
         // using encoders to record ticks
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
         // the motor must be at its set position zero, at the beginning of the opmode
         hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -115,6 +118,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         // the brake allows the motor to hold its position when power is not currently being applied
         hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         hangingMotor.setPower(0.75);
+        liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
