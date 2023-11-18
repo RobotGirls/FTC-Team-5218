@@ -335,6 +335,20 @@ public class CenterStageRedLeftAutoDS2 extends Robot {
                     RobotLog.i("liftedToBoard");
                     delay(6);
                     clawServo.setPosition(CLAW_RELEASE);
+                    delay(6);
+                        if(position.equals("left"))
+                        {
+                            driveToPark(leftBoardParkPath);
+                        }
+                        else if(position.equals("right"))
+                        {
+                            driveToPark(rightBoardParkPath);
+                        }
+                        else
+                        {
+                            driveToPark(middleBoardParkPath);
+
+                        }
 
                 }
             }
@@ -515,18 +529,18 @@ public class CenterStageRedLeftAutoDS2 extends Robot {
 
 
 
-        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
+        //middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
 
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, -0.3);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 13, 0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 39, -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 45, -0.5);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, -0.5);
 
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
-        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
+        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.5, -0.5);
 
 
 
