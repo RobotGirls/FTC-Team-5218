@@ -515,7 +515,7 @@ public class CenterStageRedLeftAutoDS2 extends Robot {
 
 
 
-        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0, 0.5);
+        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
 
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, -0.3);
