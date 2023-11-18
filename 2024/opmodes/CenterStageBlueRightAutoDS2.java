@@ -515,17 +515,17 @@ public class CenterStageBlueRightAutoDS2 extends Robot {
 
 
 
-        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
+        //middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
 
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
+        //driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, -0.3);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 13, 0.5);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 39, -0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, 0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37, -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 45, -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
 
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
+        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, -0.5);
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
 
 
