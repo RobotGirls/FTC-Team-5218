@@ -65,7 +65,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private static final double DRONE_SET_LEFT = 0.95;
     private static final double DRONE_SET_RIGHT = 0;
     private static final double DRONE_RELEASE = 0.5;
-    private static final int HANGING_FULLY_EXTENDED = 9856; 
+    private static final int HANGING_FULLY_EXTENDED = -9856;
     private static final int HANGING_FULLY_RETRACTED = 0;
 
     private static final double CLAW_OPEN = 0.5;
@@ -81,6 +81,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private DcMotor intakeMotor;
     private DcMotor transportMotor;
     private boolean currentlySlow = false;
+    private OneWheelDriveTask liftMotorTask;
 
     MecanumFieldCentricDriveScheme scheme;
 
@@ -102,7 +103,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
         intakeMotor =  hardwareMap.get(DcMotor.class,"intakeMotor");
         transportMotor  =  hardwareMap.get(DcMotor.class,"transportMotor");
-        
+
         clawServo = hardwareMap.servo.get("clawServo");
         liftMotor = hardwareMap.get(DcMotor.class,"liftMotor");
 
@@ -148,6 +149,9 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         // Note we are swapping the rights and lefts in the arguments below
         // since the gamesticks were switched for some reason and we need to do
         // more investigation
+        liftMotorTask = new OneWheelDriveTask(this, liftMotor, true);
+        liftMotorTask.slowDown(false);
+
         drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
     }
 
@@ -168,6 +172,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
         //Gamepad 1
         this.addTask(drivetask);
+        this.addTask(liftMotorTask);
 
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1) {
             public void handleEvent(RobotEvent e) {
@@ -200,9 +205,9 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
                 switch (gamepadEvent.kind) {
                     case RIGHT_BUMPER_DOWN:
-                        //position 0
                         droneServoLeft.setPosition(DRONE_RELEASE);
                         droneServoRight.setPosition(DRONE_RELEASE);
+                        break;
                     case LEFT_TRIGGER_DOWN:
                         // set claw's position to 0
                         clawServo.setPosition(CLAW_CLOSE);
@@ -214,6 +219,10 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                     case BUTTON_Y_DOWN:
                         // set arm to extend to its highest capacity to lift robot
                         hangingMotor.setTargetPosition(HANGING_FULLY_EXTENDED);
+                        break;
+                    case BUTTON_A_DOWN:
+                        // set arm to retract to its lowest capacity to lift robot
+                        hangingMotor.setTargetPosition(HANGING_FULLY_RETRACTED);
                         break;
 
                     case BUTTON_X_DOWN:
