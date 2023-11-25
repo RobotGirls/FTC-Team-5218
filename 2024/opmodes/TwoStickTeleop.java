@@ -128,10 +128,10 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     final double MAX_AUTO_STRAFE = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)ƒ
     final double MAX_AUTO_TURN = 0.3;   //  Clip the turn speed to this max value (adjust for your robot)
 
-    private DcMotor leftFrontDrive = null;  //  Used to control the left front drive wheel
-    private DcMotor rightFrontDrive = null;  //  Used to control the right front drive wheel
-    private DcMotor leftBackDrive = null;  //  Used to control the left back drive wheel
-    private DcMotor rightBackDrive = null;  //  Used to control the right back drive wheel
+    private DcMotor frontLeft;  //  Used to control the left front drive wheel
+    private DcMotor frontRight;  //  Used to control the right front drive wheel
+    private DcMotor backLeft;  //  Used to control the left back drive wheel
+    private DcMotor backRight;  //  Used to control the right back drive wheel
 
     private static final boolean USE_WEBCAM = true;  // Set true to use a webcam, or false for a phone camera
     private static final int DESIRED_TAG_ID = -1;     // Choose the tag you want to approach or set to -1 for ANY tag.
@@ -166,6 +166,11 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
         droneServoLeft = hardwareMap.servo.get("droneServoLeft");
         droneServoRight = hardwareMap.servo.get("droneServoRight");
+
+        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
+        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
 
         // using encoders to record ticks
         backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -275,10 +280,10 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         }
 
         // Send powers to the wheels.
-        leftFrontDrive.setPower(leftFrontPower);
-        rightFrontDrive.setPower(rightFrontPower);
-        leftBackDrive.setPower(leftBackPower);
-        rightBackDrive.setPower(rightBackPower);
+        frontLeft.setPower(leftFrontPower);
+        frontRight.setPower(rightFrontPower);
+        backLeft.setPower(leftBackPower);
+        backRight.setPower(rightBackPower);
     }
 
     public void initIMU() {
