@@ -225,20 +225,20 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         hangingMotor.setTargetPosition(HANGING_FULLY_RETRACTED);
                         break;
 
-                    case BUTTON_B_DOWN:
-                        intakeMotor.setPower(1);
-                        //transportMotor.setPower(1);
+                    case BUTTON_X_DOWN:
+                        intakeMotor.setPower(-1);
+                        transportMotor.setPower(1);
                         // intake pixels into robot
                         break;
                     case LEFT_BUMPER_DOWN:
                         intakeMotor.setPower(0);
-                       // transportMotor.setPower(0);
+                        transportMotor.setPower(0);
                         // stops pixel motor
                         break;
 
-                    case BUTTON_X_DOWN:
-                        intakeMotor.setPower(-1);
-                       // transportMotor.setPower(-1);
+                    case BUTTON_B_DOWN:
+                        intakeMotor.setPower(1);
+                        transportMotor.setPower(-1);
                         // outtakes pixels out of robot
                         break;
                     default:

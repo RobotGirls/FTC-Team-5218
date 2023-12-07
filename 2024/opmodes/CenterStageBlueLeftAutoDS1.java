@@ -35,7 +35,7 @@ public class CenterStageBlueLeftAutoDS1 extends Robot {
     private DeadReckonPath middlePixelBoardPath;
     private FourWheelDirectDrivetrain drivetrain;
 
-    private static final double CLAW_GRAB = 0.3;
+    private static final double CLAW_GRAB = 0.25;
     private static final double CLAW_RELEASE = 0.5;
 
     private Servo clawServo;
