@@ -45,13 +45,13 @@ import team25core.MechanumGearedDrivetrain;
 import team25core.OneWheelDriveTask;
 import team25core.RobotEvent;
 import team25core.StandardFourMotorRobot;
-import team25core.TwoStickMechanumControlScheme;
 import team25core.TeleopDriveTask;
+import team25core.TwoStickMechanumControlScheme;
 
 
-@TeleOp(name = "TwoStickTeleop")
+@TeleOp(name = "TeleopMeet")
 //@Disabled
-public class TwoStickTeleop extends StandardFourMotorRobot {
+public class TeleopMeet extends StandardFourMotorRobot {
     
     private TeleopDriveTask drivetask;
 
@@ -71,9 +71,15 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private static final double CLAW_OPEN = 0.5;
     private static final double CLAW_CLOSE = 0.2;
 
+    private static final double DRONE_PINCHER_CLOSE = 0.5;
+    private static final double DRONE_PINCHER_OPEN = 0.2;
+
     private BNO055IMU imu;
 
     private Servo clawServo;
+
+    private Servo dronePincherServo;
+
 
     private DcMotor hangingMotor;
     private DcMotor liftMotor;
@@ -105,6 +111,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         transportMotor  =  hardwareMap.get(DcMotor.class,"transportMotor");
 
         clawServo = hardwareMap.servo.get("clawServo");
+        dronePincherServo = hardwareMap.servo.get("dronePincher");
+
         liftMotor = hardwareMap.get(DcMotor.class,"liftMotor");
 
         droneServoLeft = hardwareMap.servo.get("droneServoLeft");
@@ -139,6 +147,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         clawServo.setPosition(CLAW_CLOSE);
+        dronePincherServo.setPosition(DRONE_PINCHER_CLOSE);
+
 
         //telemetry
         buttonTlm = telemetry.addData("buttonState", "unknown");
@@ -190,6 +200,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                             currentlySlow = true;
                         }
                         break;
+                    case BUTTON_B_DOWN:
+                        dronePincherServo.setPosition(DRONE_PINCHER_OPEN);
                     default:
                         buttonTlm.setValue("Not Moving");
                         break;
