@@ -36,7 +36,7 @@ public class AprilTagAuto extends Robot {
     private DcMotor backRight=null;
     private FourWheelDirectDrivetrain drivetrain;
 
-    private int desiredTagID;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    private int desiredTagID=3;     // Choose the tag you want to approach or set to -1 for ANY tag.
 
     private final float APRIL_TAG_DECIMATION = 2;
 
@@ -98,7 +98,7 @@ public class AprilTagAuto extends Robot {
         } else {
             desiredTagID = 3; // 6 on red
         }
-        //findAprilTagData();
+        findAprilTagData();
     }
 
     public AprilTagDetection findAprilTagData() {
@@ -230,9 +230,9 @@ public class AprilTagAuto extends Robot {
         findAprilTag();
         aprilTag = findAprilTagData();
         alignWithAprilTag(aprilTag);
-      //  while (!targetReached) {
-        // alignWithAprilTag(aprilTag);
-       // }
+//        while (!targetReached) {
+//         alignWithAprilTag(aprilTag);
+//        }
         frontLeft.setPower(0);
         frontRight.setPower(0);
         backLeft.setPower(0);
