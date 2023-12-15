@@ -78,7 +78,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private DcMotor hangingMotor;
     private DcMotor liftMotor;
 
-    private DcMotor intakeMotor;
+//    private DcMotor intakeMotor;
     private DcMotor transportMotor;
     private boolean currentlySlow = false;
     private OneWheelDriveTask liftMotorTask;
@@ -101,7 +101,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         hangingMotor = hardwareMap.get(DcMotor.class,"hangingMotor");
         clawServo = hardwareMap.servo.get("clawServo");
 
-        intakeMotor =  hardwareMap.get(DcMotor.class,"intakeMotor");
+//        intakeMotor =  hardwareMap.get(DcMotor.class,"intakeMotor");
         transportMotor  =  hardwareMap.get(DcMotor.class,"transportMotor");
 
         clawServo = hardwareMap.servo.get("clawServo");
@@ -129,8 +129,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         hangingMotor.setPower(0.75);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         transportMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         transportMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -226,19 +226,19 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         break;
 
                     case BUTTON_B_DOWN:
-                        intakeMotor.setPower(1);
-                        //transportMotor.setPower(1);
+                        //intakeMotor.setPower(1);
+                        transportMotor.setPower(1);
                         // intake pixels into robot
                         break;
                     case LEFT_BUMPER_DOWN:
-                        intakeMotor.setPower(0);
-                       // transportMotor.setPower(0);
+                        //intakeMotor.setPower(0);
+                        transportMotor.setPower(0);
                         // stops pixel motor
                         break;
 
                     case BUTTON_X_DOWN:
-                        intakeMotor.setPower(-1);
-                       // transportMotor.setPower(-1);
+                        //intakeMotor.setPower(-1);
+                        transportMotor.setPower(-1);
                         // outtakes pixels out of robot
                         break;
                     default:
