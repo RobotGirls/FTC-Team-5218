@@ -191,7 +191,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         }
                         break;
                     default:
-                        buttonTlm.setValue("Not Moving");
+                       // buttonTlm.setValue("Not Moving");
                         break;
                 }
             }
@@ -225,20 +225,21 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         hangingMotor.setTargetPosition(HANGING_FULLY_RETRACTED);
                         break;
 
-                    case BUTTON_B_DOWN:
-                        //intakeMotor.setPower(1);
+                    case BUTTON_X_DOWN:
                         transportMotor.setPower(1);
                         // intake pixels into robot
                         break;
-                    case LEFT_BUMPER_DOWN:
-                        //intakeMotor.setPower(0);
-                        transportMotor.setPower(0);
-                        // stops pixel motor
+                    case BUTTON_X_UP:
+//
+                     transportMotor.setPower(0);
+//                    // outtakes pixels out of robot
                         break;
-
-                    case BUTTON_X_DOWN:
-                        //intakeMotor.setPower(-1);
+                    case BUTTON_B_DOWN:
                         transportMotor.setPower(-1);
+                        // outtakes pixels out of robot
+                        break;
+                    case BUTTON_B_UP:
+                        transportMotor.setPower(0);
                         // outtakes pixels out of robot
                         break;
                     default:
