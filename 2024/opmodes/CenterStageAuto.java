@@ -4,6 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -23,12 +24,15 @@ import team25core.SingleShotTimerTask;
 @Autonomous(name = "apriltagboard")
 public class CenterStageAuto extends Robot {
 
+    private ElapsedTime timer;
+
     private DcMotor frontLeft;
+    private double aprilTagSpeed = 0.1;
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor backRight;
     private DcMotor outtake;
-    final double DESIRED_DISTANCE = 12.0; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 1.0; //  this is how close the camera should get to the target (inches)
 
     final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
@@ -70,7 +74,7 @@ public class CenterStageAuto extends Robot {
     public static double OUTTAKE_DISTANCE = 2;
     public static double OUTTAKE_SPEED = 0.7;
 
-    public static double LIFT_DISTANCE = 27;
+    public static double LIFT_DISTANCE = 32;
     public static double LIFT_SPEED = .6;
 
 
@@ -371,10 +375,11 @@ public class CenterStageAuto extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     RobotLog.i("liftedToBoard");
-                    delay(3000);
+                    timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+                    while(timer.time() < 3000) {}
                     clawServo.setPosition(CLAW_RELEASE);
-                    delay(6000);
-
+                    timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+                    while(timer.time() < 3000) {}
                 }
                 if (position.equals("left")) {
                     driveToPark(leftBoardParkPath);
@@ -409,7 +414,7 @@ public class CenterStageAuto extends Robot {
             }
         };
         objDetectionTask.init(telemetry, hardwareMap);
-        objDetectionTask.rateLimit(1000); // currently calling objDetectionTask every second
+        objDetectionTask.rateLimit(100); // currently calling objDetectionTask every second
         objDetectionTask.start();
         objDetectionTask.resumeStreaming();
         objDetectionTask.setAprilTagDecimation(APRIL_TAG_DECIMATION);
@@ -423,10 +428,10 @@ public class CenterStageAuto extends Robot {
     public void findDesiredID() {
         if (position.equals("left")) {
             desiredTagID = 1; // 4 on red
-        } else if (position.equals("center")) {
-            desiredTagID = 2; // 5 on red
+        } else if (position.equals("right")) {
+            desiredTagID = 3; // 5 on red
         } else {
-            desiredTagID = 3; // 6 on red
+            desiredTagID = 2; // 6 on red
         }
         findAprilTagData();
     }
@@ -442,15 +447,20 @@ public class CenterStageAuto extends Robot {
             turn   = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN) ;
             strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
             moveRobot(drive, turn, strafe);
-            return rangeError;
+            return headingError;
         }
 
     public void moveRobot(double x, double y, double yaw) {
         // Calculate wheel powers.
-        double leftFrontPower    =  x -y -yaw;
-        double rightFrontPower   =  x +y +yaw;
-        double leftBackPower     =  x +y -yaw;
-        double rightBackPower    =  x -y +yaw;
+        double leftFrontPower    =  -(x -y -yaw);
+        double rightFrontPower   =  -(x +y +yaw);
+        double leftBackPower     =  -(x +y -yaw);
+        double rightBackPower    =  -(x -y +yaw);
+
+//        frontLeft.setPower(aprilTagSpeed);
+//        frontRight.setPower(-aprilTagSpeed);
+//        backLeft.setPower(-aprilTagSpeed);
+//        backRight.setPower(aprilTagSpeed);
 
         // Normalize wheel powers to be less than 1.0
         double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -476,10 +486,10 @@ public class CenterStageAuto extends Robot {
             while (objDetectionTask.getAprilTag(desiredTagID) == null) {
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
 
-                frontLeft.setPower(0.3);
-                frontRight.setPower(-0.3);
-                backLeft.setPower(-0.3);
-                backRight.setPower(0.3);
+                frontLeft.setPower(aprilTagSpeed);
+                frontRight.setPower(-aprilTagSpeed);
+                backLeft.setPower(-aprilTagSpeed);
+                backRight.setPower(aprilTagSpeed);
             }
             telemetry.addData("inside findAprilTagData found ID ", desiredTagID);
             targetFound = true;
@@ -494,10 +504,10 @@ public class CenterStageAuto extends Robot {
 
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
 
-                frontLeft.setPower(0.3);
-                frontRight.setPower(-0.3);
-                backLeft.setPower(-0.3);
-                backRight.setPower(0.3);
+                frontLeft.setPower(aprilTagSpeed);
+                frontRight.setPower(-aprilTagSpeed);
+                backLeft.setPower(-aprilTagSpeed);
+                backRight.setPower(aprilTagSpeed);
             }
             telemetry.addData("inside findAprilTagData found ID ", desiredTagID);
             targetFound = true;
@@ -512,18 +522,20 @@ public class CenterStageAuto extends Robot {
 
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
 
-                frontLeft.setPower(0.3);
-                frontRight.setPower(-0.3);
-                backLeft.setPower(-0.3);
-                backRight.setPower(0.3);
+                frontLeft.setPower(aprilTagSpeed);
+                frontRight.setPower(-aprilTagSpeed);
+                backLeft.setPower(-aprilTagSpeed);
+                backRight.setPower(aprilTagSpeed);
 
             }
             desiredTag = objDetectionTask.getAprilTag(desiredTagID);
 
-            while (alignWithAprilTag() > 2.0 ) {
-            }
-
-                telemetry.addData("inside findAprilTagData found ID ", desiredTagID);
+//            while (Math.abs(alignWithAprilTag() )> 0.2 && timer.time() < 28000) {
+//                telemetry.addData("searching for apriltag 2 ", desiredTagID);
+//
+//            }
+//
+//                telemetry.addData("inside findAprilTagData found ID ", desiredTagID);
             targetFound = true;
             frontLeft.setPower(0);
             frontRight.setPower(0);
@@ -588,7 +600,7 @@ public class CenterStageAuto extends Robot {
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        outtake = hardwareMap.get(DcMotor.class, "intakeMotor");
+        outtake = hardwareMap.get(DcMotor.class, "transportMotor");
         outtake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         outtake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         outtake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -617,6 +629,7 @@ public class CenterStageAuto extends Robot {
 
     public void start()
     {
+        timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         whereAmI.setValue("in Start");
         driveToProp(driveToLinesPath);
         findAprilTag();
@@ -665,6 +678,7 @@ public class CenterStageAuto extends Robot {
         driveToBoardPath = new DeadReckonPath();
         driveToBoardPath.stop();
 
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 2, 0.25);
         driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 4, -0.25);
 
 
@@ -709,8 +723,8 @@ public class CenterStageAuto extends Robot {
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, 0.3);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12, 0.5);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 38, 0.5);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 43, -0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.5, 0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 40, -0.5);
 //        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9.5, 0.5);
 //        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
 
