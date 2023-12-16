@@ -65,9 +65,10 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private static final double DRONE_SET_LEFT = 0.95;
     private static final double DRONE_SET_RIGHT = 0;
     private static final double DRONE_RELEASE = 0.5;
-    private static final int HANGING_FULLY_EXTENDED = -9856;
-    private static final int HANGING_FULLY_RETRACTED = 0;
-
+    private static final int HANGING_FULLY_EXTENDED_RIGHT= -9856;
+    private static final int HANGING_FULLY_RETRACTED_RIGHT = 0;
+    private static final int HANGING_FULLY_EXTENDED_LEFT = -9856;
+    private static final int HANGING_FULLY_RETRACTED_LEFT = 0;
     private static final double CLAW_OPEN = 0.5;
     private static final double CLAW_CLOSE = 0.2;
 
@@ -75,7 +76,9 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     private Servo clawServo;
 
-    private DcMotor hangingMotor;
+    private DcMotor hangingMotorLeft;
+    private DcMotor hangingMotorRight;
+
     private DcMotor liftMotor;
 
     //    private DcMotor intakeMotor;
@@ -98,7 +101,9 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         super.init();
 
         //mechanisms
-        hangingMotor = hardwareMap.get(DcMotor.class,"hangingMotor");
+        hangingMotorLeft = hardwareMap.get(DcMotor.class,"hangingMotorLeft");
+        hangingMotorRight = hardwareMap.get(DcMotor.class,"hangingMotorRight");
+
         clawServo = hardwareMap.servo.get("clawServo");
 
 //        intakeMotor =  hardwareMap.get(DcMotor.class,"intakeMotor");
@@ -120,14 +125,22 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         droneServoRight.setPosition(DRONE_SET_RIGHT);
 
         // the motor must be at its set position zero, at the beginning of the opmode
-        hangingMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        hangingMotor.setTargetPosition(0);
+        hangingMotorLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hangingMotorLeft.setTargetPosition(0);
         // encoder allows you to know how much the motor has spun (distance)
-        hangingMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        hangingMotorLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         // the brake allows the motor to hold its position when power is not currently being applied
-        hangingMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        hangingMotor.setPower(0.75);
+        hangingMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hangingMotorLeft.setPower(0.75);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        hangingMotorRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hangingMotorRight.setTargetPosition(0);
+        // encoder allows you to know how much the motor has spun (distance)
+        hangingMotorRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        // the brake allows the motor to hold its position when power is not currently being applied
+        hangingMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        hangingMotorRight.setPower(0.75);
 
 //        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -218,11 +231,14 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         break;
                     case BUTTON_Y_DOWN:
                         // set arm to extend to its highest capacity to lift robot
-                        hangingMotor.setTargetPosition(HANGING_FULLY_EXTENDED);
+                        hangingMotorRight.setTargetPosition(HANGING_FULLY_EXTENDED_RIGHT);
+                        hangingMotorLeft.setTargetPosition(HANGING_FULLY_EXTENDED_LEFT);
+
                         break;
                     case BUTTON_A_DOWN:
                         // set arm to retract to its lowest capacity to lift robot
-                        hangingMotor.setTargetPosition(HANGING_FULLY_RETRACTED);
+                        hangingMotorRight.setTargetPosition(HANGING_FULLY_RETRACTED_RIGHT);
+                        hangingMotorLeft.setTargetPosition(HANGING_FULLY_RETRACTED_LEFT);
                         break;
 
                     case BUTTON_X_DOWN:
