@@ -21,7 +21,7 @@ import team25core.Robot;
 import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
-@Autonomous(name = "BlueRightAutoW/AT")
+@Autonomous(name = "BlueLeftAutoW/AT")
 public class BlueLeftAutoAT extends Robot {
 
     private ElapsedTime timer;
@@ -377,10 +377,10 @@ public class BlueLeftAutoAT extends Robot {
                 if (path.kind == EventKind.PATH_DONE) {
                     RobotLog.i("liftedToBoard");
                     ElapsedTime localtimer1 = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-                    while(localtimer1.time() < 4000) {}
+                    while(localtimer1.time() < 1000) {}
                     clawServo.setPosition(CLAW_RELEASE);
                     ElapsedTime localtimer2 = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-                    while(localtimer2.time() < 4000) {}
+                    while(localtimer2.time() < 1000) {}
                 }
                 if (position.equals("left")) {
                     driveToPark(leftBoardParkPath);
