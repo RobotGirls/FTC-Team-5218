@@ -706,12 +706,12 @@ public class RedRightAutoAT extends Robot {
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3.5, -0.5);
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11.4, -0.5);
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 77, -0.5);
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 4, -0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 34, -0.75);
 
 
 
-        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, -0.5);
+        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 1);
+        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, -1);
 
 
 
