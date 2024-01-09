@@ -722,7 +722,7 @@ public class RedLeftAutoAT1 extends Robot {
 
 
         leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
-        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, 0.5);
+        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 7, 0.5);
 
         rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 38, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .75, 0.5);
