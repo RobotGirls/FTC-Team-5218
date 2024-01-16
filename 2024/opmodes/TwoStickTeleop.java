@@ -85,6 +85,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private DcMotor transportMotor;
     private boolean currentlySlow = false;
     private OneWheelDriveTask liftMotorTask;
+    private OneWheelDriveTask transporIntakeMotorTask;
+
 
     MecanumFieldCentricDriveScheme scheme;
 
@@ -165,6 +167,9 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         liftMotorTask = new OneWheelDriveTask(this, liftMotor, true);
         liftMotorTask.slowDown(false);
 
+        transporIntakeMotorTask = new OneWheelDriveTask(this, transportMotor, false);
+        transporIntakeMotorTask.slowDown(false);
+
         drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
     }
 
@@ -186,6 +191,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         //Gamepad 1
         this.addTask(drivetask);
         this.addTask(liftMotorTask);
+        this.addTask(transporIntakeMotorTask);
+
 
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1) {
             public void handleEvent(RobotEvent e) {
@@ -241,23 +248,23 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         hangingMotorLeft.setTargetPosition(HANGING_FULLY_RETRACTED_LEFT);
                         break;
 
-                    case BUTTON_X_DOWN:
-                        transportMotor.setPower(1);
-                        // intake pixels into robot
-                        break;
-                    case BUTTON_X_UP:
-//
-                        transportMotor.setPower(0);
-//                    // outtakes pixels out of robot
-                        break;
-                    case BUTTON_B_DOWN:
-                        transportMotor.setPower(-1);
-                        // outtakes pixels out of robot
-                        break;
-                    case BUTTON_B_UP:
-                        transportMotor.setPower(0);
-                        // outtakes pixels out of robot
-                        break;
+//                    case BUTTON_X_DOWN:
+//                        transportMotor.setPower(1);
+//                        // intake pixels into robot
+//                        break;
+//                    case BUTTON_X_UP:
+////
+//                        transportMotor.setPower(0);
+////                    // outtakes pixels out of robot
+//                        break;
+//                    case BUTTON_B_DOWN:
+//                        transportMotor.setPower(-1);
+//                        // outtakes pixels out of robot
+//                        break;
+//                    case BUTTON_B_UP:
+//                        transportMotor.setPower(0);
+//                        // outtakes pixels out of robot
+//                        break;
                     default:
                         buttonTlm.setValue("Not Moving");
                         break;
