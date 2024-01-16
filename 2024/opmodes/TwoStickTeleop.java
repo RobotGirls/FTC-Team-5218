@@ -65,9 +65,9 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private static final double DRONE_SET_LEFT = 0.95;
     private static final double DRONE_SET_RIGHT = 0;
     private static final double DRONE_RELEASE = 0.5;
-    private static final int HANGING_FULLY_EXTENDED_RIGHT= 9856;
+    private static final int HANGING_FULLY_EXTENDED_RIGHT= 6800;
     private static final int HANGING_FULLY_RETRACTED_RIGHT = 5;
-    private static final int HANGING_FULLY_EXTENDED_LEFT = 7156;
+    private static final int HANGING_FULLY_EXTENDED_LEFT = 6900;
     private static final int HANGING_FULLY_RETRACTED_LEFT = 5;
     private static final double CLAW_OPEN = 0.5;
     private static final double CLAW_CLOSE = 0.2;
