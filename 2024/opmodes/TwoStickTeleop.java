@@ -71,10 +71,14 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private static final int HANGING_FULLY_RETRACTED_LEFT = 5;
     private static final double CLAW_OPEN = 0.5;
     private static final double CLAW_CLOSE = 0.2;
+    private static final double PIXEL_LEFT = 0.5;
+    private static final double PIXEL_RIGHT = 1;
 
     private BNO055IMU imu;
 
     private Servo clawServo;
+    private Servo pixelControllerServo;
+
 
     private DcMotor hangingMotorLeft;
     private DcMotor hangingMotorRight;
@@ -85,6 +89,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private DcMotor transportMotor;
     private boolean currentlySlow = false;
     private OneWheelDriveTask liftMotorTask;
+    private OneWheelDriveTask transporIntakeMotorTask;
+
 
     MecanumFieldCentricDriveScheme scheme;
 
@@ -105,11 +111,12 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         hangingMotorRight = hardwareMap.get(DcMotor.class,"hangingMotorRight");
 
         clawServo = hardwareMap.servo.get("clawServo");
+        pixelControllerServo = hardwareMap.servo.get("pixelControllerServo");
+
 
 //        intakeMotor =  hardwareMap.get(DcMotor.class,"intakeMotor");
         transportMotor  =  hardwareMap.get(DcMotor.class,"transportMotor");
 
-        clawServo = hardwareMap.servo.get("clawServo");
         liftMotor = hardwareMap.get(DcMotor.class,"liftMotor");
 
         droneServoLeft = hardwareMap.servo.get("droneServoLeft");
@@ -152,6 +159,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         clawServo.setPosition(CLAW_CLOSE);
+        pixelControllerServo.setPosition(PIXEL_LEFT);
+
 
         //telemetry
         buttonTlm = telemetry.addData("buttonState", "unknown");
@@ -164,6 +173,9 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         // more investigation
         liftMotorTask = new OneWheelDriveTask(this, liftMotor, true);
         liftMotorTask.slowDown(false);
+
+        transporIntakeMotorTask = new OneWheelDriveTask(this, transportMotor, false);
+        transporIntakeMotorTask.slowDown(false);
 
         drivetask = new TeleopDriveTask(this, scheme, frontLeft, frontRight, backLeft, backRight);
     }
@@ -186,20 +198,43 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         //Gamepad 1
         this.addTask(drivetask);
         this.addTask(liftMotorTask);
+        this.addTask(transporIntakeMotorTask);
+
 
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1) {
             public void handleEvent(RobotEvent e) {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
 
                 switch (gamepadEvent.kind) {
+                    case LEFT_BUMPER_DOWN:
+                        pixelControllerServo.setPosition(PIXEL_LEFT);
+                        break;
+                    case LEFT_TRIGGER_DOWN:
+                        pixelControllerServo.setPosition(PIXEL_RIGHT);
+                        break;
+                    case RIGHT_BUMPER_DOWN:
+                        // If slow, then normal speed. If fast, then slow speed of motors.
+                        //pertains to slowmode
+
+
+                        drivetask.slowDown(1);
+                        currentlySlow = false;
+
+                        break;
+                    case RIGHT_BUMPER_UP:
+
+                        drivetask.slowDown(0.5);
+                        currentlySlow = true;
+
+                        break;
                     case BUTTON_X_DOWN:
                         // If slow, then normal speed. If fast, then slow speed of motors.
                         //pertains to slowmode
                         if (currentlySlow) {
-                            drivetask.slowDown(1.0);
+                            drivetask.slowDown(0.5);
                             currentlySlow = false;
                         } else {
-                            drivetask.slowDown(0.3);
+                            drivetask.slowDown(0.1);
                             currentlySlow = true;
                         }
                         break;
@@ -241,23 +276,23 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         hangingMotorLeft.setTargetPosition(HANGING_FULLY_RETRACTED_LEFT);
                         break;
 
-                    case BUTTON_X_DOWN:
-                        transportMotor.setPower(1);
-                        // intake pixels into robot
-                        break;
-                    case BUTTON_X_UP:
-//
-                        transportMotor.setPower(0);
-//                    // outtakes pixels out of robot
-                        break;
-                    case BUTTON_B_DOWN:
-                        transportMotor.setPower(-1);
-                        // outtakes pixels out of robot
-                        break;
-                    case BUTTON_B_UP:
-                        transportMotor.setPower(0);
-                        // outtakes pixels out of robot
-                        break;
+//                    case BUTTON_X_DOWN:
+//                        transportMotor.setPower(1);
+//                        // intake pixels into robot
+//                        break;
+//                    case BUTTON_X_UP:
+////
+//                        transportMotor.setPower(0);
+////                    // outtakes pixels out of robot
+//                        break;
+//                    case BUTTON_B_DOWN:
+//                        transportMotor.setPower(-1);
+//                        // outtakes pixels out of robot
+//                        break;
+//                    case BUTTON_B_UP:
+//                        transportMotor.setPower(0);
+//                        // outtakes pixels out of robot
+//                        break;
                     default:
                         buttonTlm.setValue("Not Moving");
                         break;
