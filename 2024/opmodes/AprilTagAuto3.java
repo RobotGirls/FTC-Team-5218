@@ -10,14 +10,15 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import team25core.DeadReckonTask;
 import team25core.FourWheelDirectDrivetrain;
+import team25core.GamepadTask;
 import team25core.ObjectDetectionNewTask;
 import team25core.Robot;
 import team25core.RobotEvent;
 
 @Autonomous(name = "AprilTagAuto3")
-public class AprilAuto3 extends Robot {
+public class AprilTagAuto3 extends Robot {
     private ObjectDetectionNewTask objDetectionTask;
-    private final static String TAG = "Prop";
+    private final static String TAG = "CODA";
     final double DESIRED_DISTANCE = 2.0; //  this is how close the camera should get to the target (inches)
     //  Set the GAIN constants to control the relationship between the measured position error,
     //  and how much power is applied to the drive motors to correct the error.
@@ -37,24 +38,55 @@ public class AprilAuto3 extends Robot {
     private DcMotor backRight=null;
     private FourWheelDirectDrivetrain drivetrain;
 
-    private int desiredTagID=3;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    private final int DEFAULT_TAG_ID = 3;
+    private int desiredTagID = DEFAULT_TAG_ID;     // Choose the tag you want to approach or set to -1 for ANY tag.
 
     private final float APRIL_TAG_DECIMATION = 3;
 
     private final int EXPOSURE_MS = 6;
     private final int GAIN = 250;
 
-    public String position; // this will contain the actual prop position information in final auto
+    public String tagPositionOnProp; // this will contain the actual prop position information in final auto
 
     public AprilTagDetection aprilTag;
     boolean targetFound = false;
     boolean targetReached = false;
 
     private AprilTagDetection foundAprilTag;
-
     private int foundAprilTagId;
+
+    //------- Telemetry ---------------------
     private Telemetry.Item whereAmI;
+    private Telemetry.Item timesCalled;
     private int numCalls = 0;
+
+    //------- Constants used for Driving ---
+    private final double MOTOR_SPEED = 0.25;
+    private final int LEFT = -1;
+    private final int RIGHT = 1;
+    private final int BACKWARDS = -1;
+    private final int FORWARDS = 1;
+
+    //------- Gamepad Variables-------------
+    private GamepadTask gamepad;
+    protected enum AllianceColor {
+        BLUE,
+        RED,
+        DEFAULT,
+    }
+    private enum TagPositionOnProp {
+        LEFT,
+        RIGHT,
+        MIDDLE
+    }
+}
+    // Declare constants and autonomous variables.
+    private AllianceColor allianceColor;
+    private Telemetry.Item allianceColorTlm;
+    private Telemetry.Item tagChoiceTlm;
+    private Telemetry.Item desiredIdTlm;
+    private TagPositionOnProp tagPositionOnProp;
+    //--------------------------------------
 
     @Override
     public void handleEvent(RobotEvent e) {
@@ -64,6 +96,10 @@ public class AprilAuto3 extends Robot {
         //if (e instanceof DeadReckonTask.DeadReckonEvent) {
         //  RobotLog.i("Completed path segment %d", ((DeadReckonTask.DeadReckonEvent)e).segment_num);
         //}
+        if (e instanceof GamepadTask.GamepadEvent) {
+            GamepadTask.GamepadEvent event = (GamepadTask.GamepadEvent) e;
+            handleGamepadSelection(event);
+        }
     }
 
     public void findAprilTag() {
@@ -75,10 +111,14 @@ public class AprilAuto3 extends Robot {
                 switch (event.kind) {
                     case APRIL_TAG_DETECTED:
                         RobotLog.ii(TAG, "AprilTag detected");
+                        // AprilTag information (x, y, z, pose numbers)
                         foundAprilTag = event.aprilTag;
+                        // AprilTag ID
                         foundAprilTagId = foundAprilTag.id;
                         numCalls += 1;
                         whereAmI.setValue("handleEvent", numCalls);
+                        timesCalled.setValue(numCalls);
+
                         break;
                 }
             }
@@ -86,7 +126,7 @@ public class AprilAuto3 extends Robot {
         // initializes the aprilTag processor
         objDetectionTask.init(telemetry, hardwareMap);
         // FIXME make sure this is the rate we want to use
-        objDetectionTask.rateLimit(500); // currently calling objDetectionTask every second
+        objDetectionTask.rateLimit(250); // currently calling objDetectionTask every 1/4 second
         objDetectionTask.start(); // instantiates the rate limiting timer
         // start acquiring and processing images. Note this
         // uses a lot of computational resources, so make sure
@@ -102,17 +142,7 @@ public class AprilAuto3 extends Robot {
     }
 
 
-    // find desired id for blue alliance (1, 2, or 3)
-    public void findDesiredID() {
-        if (position.equals("left")) {
-            desiredTagID = 1; // 4 on red
-        } else if (position.equals("center")) {
-            desiredTagID = 2; // 5 on red
-        } else {
-            desiredTagID = 3; // 6 on red
-        }
-        findAprilTagData();
-    }
+
 
     public AprilTagDetection findAprilTagData() {
         if (desiredTagID == 1) {
@@ -161,8 +191,8 @@ public class AprilAuto3 extends Robot {
 
         AprilTagDetection myTagDetection;
 
-        while (!targetReached) {
-            if ((myTagDetection = objDetectionTask.getAprilTag(desiredTagID)) != null) {
+        //while (!targetReached) {
+            //if ((myTagDetection = objDetectionTask.getAprilTag(desiredTagID)) != null) {
 
                 double rangeError = (tag.ftcPose.range - DESIRED_DISTANCE);
                 double headingError = tag.ftcPose.bearing;
@@ -176,14 +206,14 @@ public class AprilAuto3 extends Robot {
 
                 if (rangeError < 0.05 && headingError < 0.05 && yawError < 0.05) {
                     targetReached = true;
-                    break;
+                    //break;
                 } // FIXME print rangeError, headingError, and yawErrer
-            }
+            //} // if
             telemetry.update();
             // Apply desired axes motions to the drivetrain.
             moveRobot(drive, strafe, turn);
-            sleep(10);
-        }
+            //sleep(10);
+        //} // while
     }
     public void moveRobot(double x, double y, double yaw) {
         // Calculate wheel powers.
@@ -231,26 +261,94 @@ public class AprilAuto3 extends Robot {
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
 
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
+        frontLeft.setDirection(DcMotor.Direction.FORWARD);
+        backLeft.setDirection(DcMotor.Direction.FORWARD);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
 
-        whereAmI = telemetry.addData("init", 0);
+        //----- Gamepad stuff -------------------------
+        allianceColor = AllianceColor.DEFAULT;
+        gamepad = new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1);
+        addTask(gamepad);
+        allianceColorTlm = telemetry.addData("Alliance: ", "NOT SELECTED");
+        tagChoiceTlm = telemetry.addData("Tag Position:", DEFAULT_TAG_ID);
+        desiredIdTlm = telemetry.addData("Desired Tag ID:", 0);
+
+        //---------------------------------------------
+
+        whereAmI = telemetry.addData("location", "init", numCalls);
+        timesCalled = telemetry.addData("num calls", numCalls);
     }
+
+    public void strafe(int direction) {
+        moveRobot(0,MOTOR_SPEED * direction,  0);
+    }
+
+    public void drive(int direction) {
+        moveRobot(MOTOR_SPEED * direction, 0, 0);
+    }
+
     @Override
     public void start(){
         //findDesiredID();
-        desiredTagID = 3;
         findAprilTag();
-        aprilTag = findAprilTagData();
-        alignWithAprilTag(aprilTag);
+
+        strafe(LEFT);
+
+//        aprilTag = findAprilTagData();
+//        alignWithAprilTag(aprilTag);
 //        while (!targetReached) {
 //         alignWithAprilTag(aprilTag);
 //        }
-        frontLeft.setPower(0);
-        frontRight.setPower(0);
-        backLeft.setPower(0);
-        backRight.setPower(0);
+//        frontLeft.setPower(0);
+//        frontRight.setPower(0);
+//        backLeft.setPower(0);
+//        backRight.setPower(0);
     }
-}
+    // find desired id for blue alliance (1, 2, or 3)
+    public void findDesiredID(TagPositionOnProp tagPos) {
+        int delta = 0;
+        if (allianceColor == AllianceColor.RED) {
+            delta = 3;
+        }
+        switch(tagPos) {
+            case LEFT:
+                // tag ID 1 on blue and 4 on red
+                desiredTagID = 1 + delta;
+                break;
+            case MIDDLE:
+                // tag ID 2 on blue and 5 on red
+                desiredTagID = 2 + delta;
+                break;
+            case RIGHT:
+                // tag ID 3 on blue and 6 on red
+                desiredTagID = 2 + delta;
+                break;
+        }
+
+        //findAprilTagData();
+    }
+    public void handleGamepadSelection(GamepadTask.GamepadEvent event) {
+        switch (event.kind) {
+            case BUTTON_X_DOWN:
+                allianceColor = AllianceColor.BLUE;
+                allianceColorTlm.setValue("BLUE");
+                break;
+            case BUTTON_B_DOWN:
+                allianceColor = AllianceColor.RED;
+                allianceColorTlm.setValue("RED");
+                break;
+            case DPAD_UP_DOWN:
+                tagPositionOnProp = TagPositionOnProp.MIDDLE;
+                tagChoiceTlm.setValue("MIDDLE");
+                break;
+            case DPAD_RIGHT_DOWN:
+                tagPositionOnProp = TagPositionOnProp.RIGHT;
+                tagChoiceTlm.setValue("RIGHT");
+                break;
+            case DPAD_LEFT_DOWN:
+                tagPositionOnProp = TagPositionOnProp.LEFT;
+                tagChoiceTlm.setValue("LEFT");
+                break;
+        }
+    }
