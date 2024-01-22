@@ -64,8 +64,8 @@ public class AprilTagAuto3 extends Robot {
     private final double MOTOR_SPEED = 0.25;
     private final int LEFT = -1;
     private final int RIGHT = 1;
-    private final int BACKWARD = -1;
-    private final int FORWARD = 1;
+    private final int BACKWARD = 1;
+    private final int FORWARD = -1;
 
     //------- Gamepad Variables-------------
     private GamepadTask gamepad;
@@ -85,7 +85,8 @@ public class AprilTagAuto3 extends Robot {
         FORWARD,
         BACKWARD,
         LEFT,
-        RIGHT
+        RIGHT,
+        DONT_MOVE
     }
 
     // Declare constants and autonomous variables.
@@ -94,9 +95,14 @@ public class AprilTagAuto3 extends Robot {
     private Telemetry.Item tagChoiceTlm;
     private Telemetry.Item desiredIdTlm;
     private TagPositionOnProp tagPosition = TagPositionOnProp.RIGHT;
-    private boolean coneAprilTags = true;
+    private boolean coneAprilTags = false;
     private DriveDirection driveDirection = DriveDirection.LEFT;
     private Telemetry.Item driveDirectionTlm;
+
+    private boolean startHasBeenPushed = false;
+    private boolean skipAlign = false;
+    private Telemetry.Item skipAlignTlm;
+
 
     //--------------------------------------
 
@@ -134,7 +140,9 @@ public class AprilTagAuto3 extends Robot {
                         numCalls += 1;
                         whereAmI.setValue("handleEvent", "APRIL_TAG_DETECTED");
                         timesCalled.setValue(numCalls);
-
+                        if (startHasBeenPushed && !skipAlign) {
+                            alignWithAprilTag(foundAprilTag);
+                        }
                         break;
                 }
             }
@@ -203,11 +211,6 @@ public class AprilTagAuto3 extends Robot {
         double strafe = 0;
         double turn = 0;
 
-        AprilTagDetection myTagDetection;
-
-        //while (!targetReached) {
-        //if ((myTagDetection = objDetectionTask.getAprilTag(desiredTagID)) != null) {
-
         double rangeError = (tag.ftcPose.range - DESIRED_DISTANCE);
         double headingError = tag.ftcPose.bearing;
         double yawError = tag.ftcPose.yaw;
@@ -222,12 +225,11 @@ public class AprilTagAuto3 extends Robot {
             targetReached = true;
             //break;
         } // FIXME print rangeError, headingError, and yawErrer
-        //} // if
-        telemetry.update();
+        //telemetry.update();
+
         // Apply desired axes motions to the drivetrain.
         moveRobot(drive, strafe, turn);
-        //sleep(10);
-        //} // while
+
     }
 
     public void moveRobot(double x, double y, double yaw) {
@@ -269,6 +271,151 @@ public class AprilTagAuto3 extends Robot {
     }
 
 
+
+    public void strafe(DriveDirection driveDirection) {
+        int direction;
+        if (driveDirection == DriveDirection.LEFT) {
+            direction = LEFT;
+        } else {
+            direction = RIGHT;
+        }
+        driveDirectionTlm.setValue(driveDirection);
+        moveRobot(0, MOTOR_SPEED * direction, 0);
+    }
+
+    public void drive(DriveDirection driveDirection) {
+        int direction;
+        if (driveDirection == DriveDirection.FORWARD) {
+            direction = FORWARD;
+        } else {
+            direction = BACKWARD;
+        }
+        driveDirectionTlm.setValue(driveDirection);
+
+        moveRobot(MOTOR_SPEED * direction, 0, 0);
+    }
+
+    public void turn(DriveDirection driveDirection) {
+        int direction;
+        if (driveDirection == DriveDirection.RIGHT) {
+            direction = RIGHT;
+        } else {
+            direction = LEFT;
+        }
+        driveDirectionTlm.setValue(driveDirection);
+
+        moveRobot(0,0,MOTOR_SPEED * direction);
+    }
+
+
+    // find desired id for blue alliance (1, 2, or 3)
+    public void findDesiredID(TagPositionOnProp tagPos) {
+        int delta = 0;
+        if (allianceColor == AllianceColor.RED) {
+            delta = 3;
+        }
+        switch (tagPos) {
+            case LEFT:
+                // tag ID 1 on blue and 4 on red
+                if (coneAprilTags) {
+                    desiredTagID = 0;
+                } else {
+                    desiredTagID = 1 + delta;
+                }
+                break;
+            case MIDDLE:
+                // tag ID 2 on blue and 5 on red
+                if (coneAprilTags) {
+                    desiredTagID = 19;
+                } else {
+                    desiredTagID = 2 + delta;
+                }
+                break;
+            case RIGHT:
+                // tag ID 3 on blue and 6 on red
+                if (coneAprilTags) {
+                    desiredTagID = 6;
+                } else {
+                    desiredTagID = 3 + delta;
+                }
+                break;
+        }
+        desiredIdTlm.setValue(desiredTagID);
+        //findAprilTagData();
+    }
+
+    public void stopRobot() {
+        frontLeft.setPower(0);
+        frontRight.setPower(0);
+        backLeft.setPower(0);
+        backRight.setPower(0);
+    }
+    public void handleGamepadSelection(GamepadTask.GamepadEvent event) {
+        switch (event.kind) {
+            case BUTTON_X_DOWN:
+                allianceColor = AllianceColor.BLUE;
+                allianceColorTlm.setValue("BLUE");
+                break;
+            case BUTTON_B_DOWN:
+                allianceColor = AllianceColor.RED;
+                allianceColorTlm.setValue("RED");
+                break;
+            case BUTTON_Y_DOWN:
+                driveDirection = DriveDirection.FORWARD;
+                driveDirectionTlm.setValue(DriveDirection.FORWARD);
+                break;
+            case BUTTON_A_DOWN:
+                driveDirection = DriveDirection.BACKWARD;
+                driveDirectionTlm.setValue(DriveDirection.BACKWARD);
+                break;
+            case DPAD_DOWN_DOWN:
+                stopRobot();
+                break;
+            case RIGHT_STICK_DOWN:
+                skipAlign = true;
+                skipAlignTlm.setValue(skipAlign);
+                break;
+            case RIGHT_STICK_LEFT:
+                turn(driveDirection.LEFT);
+                break;
+            case RIGHT_STICK_RIGHT:
+                turn(driveDirection.RIGHT);
+                break;
+            case LEFT_STICK_LEFT:
+                strafe(driveDirection.LEFT);
+                break;
+            case LEFT_STICK_RIGHT:
+                strafe(driveDirection.RIGHT);
+                break;
+            case LEFT_STICK_UP:
+                drive(driveDirection.FORWARD);
+                break;
+            case LEFT_STICK_DOWN:
+                drive(driveDirection.BACKWARD);
+                break;
+            case RIGHT_TRIGGER_DOWN:
+                driveDirection = DriveDirection.RIGHT;
+                driveDirectionTlm.setValue(DriveDirection.RIGHT);
+                break;
+            case LEFT_TRIGGER_DOWN:
+                driveDirection = DriveDirection.LEFT;
+                driveDirectionTlm.setValue(DriveDirection.LEFT);
+                break;
+            case DPAD_UP_DOWN:
+                tagPosition = TagPositionOnProp.MIDDLE;
+                tagChoiceTlm.setValue("MIDDLE");
+                break;
+            case DPAD_RIGHT_DOWN:
+                tagPosition = TagPositionOnProp.RIGHT;
+                tagChoiceTlm.setValue("RIGHT");
+                break;
+            case DPAD_LEFT_DOWN:
+                tagPosition = TagPositionOnProp.LEFT;
+                tagChoiceTlm.setValue("LEFT");
+                break;
+        }
+        findDesiredID(tagPosition);
+    }
     @Override
     public void init() {
         //initializes the motors for the wheels
@@ -295,125 +442,29 @@ public class AprilTagAuto3 extends Robot {
         tagChoiceTlm = telemetry.addData("Tag Position:", TagPositionOnProp.RIGHT);
         desiredIdTlm = telemetry.addData("Desired Tag ID:", 0);
         driveDirectionTlm = telemetry.addData("Drive Direction:", driveDirection);
+        skipAlignTlm = telemetry.addData("Skip Align:", skipAlign);
 
         //---------------------------------------------
 
         whereAmI = telemetry.addData("whereami:","init", "part", "body");
         timesCalled = telemetry.addData("num calls", numCalls);
-    }
 
-    public void strafe(DriveDirection driveDirection) {
-        int direction;
-        if (driveDirection == DriveDirection.LEFT) {
-            direction = LEFT;
-        } else {
-            direction = RIGHT;
+        if (coneAprilTags) {
+            desiredTagID = 6;
         }
-        moveRobot(0, MOTOR_SPEED * direction, 0);
-    }
-
-    public void drive(DriveDirection driveDirection) {
-        int direction;
-        if (driveDirection == DriveDirection.FORWARD) {
-            direction = FORWARD;
-        } else {
-            direction = BACKWARD;
-        }
-        moveRobot(MOTOR_SPEED * direction, 0, 0);
-    }
-
-
-    // find desired id for blue alliance (1, 2, or 3)
-    public void findDesiredID(TagPositionOnProp tagPos) {
-        int delta = 0;
-        if (allianceColor == AllianceColor.RED) {
-            delta = 3;
-        }
-        switch (tagPos) {
-            case LEFT:
-                // tag ID 1 on blue and 4 on red
-                if (coneAprilTags) {
-                    desiredTagID = 5;
-                } else {
-                    desiredTagID = 1 + delta;
-                }
-                break;
-            case MIDDLE:
-                // tag ID 2 on blue and 5 on red
-                if (coneAprilTags) {
-                    desiredTagID = 2;
-                } else {
-                    desiredTagID = 2 + delta;
-                }
-                break;
-            case RIGHT:
-                // tag ID 3 on blue and 6 on red
-                if (coneAprilTags) {
-                    desiredTagID = 18;
-                } else {
-                    desiredTagID = 3 + delta;
-                }
-                break;
-        }
-        desiredIdTlm.setValue(desiredTagID);
-        //findAprilTagData();
-    }
-
-    public void handleGamepadSelection(GamepadTask.GamepadEvent event) {
-        switch (event.kind) {
-            case BUTTON_X_DOWN:
-                allianceColor = AllianceColor.BLUE;
-                allianceColorTlm.setValue("BLUE");
-                break;
-            case BUTTON_B_DOWN:
-                allianceColor = AllianceColor.RED;
-                allianceColorTlm.setValue("RED");
-                break;
-            case BUTTON_Y_DOWN:
-                driveDirection = DriveDirection.FORWARD;
-                driveDirectionTlm.setValue(DriveDirection.FORWARD);
-                break;
-            case BUTTON_A_DOWN:
-                driveDirection = DriveDirection.BACKWARD;
-                driveDirectionTlm.setValue(DriveDirection.BACKWARD);
-
-                break;
-            case RIGHT_BUMPER_DOWN:
-                driveDirection = DriveDirection.RIGHT;
-                driveDirectionTlm.setValue(DriveDirection.RIGHT);
-                break;
-            case LEFT_BUMPER_DOWN:
-                driveDirection = DriveDirection.LEFT;
-                driveDirectionTlm.setValue(DriveDirection.RIGHT);
-                break;
-            case DPAD_UP_DOWN:
-                tagPosition = TagPositionOnProp.MIDDLE;
-                tagChoiceTlm.setValue("MIDDLE");
-                break;
-            case DPAD_RIGHT_DOWN:
-                tagPosition = TagPositionOnProp.RIGHT;
-                tagChoiceTlm.setValue("RIGHT");
-                break;
-            case DPAD_LEFT_DOWN:
-                tagPosition = TagPositionOnProp.LEFT;
-                tagChoiceTlm.setValue("LEFT");
-                break;
-        }
-        findDesiredID(tagPosition);
+        findAprilTag();
     }
 
     @Override
     public void start() {
         //findDesiredID();
-        if (coneAprilTags) {
-            desiredTagID = 18;
-        }
-        findAprilTag();
+        startHasBeenPushed = true;
 
         if ((driveDirection == DriveDirection.RIGHT) ||
                 (driveDirection == DriveDirection.LEFT)) {
             strafe(driveDirection);
-        } else {
+        } else if ((driveDirection == DriveDirection.FORWARD) ||
+                (driveDirection == DriveDirection.BACKWARD)){
             drive(driveDirection);
         }
 
