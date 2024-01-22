@@ -18,7 +18,18 @@ DPAD-down -->  STOP_DRIVING
 | green button  | BACKWARD |
 | left trigger  | LEFT     |
 | right trigger | RIGHT    |
-| DPAD down     | STOP     |
+| DPAD down     | *STOP*    |
+| right stick DOWN | *SKIP ALIGN* |
+
+# Active Driving
+| Direction     | Gamepad  |
+| ------------- | -------- |
+| left stick up | FORWARD  |
+| left stick down  | BACKWARD |
+| left stick left  | LEFT     |
+| left stick right | RIGHT    |
+| right stick right | turn clockwise |
+| right stick left | turn counter-clockwise |
 
 
 
