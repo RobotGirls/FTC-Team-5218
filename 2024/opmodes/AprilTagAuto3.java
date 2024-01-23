@@ -92,6 +92,8 @@ public class AprilTagAuto3 extends Robot {
                         numCalls += 1;
                         whereAmI.setValue("handleEven");
                         timesCalled.setValue(numCalls);
+                        // stopMotors();
+                        // FIXME come back to uncomment
                         alignWithAprilTag(foundAprilTag);
                         break;
                 }
@@ -101,7 +103,7 @@ public class AprilTagAuto3 extends Robot {
         objDetectionTask.init(telemetry, hardwareMap);
         // FIXME make sure this is the rate we want to use
         // objectDetection only has 1000 ms to run its process before another task has its turn in timeslice
-        objDetectionTask.rateLimit(250); // currently calling objDetectionTask every second
+        objDetectionTask.rateLimit(50); // currently calling objDetectionTask every second
         objDetectionTask.start(); // instantiates the rate limiting timer
         //start processing images; this uses a lot of computational resources so
         // stop streaming if you aren't using AprilTag detection
@@ -127,6 +129,13 @@ public class AprilTagAuto3 extends Robot {
             desiredTagID = 3; // 6 on red
         }
         findAprilTagData();
+    }
+
+    public void stopMotors() {
+        frontLeft.setPower(0);
+        frontRight.setPower(0);
+        backLeft.setPower(0);
+        backRight.setPower(0);
     }
 
     public AprilTagDetection findAprilTagData() {
