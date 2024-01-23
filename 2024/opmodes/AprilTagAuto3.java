@@ -195,14 +195,18 @@ public class AprilTagAuto3 extends Robot {
 
         telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
 
-//        if (rangeError < 0.05 && headingError < 0.05 && yawError < 0.05) {
-//            targetReached = true;
-//        } // FIXME print rangeError, headingError, and yawErrer
+        if (rangeError < 0.05 && headingError < 0.05 && yawError < 0.05) {
+            targetReached = true;
+        } // FIXME print rangeError, headingError, and yawError
 
         telemetry.update();
         // Apply desired axes motions to the drivetrain.
         // FIXME just commented out to run code please uncomment
-        moveRobot(drive, strafe, turn);
+        if (targetReached) {
+            stopMotors();
+        } else {
+            moveRobot(drive, strafe, turn);
+        }
         //sleep(10);
 
     }
@@ -220,7 +224,7 @@ public class AprilTagAuto3 extends Robot {
         max = Math.max(max, Math.abs(leftBackPower));
         max = Math.max(max, Math.abs(rightBackPower));
 
-        telemetry.addData("Auto", "leftFrontPower %5.2f, leftBackPower %5.2f, rightBackPower %5.2f, rightFrontPower %5.2f", leftFrontPower, leftBackPower, rightBackPower, rightFrontPower);
+        // telemetry.addData("Auto", "leftFrontPower %5.2f, leftBackPower %5.2f, rightBackPower %5.2f, rightFrontPower %5.2f", leftFrontPower, leftBackPower, rightBackPower, rightFrontPower);
 
         if (max > 1.0) {
             leftFrontPower /= max;
@@ -228,7 +232,7 @@ public class AprilTagAuto3 extends Robot {
             leftBackPower /= max;
             rightBackPower /= max;
         }
-        telemetry.update();
+        // telemetry.update();
         // Send powers to the wheels.
         frontLeft.setPower(leftFrontPower);
         frontRight.setPower(rightFrontPower);
