@@ -44,6 +44,8 @@ public class AprilTagAuto3 extends Robot {
     private final int EXPOSURE_MS = 6;
     private final int GAIN = 250;
 
+    private final int SLOW_DOWN = 2;
+
     public String position; // this will contain the actual prop position information in final auto
 
     public AprilTagDetection aprilTag;
@@ -65,6 +67,14 @@ public class AprilTagAuto3 extends Robot {
     private final int BACKWARDS = -1;
     private final int FORWARDS = 1;
 
+    private boolean firstTime = true;
+    private boolean firstErrorTime = true;
+    private Telemetry.Item driveTlm;
+    private Telemetry.Item strafeTlm;
+    private Telemetry.Item turnTlm;
+    private Telemetry.Item rangeErrorTlm;
+    private Telemetry.Item headingErrorTlm;
+    private Telemetry.Item yawErrorTlm;
 
     @Override
     public void handleEvent(RobotEvent e) {
@@ -82,6 +92,7 @@ public class AprilTagAuto3 extends Robot {
             @Override
             public void handleEvent(RobotEvent e) {
                 TagDetectionEvent event = (TagDetectionEvent) e;
+                whereAmI.setValue("handleEvent");
                 switch (event.kind) {
                     case APRIL_TAG_DETECTED:
                         RobotLog.ii(TAG, "AprilTag detected");
@@ -90,7 +101,7 @@ public class AprilTagAuto3 extends Robot {
                         // AprilTag ID number
                         foundAprilTagId = foundAprilTag.id;
                         numCalls += 1;
-                        whereAmI.setValue("handleEven");
+                        whereAmI.setValue("Found AprilTag");
                         timesCalled.setValue(numCalls);
                         // stopMotors();
                         // FIXME come back to uncomment
@@ -184,29 +195,67 @@ public class AprilTagAuto3 extends Robot {
         double turn = 0;
 
         AprilTagDetection myTagDetection;
+        whereAmI.setValue("inside AlignwAprilTag");
 
-        double rangeError = (tag.ftcPose.range - DESIRED_DISTANCE);
-        double headingError = tag.ftcPose.bearing;
-        double yawError = tag.ftcPose.yaw;
+        if (gamepad1.left_bumper) {
+            double rangeError = (tag.ftcPose.range - DESIRED_DISTANCE);
+            double headingError = tag.ftcPose.bearing;
+            double yawError = tag.ftcPose.yaw;
 
-        drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-        turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-        strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+            whereAmI.setValue("inside left bumper pushed");
 
-        telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED)/SLOW_DOWN;
+            turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN)/SLOW_DOWN;
+            strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE)/SLOW_DOWN;
 
-        if (rangeError < 0.05 && headingError < 0.05 && yawError < 0.05) {
-            targetReached = true;
-        } // FIXME print rangeError, headingError, and yawError
+            if (firstErrorTime) {
+                rangeErrorTlm = telemetry.addData("Range Error:","%5.2f", rangeError);
+                headingErrorTlm = telemetry.addData("Heading Error: ","%5.2f", headingError);
+                yawErrorTlm = telemetry.addData("Yaw Error: ","%5.2f", yawError);
+                firstErrorTime = false;
+            } else {
+                rangeErrorTlm.setValue("%5.2f", rangeError);
+                headingErrorTlm.setValue("%5.2f", headingError);
+                yawErrorTlm.setValue("%5.2f", yawError);
+            }
 
-        telemetry.update();
-        // Apply desired axes motions to the drivetrain.
-        // FIXME just commented out to run code please uncomment
-        if (targetReached) {
-            stopMotors();
         } else {
-            moveRobot(drive, strafe, turn);
+            whereAmI.setValue("inside left bumper not pushed");
+
+            // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
+            drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
+            strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
+            turn   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
         }
+
+        if (firstTime) {
+            driveTlm = telemetry.addData("Drive: ","%5.2f", drive);
+            strafeTlm = telemetry.addData("Strafe: ","%5.2f", strafe);
+            turnTlm = telemetry.addData("Turn: ","%5.2f", turn);
+
+            firstTime = false;
+        } else {
+            driveTlm.setValue("%5.2f", drive);
+            strafeTlm.setValue("%5.2f", strafe);
+            turnTlm.setValue("%5.2f", turn);
+        }
+
+        //telemetry.update();
+        moveRobot(drive, strafe, turn);
+        sleep(10);
+
+//        if (rangeError < 0.05 && headingError < 0.05 && yawError < 0.05) {
+//            targetReached = true;
+//        } // FIXME print rangeError, headingError, and yawError
+//
+//        telemetry.update();
+//        // Apply desired axes motions to the drivetrain.
+//        // FIXME just commented out to run code please uncomment
+//        if (targetReached) {
+//            stopMotors();
+//        } else {
+//            moveRobot(drive, strafe, turn);
+//        }
         //sleep(10);
 
     }
