@@ -1,6 +1,7 @@
 package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -12,7 +13,7 @@ import team25core.RobotEvent;
 
 
 @Autonomous(name = "MotorTest")
-//@Disabled
+@Disabled
 public class MotorTest extends Robot {
 
     private DcMotor frontLeft;

@@ -19,7 +19,7 @@ import team25core.RobotEvent;
 public class AprilTagAuto3 extends Robot {
     private ObjectDetectionNewTask objDetectionTask;
     private final static String TAG = "CODA";
-    final double DESIRED_DISTANCE = 2.0; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 10.0; //  this is how close the camera should get to the target (inches)
     //  Set the GAIN constants to control the relationship between the measured position error,
     //  and how much power is applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger
@@ -39,12 +39,15 @@ public class AprilTagAuto3 extends Robot {
     private FourWheelDirectDrivetrain drivetrain;
 
     private final int DEFAULT_TAG_ID = 3;
+    private final int CONE_TAG_ID = 6;
     private int desiredTagID = DEFAULT_TAG_ID;     // Choose the tag you want to approach or set to -1 for ANY tag.
 
     private final float APRIL_TAG_DECIMATION = 3;
 
     private final int EXPOSURE_MS = 6;
     private final int GAIN = 250;
+
+    private final int SLOW_DOWN = 4; // slow down twice as much
 
     //public String tagPositionOnProp; // this will contain the actual prop position information in final auto
 
@@ -62,10 +65,10 @@ public class AprilTagAuto3 extends Robot {
 
     //------- Constants used for Driving ---
     private final double MOTOR_SPEED = 0.25;
-    private final int LEFT = -1;
-    private final int RIGHT = 1;
-    private final int BACKWARD = 1;
-    private final int FORWARD = -1;
+    private final int LEFT = 1;
+    private final int RIGHT = -1;
+    private final int BACKWARD = -1;
+    private final int FORWARD = 1;
 
     //------- Gamepad Variables-------------
     private GamepadTask gamepad;
@@ -95,14 +98,19 @@ public class AprilTagAuto3 extends Robot {
     private Telemetry.Item tagChoiceTlm;
     private Telemetry.Item desiredIdTlm;
     private TagPositionOnProp tagPosition = TagPositionOnProp.RIGHT;
-    private boolean coneAprilTags = false;
+    private boolean coneAprilTags = true;
     private DriveDirection driveDirection = DriveDirection.LEFT;
     private Telemetry.Item driveDirectionTlm;
+
+
+    private Telemetry.Item coneTlm;
 
     private boolean startHasBeenPushed = false;
     private boolean skipAlign = false;
     private Telemetry.Item skipAlignTlm;
 
+    private int PRINT_APRIL_TAG_LEVEL = 3;
+    private boolean doAlign = false;
 
     //--------------------------------------
 
@@ -121,13 +129,13 @@ public class AprilTagAuto3 extends Robot {
     }
 
     public void findAprilTag() {
-        whereAmI.setValue("findAprilTag", "beginning");
+        whereAmI.setValue("findAprilTag-beginning");
 
         RobotLog.ii(TAG, "Setup findAprilTag");
         objDetectionTask = new ObjectDetectionNewTask(this, telemetry, ObjectDetectionNewTask.DetectionKind.APRILTAG_DETECTED) {
             @Override
             public void handleEvent(RobotEvent e) {
-                whereAmI.setValue("findAprilTag", "handleEvent");
+                whereAmI.setValue("findAprilTag-handleEvent");
 
                 TagDetectionEvent event = (TagDetectionEvent) e;
                 switch (event.kind) {
@@ -138,19 +146,31 @@ public class AprilTagAuto3 extends Robot {
                         // AprilTag ID
                         foundAprilTagId = foundAprilTag.id;
                         numCalls += 1;
-                        whereAmI.setValue("handleEvent", "APRIL_TAG_DETECTED");
+                        whereAmI.setValue("handleEvent-APRIL_TAG_DETECTED");
                         timesCalled.setValue(numCalls);
-                        if (startHasBeenPushed && !skipAlign) {
-                            alignWithAprilTag(foundAprilTag);
+                        if (startHasBeenPushed) {
+                            //objDetectionTask.setVerbosity(PRINT_APRIL_TAG_LEVEL);
+                            if (skipAlign) {
+                                whereAmI.setValue("handleEvent-stopRobot");
+
+                                stopRobot();
+                            } else {
+                                objDetectionTask.setVerbosity(PRINT_APRIL_TAG_LEVEL);
+                                whereAmI.setValue("handleEvent-align");
+                                alignWithAprilTag(foundAprilTag);
+                            }
                         }
                         break;
+                    default:
+                        whereAmI.setValue("handleEvent-default case");
+
                 }
             }
         };
         // initializes the aprilTag processor
         objDetectionTask.init(telemetry, hardwareMap);
         // FIXME make sure this is the rate we want to use
-        objDetectionTask.rateLimit(250); // currently calling objDetectionTask every 1/4 second
+        objDetectionTask.rateLimit(10); // currently calling objDetectionTask every 1/4 second
         objDetectionTask.start(); // instantiates the rate limiting timer
         // start acquiring and processing images. Note this
         // uses a lot of computational resources, so make sure
@@ -162,6 +182,9 @@ public class AprilTagAuto3 extends Robot {
         objDetectionTask.setAprilTagDecimation(APRIL_TAG_DECIMATION);
         objDetectionTask.doManualExposure(EXPOSURE_MS, GAIN); // Use low exposure time to reduce motion blur
         objDetectionTask.setDesiredTagID(desiredTagID);
+        objDetectionTask.setDriveGains(SPEED_GAIN, STRAFE_GAIN, TURN_GAIN);
+        objDetectionTask.setMaxAuto(MAX_AUTO_SPEED, MAX_AUTO_STRAFE, MAX_AUTO_TURN);
+        objDetectionTask.setDesiredDistance(DESIRED_DISTANCE);
         addTask(objDetectionTask);
     }
 
@@ -210,25 +233,63 @@ public class AprilTagAuto3 extends Robot {
         double drive = 0;
         double strafe = 0;
         double turn = 0;
+        double rangeError;
+        double headingError;
+        double yawError;
+        double[] errorData;
 
-        double rangeError = (tag.ftcPose.range - DESIRED_DISTANCE);
-        double headingError = tag.ftcPose.bearing;
-        double yawError = tag.ftcPose.yaw;
+        whereAmI.setValue("alignWithAprilTag");
 
-        drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
-        turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
-        strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+        if (gamepad1.left_bumper) {
+            errorData = objDetectionTask.getDriveErrors(tag);
+            drive = errorData[0]/SLOW_DOWN;
+            turn = errorData[1]/SLOW_DOWN;
+            strafe = errorData[2]/SLOW_DOWN;
+//        rangeError = errorData[ObjectDetectionNewTask.ErrDataType.RANGE_ERROR.getValue()];
+//        headingError = errorData[ObjectDetectionNewTask.ErrDataType.HEADING_ERROR.getValue()];
+//        yawError = errorData[ObjectDetectionNewTask.ErrDataType.YAW_ERROR.getValue()];
+            rangeError = errorData[3];
+            headingError = errorData[4];
+            yawError = errorData[5];
 
-        telemetry.addData("Auto", "Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+            objDetectionTask.printErrorData();
+        } else {
+            // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
+            drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
+            strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
+            turn   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
+            //telemetry.addData("Manual","Drive %5.2f, Strafe %5.2f, Turn %5.2f ", drive, strafe, turn);
+        }
 
-        if (rangeError < 0.05 && headingError < 0.05 && yawError < 0.05) {
-            targetReached = true;
-            //break;
-        } // FIXME print rangeError, headingError, and yawErrer
-        //telemetry.update();
+//        double rangeError = (tag.ftcPose.range - DESIRED_DISTANCE);
+//        double headingError = tag.ftcPose.bearing;
+//        double yawError = tag.ftcPose.yaw;
+//
+//        drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
+//        turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
+//        strafe = Range.clip(-yawError * STRAFE_GAIN, -MAX_AUTO_STRAFE, MAX_AUTO_STRAFE);
+//
+//
+//        if (rangeError < 0.05 && headingError < 0.05 && yawError < 0.05) {
+//            targetReached = true;
+//            //break;
+//        } // FIXME print rangeError, headingError, and yawErrer
+//        telemetry.update();
 
-        // Apply desired axes motions to the drivetrain.
-        moveRobot(drive, strafe, turn);
+//       if (drive < 0.02 && turn < 0.02 && strafe < 0.02) {
+//        if (Math.abs(rangeError) < 2 && Math.abs(headingError) < 2 &&
+//            Math.abs(yawError) < 2) {
+
+//        if (Math.abs(rangeError) < 5 && Math.abs(headingError) < 5 ) {
+//
+//             stopRobot();
+//        } else {
+            // Apply desired axes motions to the drivetrain.
+            //moveRobot(drive, strafe, turn);
+            moveRobot(drive, strafe, turn);
+
+//        }
+
 
     }
 
@@ -245,7 +306,7 @@ public class AprilTagAuto3 extends Robot {
         max = Math.max(max, Math.abs(leftBackPower));
         max = Math.max(max, Math.abs(rightBackPower));
 
-        telemetry.addData("Auto", "leftFrontPower %5.2f, leftBackPower %5.2f, rightBackPower %5.2f, rightFrontPower %5.2f", leftFrontPower, leftBackPower, rightBackPower, rightFrontPower);
+        //telemetry.addData("Auto", "leftFrontPower %5.2f, leftBackPower %5.2f, rightBackPower %5.2f, rightFrontPower %5.2f", leftFrontPower, leftBackPower, rightBackPower, rightFrontPower);
 
         if (max > 1.0) {
             leftFrontPower /= max;
@@ -253,7 +314,7 @@ public class AprilTagAuto3 extends Robot {
             leftBackPower /= max;
             rightBackPower /= max;
         }
-        telemetry.update();
+        //telemetry.update();
         // Send powers to the wheels.
         frontLeft.setPower(leftFrontPower);
         frontRight.setPower(rightFrontPower);
@@ -345,6 +406,8 @@ public class AprilTagAuto3 extends Robot {
     }
 
     public void stopRobot() {
+        whereAmI.setValue("stopRobot");
+
         frontLeft.setPower(0);
         frontRight.setPower(0);
         backLeft.setPower(0);
@@ -369,7 +432,9 @@ public class AprilTagAuto3 extends Robot {
                 driveDirectionTlm.setValue(DriveDirection.BACKWARD);
                 break;
             case DPAD_DOWN_DOWN:
-                stopRobot();
+                driveDirection = DriveDirection.DONT_MOVE;
+                driveDirectionTlm.setValue(DriveDirection.DONT_MOVE);
+                //stopRobot();
                 break;
             case RIGHT_STICK_DOWN:
                 skipAlign = true;
@@ -380,6 +445,9 @@ public class AprilTagAuto3 extends Robot {
                 break;
             case RIGHT_STICK_RIGHT:
                 turn(driveDirection.RIGHT);
+                break;
+            case RIGHT_STICK_NEUTRAL:
+                stopRobot();
                 break;
             case LEFT_STICK_LEFT:
                 strafe(driveDirection.LEFT);
@@ -393,6 +461,9 @@ public class AprilTagAuto3 extends Robot {
             case LEFT_STICK_DOWN:
                 drive(driveDirection.BACKWARD);
                 break;
+            case LEFT_STICK_NEUTRAL:
+                stopRobot();
+                break;
             case RIGHT_TRIGGER_DOWN:
                 driveDirection = DriveDirection.RIGHT;
                 driveDirectionTlm.setValue(DriveDirection.RIGHT);
@@ -400,6 +471,14 @@ public class AprilTagAuto3 extends Robot {
             case LEFT_TRIGGER_DOWN:
                 driveDirection = DriveDirection.LEFT;
                 driveDirectionTlm.setValue(DriveDirection.LEFT);
+                break;
+            case LEFT_BUMPER_DOWN:
+                driveDirection = DriveDirection.DONT_MOVE;
+                driveDirectionTlm.setValue(DriveDirection.DONT_MOVE);
+                doAlign = true;
+                break;
+            case LEFT_BUMPER_UP:
+                doAlign = false;
                 break;
             case DPAD_UP_DOWN:
                 tagPosition = TagPositionOnProp.MIDDLE;
@@ -413,6 +492,7 @@ public class AprilTagAuto3 extends Robot {
                 tagPosition = TagPositionOnProp.LEFT;
                 tagChoiceTlm.setValue("LEFT");
                 break;
+
         }
         findDesiredID(tagPosition);
     }
@@ -424,15 +504,11 @@ public class AprilTagAuto3 extends Robot {
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
 
-        // from FTC RobotAutoDriveToAprilTagTank.java example
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
-//        frontLeft.setDirection(DcMotor.Direction.FORWARD);
-//        backLeft.setDirection(DcMotor.Direction.FORWARD);
-//        frontRight.setDirection(DcMotor.Direction.REVERSE);
-//        backRight.setDirection(DcMotor.Direction.REVERSE);
+        frontLeft.setDirection(DcMotor.Direction.FORWARD);
+        backLeft.setDirection(DcMotor.Direction.FORWARD);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
+
 
         //----- Gamepad stuff -------------------------
         allianceColor = AllianceColor.DEFAULT;
@@ -440,14 +516,19 @@ public class AprilTagAuto3 extends Robot {
         addTask(gamepad);
         allianceColorTlm = telemetry.addData("Alliance: ", "NOT SELECTED");
         tagChoiceTlm = telemetry.addData("Tag Position:", TagPositionOnProp.RIGHT);
-        desiredIdTlm = telemetry.addData("Desired Tag ID:", 0);
+
+        if (coneAprilTags) {
+            desiredTagID = CONE_TAG_ID;
+        }
+        desiredIdTlm = telemetry.addData("Desired Tag ID:", desiredTagID);
         driveDirectionTlm = telemetry.addData("Drive Direction:", driveDirection);
         skipAlignTlm = telemetry.addData("Skip Align:", skipAlign);
 
         //---------------------------------------------
 
-        whereAmI = telemetry.addData("whereami:","init", "part", "body");
+        whereAmI = telemetry.addData("whereami:","init");
         timesCalled = telemetry.addData("num calls", numCalls);
+        coneTlm = telemetry.addData("cone", coneAprilTags);
 
         if (coneAprilTags) {
             desiredTagID = 6;
@@ -460,13 +541,13 @@ public class AprilTagAuto3 extends Robot {
         //findDesiredID();
         startHasBeenPushed = true;
 
-        if ((driveDirection == DriveDirection.RIGHT) ||
-                (driveDirection == DriveDirection.LEFT)) {
-            strafe(driveDirection);
-        } else if ((driveDirection == DriveDirection.FORWARD) ||
-                (driveDirection == DriveDirection.BACKWARD)){
-            drive(driveDirection);
-        }
+//        if ((driveDirection == DriveDirection.RIGHT) ||
+//                (driveDirection == DriveDirection.LEFT)) {
+//            strafe(driveDirection);
+//        } else if ((driveDirection == DriveDirection.FORWARD) ||
+//                (driveDirection == DriveDirection.BACKWARD)){
+//            drive(driveDirection);
+//        }
 
 
 //        aprilTag = findAprilTagData();
