@@ -10,6 +10,7 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
 import team25core.DeadReckonTask;
 import team25core.FourWheelDirectDrivetrain;
+import team25core.GamepadTask;
 import team25core.ObjectDetectionNewTask;
 import team25core.Robot;
 import team25core.RobotEvent;
@@ -77,15 +78,59 @@ public class AprilTagAuto3 extends Robot {
     private Telemetry.Item headingErrorTlm;
     private Telemetry.Item yawErrorTlm;
 
+    private Telemetry.Item allianceTlm;
+    private Telemetry.Item tagPositionTlm;
+
+    private AllianceColor alliance = AllianceColor.BLUE;
+    private TagPosition tagPosition = TagPosition.MIDDLE;
+
+    private enum AllianceColor {
+        BLUE,
+        RED
+    }
+
+    private enum TagPosition {
+        LEFT,
+        MIDDLE,
+        RIGHT
+    }
+
     @Override
     public void handleEvent(RobotEvent e) {
         /*
          * Every time we complete a segment drop a note in the robot log.
          */
-        //if (e instanceof DeadReckonTask.DeadReckonEvent) {
-        //  RobotLog.i("Completed path segment %d", ((DeadReckonTask.DeadReckonEvent)e).segment_num);
-        //}
+        if (e instanceof GamepadTask.GamepadEvent) {
+          GamepadTask.GamepadEvent event = (GamepadTask.GamepadEvent) e ;
+          handleGamepadSelection(event);
+        }
     }
+
+    public void handleGamepadSelection(GamepadTask.GamepadEvent selection) {
+        switch (selection.kind) {
+            case BUTTON_X_DOWN:
+                alliance = AllianceColor.BLUE;
+                allianceTlm.setValue(AllianceColor.BLUE);
+                break;
+            case BUTTON_B_DOWN:
+                alliance = AllianceColor.RED;
+                allianceTlm.setValue(AllianceColor.RED);
+                break;
+            case DPAD_LEFT_DOWN:
+                tagPosition = TagPosition.LEFT;
+                tagPositionTlm.setValue(tagPosition);
+                break;
+            case DPAD_UP_DOWN:
+                tagPosition = TagPosition.MIDDLE;
+                tagPositionTlm.setValue(tagPosition);
+                break;
+            case DPAD_RIGHT_DOWN:
+                tagPosition = TagPosition.RIGHT;
+                tagPositionTlm.setValue(tagPosition);
+                break;
+        }
+    }
+
 
     public void findAprilTag() {
         RobotLog.ii(TAG, "Setup findAprilTag");
@@ -326,6 +371,8 @@ public class AprilTagAuto3 extends Robot {
         whereAmI = telemetry.addData("whereami", "init");
         timesCalled = telemetry.addData("num calls", numCalls);
         numDriveCallsTlm = telemetry.addData("num drive calls", numDriveCalls);
+        allianceTlm = telemetry.addData("Alliance:", alliance);
+        tagPositionTlm = telemetry.addData("Tag position: ", tagPosition);
     }
 
     public void strafe(int direction) {
