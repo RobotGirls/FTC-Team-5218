@@ -53,17 +53,18 @@ public class AprilTagAuto3 extends Robot {
     boolean targetReached = false;
 
     private int numCalls = 0;
+    private int numDriveCalls = 0;
+    private Telemetry.Item numDriveCallsTlm;
     private Telemetry.Item whereAmI;
     private Telemetry.Item timesCalled;
-
 
     private AprilTagDetection foundAprilTag;
 
     private int foundAprilTagId;
 
     private final double MOTOR_SPEED = 0.25;
-    private final int LEFT = -1;
-    private final int RIGHT = 1;
+    private final int LEFT = 1;
+    private final int RIGHT = -1;
     private final int BACKWARDS = -1;
     private final int FORWARDS = 1;
 
@@ -222,7 +223,7 @@ public class AprilTagAuto3 extends Robot {
         } else {
             whereAmI.setValue("inside left bumper not pushed");
 
-            // drive using manual POV Joystick mode.  Slow things down to make the robot more controlable.
+            // drive using manual POV Joystick mode.  Slow things down to make the robot more controllable.
             drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
             strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
             turn   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
@@ -233,14 +234,20 @@ public class AprilTagAuto3 extends Robot {
             strafeTlm = telemetry.addData("Strafe: ","%5.2f", strafe);
             turnTlm = telemetry.addData("Turn: ","%5.2f", turn);
 
+            numDriveCalls += 1;
+            numDriveCallsTlm.setValue(numDriveCalls);
+
             firstTime = false;
         } else {
             driveTlm.setValue("%5.2f", drive);
             strafeTlm.setValue("%5.2f", strafe);
             turnTlm.setValue("%5.2f", turn);
+
+            numDriveCalls += 1;
+            numDriveCallsTlm.setValue(numDriveCalls);
         }
 
-        //telemetry.update();
+        telemetry.update();
         moveRobot(drive, strafe, turn);
         sleep(10);
 
@@ -260,13 +267,17 @@ public class AprilTagAuto3 extends Robot {
 
     }
 
-
     public void moveRobot(double x, double y, double yaw) {
         // Calculate wheel powers.
-        double leftFrontPower    =  x +y +yaw;
-        double rightFrontPower   =  x -y -yaw;
-        double leftBackPower     =  x -y +yaw;
-        double rightBackPower    =  x +y -yaw;
+//        double leftFrontPower    =  x +y +yaw;
+//        double rightFrontPower   =  x -y -yaw;
+//        double leftBackPower     =  x -y +yaw;
+//        double rightBackPower    =  x +y -yaw;
+
+        double leftFrontPower    =  x -y -yaw;
+        double rightFrontPower   =  x +y +yaw;
+        double leftBackPower     =  x +y -yaw;
+        double rightBackPower    =  x -y +yaw;
 
         // Normalize wheel powers to be less tha=n 1.0
         double max = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
@@ -311,9 +322,10 @@ public class AprilTagAuto3 extends Robot {
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.REVERSE);
 
+        telemetry.setAutoClear(false);
         whereAmI = telemetry.addData("whereami", "init");
         timesCalled = telemetry.addData("num calls", numCalls);
-
+        numDriveCallsTlm = telemetry.addData("num drive calls", numDriveCalls);
     }
 
     public void strafe(int direction) {
