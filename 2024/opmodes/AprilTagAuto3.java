@@ -100,37 +100,44 @@ public class AprilTagAuto3 extends Robot {
         /*
          * Every time we complete a segment drop a note in the robot log.
          */
+        whereAmI.setValue("inside handleEvent");
         if (e instanceof GamepadTask.GamepadEvent) {
           GamepadTask.GamepadEvent event = (GamepadTask.GamepadEvent) e ;
           handleGamepadSelection(event);
+          whereAmI.setValue("inside GamePadTask");
         }
     }
 
     public void handleGamepadSelection(GamepadTask.GamepadEvent selection) {
+        whereAmI.setValue("inside handleGamepadSelection");
         switch (selection.kind) {
             case BUTTON_X_DOWN:
                 alliance = AllianceColor.BLUE;
                 allianceTlm.setValue(AllianceColor.BLUE);
+                whereAmI.setValue("inside BUTTON_X_DOWN");
                 break;
             case BUTTON_B_DOWN:
                 alliance = AllianceColor.RED;
                 allianceTlm.setValue(AllianceColor.RED);
+                whereAmI.setValue("inside BUTTON_B_DOWN");
                 break;
             case DPAD_LEFT_DOWN:
                 tagPosition = TagPosition.LEFT;
                 tagPositionTlm.setValue(tagPosition);
+                whereAmI.setValue("inside DPAD_LEFT_DOWN");
                 break;
             case DPAD_UP_DOWN:
                 tagPosition = TagPosition.MIDDLE;
                 tagPositionTlm.setValue(tagPosition);
+                whereAmI.setValue("inside DPAD_UP_DOWN");
                 break;
             case DPAD_RIGHT_DOWN:
                 tagPosition = TagPosition.RIGHT;
                 tagPositionTlm.setValue(tagPosition);
+                whereAmI.setValue("inside DPAD_RIGHT_DOWN");
                 break;
         }
     }
-
 
     public void findAprilTag() {
         RobotLog.ii(TAG, "Setup findAprilTag");
