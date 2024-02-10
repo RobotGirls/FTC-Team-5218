@@ -8,15 +8,14 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 
-import team25core.DeadReckonTask;
 import team25core.FourWheelDirectDrivetrain;
 import team25core.GamepadTask;
 import team25core.ObjectDetectionNewTask;
 import team25core.Robot;
 import team25core.RobotEvent;
 
-@Autonomous(name = "AprilTagAuto3")
-public class AprilTagAuto3 extends Robot {
+@Autonomous(name = "AprilTagAutoWithPaths")
+public class AprilTagAutoWithPaths extends Robot {
     private ObjectDetectionNewTask objDetectionTask = null;
     private final static String TAG = "Prop";
     final double DESIRED_DISTANCE = 2.0; //  this is how close the camera should get to the target (inches)
@@ -437,7 +436,7 @@ public class AprilTagAuto3 extends Robot {
 
     @Override
     public void start(){
-        //findDesiredID();
+        findDesiredID();
         findAprilTag();
 
         //strafed to the right

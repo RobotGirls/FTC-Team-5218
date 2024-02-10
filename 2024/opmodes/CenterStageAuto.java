@@ -55,7 +55,7 @@ public class CenterStageAuto extends Robot {
     private DeadReckonPath middlePixelBoardPath;
     private FourWheelDirectDrivetrain drivetrain;
 
-    private static final double CLAW_GRAB = 0.2;
+    private static final double CLAW_GRAB = 0.65;
     private static final double CLAW_RELEASE = 0.5;
 
     private Servo clawServo;
@@ -71,10 +71,10 @@ public class CenterStageAuto extends Robot {
     public String position;
     private DeadReckonPath outtakePath;
 
-    public static double OUTTAKE_DISTANCE = 2;
-    public static double OUTTAKE_SPEED = 0.7;
+    public static double OUTTAKE_DISTANCE = 20;
+    public static double OUTTAKE_SPEED = -1;
 
-    public static double LIFT_DISTANCE = 25;
+    public static double LIFT_DISTANCE = 20;
     public static double LIFT_SPEED = .6;
 
 
@@ -698,8 +698,10 @@ public class CenterStageAuto extends Robot {
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
 
         leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37, -0.5);
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, -0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, 0.5);
+
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11, 0.45);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 78, 0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 30.5, -0.5);

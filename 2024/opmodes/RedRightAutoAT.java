@@ -427,11 +427,11 @@ public class RedRightAutoAT extends Robot {
     // find desired id for blue alliance (1, 2, or 3)
     public void findDesiredID() {
         if (position.equals("left")) {
-            desiredTagID = 4; // 4 on red
+            desiredTagID = 1; // 4 on red
         } else if (position.equals("right")) {
-            desiredTagID = 6; // 5 on red
+            desiredTagID = 3; // 5 on red
         } else {
-            desiredTagID = 5; // 6 on red
+            desiredTagID = 2; // 6 on red
         }
         findAprilTagData();
     }
@@ -482,7 +482,7 @@ public class RedRightAutoAT extends Robot {
     }
 
     public AprilTagDetection findAprilTagData() {
-        if (desiredTagID == 4) {
+        if (desiredTagID == 1) {
             while (objDetectionTask.getAprilTag(desiredTagID) == null) {
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
 
@@ -499,7 +499,7 @@ public class RedRightAutoAT extends Robot {
             backRight.setPower(0);
             driveToBoard(driveToBoardPath);
 
-        } else if (desiredTagID == 6) {
+        } else if (desiredTagID == 3) {
             while (objDetectionTask.getAprilTag(desiredTagID) == null) {
 
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
@@ -517,7 +517,7 @@ public class RedRightAutoAT extends Robot {
             backRight.setPower(0);
             driveToBoard(driveToBoardPath);
 
-        } else if (desiredTagID == 5){
+        } else if (desiredTagID == 2){
             while (objDetectionTask.getAprilTag(desiredTagID) == null) {
 
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
