@@ -56,7 +56,7 @@ public class RedLeftAutoAT1 extends Robot {
     private FourWheelDirectDrivetrain drivetrain;
 
     private static final double CLAW_GRAB = 0.2;
-    private static final double CLAW_RELEASE = 0.5;
+    private static final double CLAW_RELEASE = 0.5  ;
 
     private Servo clawServo;
 
