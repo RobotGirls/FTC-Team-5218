@@ -17,7 +17,7 @@ import team25core.RobotEvent;
 
 @Autonomous(name = "AprilTagAuto3")
 public class AprilTagAuto3 extends Robot {
-    private ObjectDetectionNewTask objDetectionTask;
+    private ObjectDetectionNewTask objDetectionTask = null;
     private final static String TAG = "Prop";
     final double DESIRED_DISTANCE = 2.0; //  this is how close the camera should get to the target (inches)
     //  Set the GAIN constants to control the relationship between the measured position error,
@@ -37,8 +37,6 @@ public class AprilTagAuto3 extends Robot {
     private DcMotor backLeft=null;
     private DcMotor backRight=null;
     private FourWheelDirectDrivetrain drivetrain;
-
-    private int desiredTagID=3;     // Choose the tag you want to approach or set to -1 for ANY tag.
 
     private final float APRIL_TAG_DECIMATION = 3;
 
@@ -71,18 +69,26 @@ public class AprilTagAuto3 extends Robot {
 
     private boolean firstTime = true;
     private boolean firstErrorTime = true;
+    private boolean ignoreLeftBumper = true;
+
     private Telemetry.Item driveTlm;
     private Telemetry.Item strafeTlm;
     private Telemetry.Item turnTlm;
     private Telemetry.Item rangeErrorTlm;
     private Telemetry.Item headingErrorTlm;
     private Telemetry.Item yawErrorTlm;
-
+    private Telemetry.Item aprilTagIDTlm;
     private Telemetry.Item allianceTlm;
     private Telemetry.Item tagPositionTlm;
 
+    // -------------------------------------------------------------
+    // the next three lines have to match each other
+    private int desiredTagID = 2;
     private AllianceColor alliance = AllianceColor.BLUE;
     private TagPosition tagPosition = TagPosition.MIDDLE;
+    // -------------------------------------------------------------
+
+    private GamepadTask gamepad;
 
     private enum AllianceColor {
         BLUE,
@@ -114,29 +120,63 @@ public class AprilTagAuto3 extends Robot {
             case BUTTON_X_DOWN:
                 alliance = AllianceColor.BLUE;
                 allianceTlm.setValue(AllianceColor.BLUE);
+                if (tagPosition == TagPosition.LEFT) {
+                    desiredTagID = 1;
+                } else if (tagPosition == TagPosition.MIDDLE){
+                    desiredTagID = 2;
+                } else { // tagPosition is RIGHT
+                    desiredTagID = 3;
+                }
                 whereAmI.setValue("inside BUTTON_X_DOWN");
                 break;
             case BUTTON_B_DOWN:
                 alliance = AllianceColor.RED;
                 allianceTlm.setValue(AllianceColor.RED);
+                if (tagPosition == TagPosition.LEFT) {
+                    desiredTagID = 4;
+                } else if (tagPosition == TagPosition.MIDDLE){
+                    desiredTagID = 5;
+                } else { // tagPosition is RIGHT
+                    desiredTagID = 6;
+
+                }
                 whereAmI.setValue("inside BUTTON_B_DOWN");
                 break;
             case DPAD_LEFT_DOWN:
                 tagPosition = TagPosition.LEFT;
                 tagPositionTlm.setValue(tagPosition);
                 whereAmI.setValue("inside DPAD_LEFT_DOWN");
+                if (alliance == AllianceColor.BLUE) {
+                    desiredTagID = 1;
+                } else { //alliance color is RED
+                    desiredTagID = 4;
+                }
                 break;
             case DPAD_UP_DOWN:
                 tagPosition = TagPosition.MIDDLE;
                 tagPositionTlm.setValue(tagPosition);
                 whereAmI.setValue("inside DPAD_UP_DOWN");
+                if (alliance == AllianceColor.BLUE) {
+                    desiredTagID = 2;
+                } else { // alliance color is RED
+                    desiredTagID = 5;
+                }
                 break;
             case DPAD_RIGHT_DOWN:
                 tagPosition = TagPosition.RIGHT;
                 tagPositionTlm.setValue(tagPosition);
                 whereAmI.setValue("inside DPAD_RIGHT_DOWN");
+                if (alliance == AllianceColor.BLUE) {
+                    desiredTagID = 3;
+                } else { // alliance color is RED
+                    desiredTagID = 6;
+                }
                 break;
         }
+        if (objDetectionTask != null) {
+            objDetectionTask.setDesiredTagID(desiredTagID);
+        }
+        aprilTagIDTlm.setValue(desiredTagID);
     }
 
     public void findAprilTag() {
@@ -178,6 +218,7 @@ public class AprilTagAuto3 extends Robot {
         objDetectionTask.doManualExposure(EXPOSURE_MS, GAIN); // Use low exposure time to reduce motion blur
         //
         objDetectionTask.setDesiredTagID(desiredTagID);
+        aprilTagIDTlm.setValue(desiredTagID);
         // starts running the task in the timeslice
         addTask(objDetectionTask);
     }
@@ -249,8 +290,15 @@ public class AprilTagAuto3 extends Robot {
 
         AprilTagDetection myTagDetection;
         whereAmI.setValue("inside AlignwAprilTag");
+        if (!gamepad1.left_bumper){
+            whereAmI.setValue("inside left bumper not pushed");
 
-        if (gamepad1.left_bumper) {
+            // drive using manual POV Joystick mode.  Slow things down to make the robot more controllable.
+            drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
+            strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
+            turn   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
+        }
+        if (gamepad1.left_bumper || ignoreLeftBumper) {
             double rangeError = (tag.ftcPose.range - DESIRED_DISTANCE);
             double headingError = tag.ftcPose.bearing;
             double yawError = tag.ftcPose.yaw;
@@ -271,14 +319,6 @@ public class AprilTagAuto3 extends Robot {
                 headingErrorTlm.setValue("%5.2f", headingError);
                 yawErrorTlm.setValue("%5.2f", yawError);
             }
-
-        } else {
-            whereAmI.setValue("inside left bumper not pushed");
-
-            // drive using manual POV Joystick mode.  Slow things down to make the robot more controllable.
-            drive  = -gamepad1.left_stick_y  / 2.0;  // Reduce drive rate to 50%.
-            strafe = -gamepad1.left_stick_x  / 2.0;  // Reduce strafe rate to 50%.
-            turn   = -gamepad1.right_stick_x / 3.0;  // Reduce turn rate to 33%.
         }
 
         if (firstTime) {
@@ -374,7 +414,11 @@ public class AprilTagAuto3 extends Robot {
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.REVERSE);
 
+        gamepad = new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1);
+        addTask(gamepad);
+
         telemetry.setAutoClear(false);
+        aprilTagIDTlm = telemetry.addData("Tag ID", desiredTagID);
         whereAmI = telemetry.addData("whereami", "init");
         timesCalled = telemetry.addData("num calls", numCalls);
         numDriveCallsTlm = telemetry.addData("num drive calls", numDriveCalls);
@@ -394,12 +438,15 @@ public class AprilTagAuto3 extends Robot {
     @Override
     public void start(){
         //findDesiredID();
-        desiredTagID = 3;
         findAprilTag();
 
         //strafed to the right
         //moveRobot(0, 0.25, 0);
-        strafe(LEFT);
+        if (alliance == AllianceColor.BLUE) {
+            strafe(LEFT);
+        } else { // alliance color is RED
+            strafe(RIGHT);
+        }
 
         // go forward
         //moveRobot(0.25, 0, 0);
