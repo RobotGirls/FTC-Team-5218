@@ -12,7 +12,7 @@ import team25core.RobotEvent;
 
 
 @Autonomous(name = "MotorTest")
-//@Disabled
+@Disabled
 public class MotorTest extends Robot {
 
     private DcMotor frontLeft;
