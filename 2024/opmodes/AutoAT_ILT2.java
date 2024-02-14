@@ -56,10 +56,14 @@ public class AutoAT_ILT2 extends Robot {
     private DeadReckonPath middlePixelBoardPath;
     private FourWheelDirectDrivetrain drivetrain;
 
-    private static final double CLAW_GRAB = 0.2;
-    private static final double CLAW_RELEASE = 0.5;
+    private static final double CLAW_GRAB = 0.5;
+    private static final double CLAW_RELEASE = 0.2;
+    private static final double PIXEL_RELEASE = .95;
+    private static final double PIXEL_GRAB = 0.05;
 
     private Servo clawServo;
+    private Servo pixelHolderServo;
+
 
     private DistanceSensorTask distanceTask;
     private final static String TAG = "PROP";
@@ -267,7 +271,7 @@ public class AutoAT_ILT2 extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     RobotLog.i("finished placing pixel");
-                    releaseOuttake();
+                    pixelHolderServo.setPosition(PIXEL_RELEASE);
                 }
             }
         });
@@ -311,7 +315,6 @@ public class AutoAT_ILT2 extends Robot {
                 SingleShotTimerEvent event = (SingleShotTimerEvent) e;
                 if (event.kind == EventKind.EXPIRED ) {
                     whereAmI.setValue("in delay task");
-
                 }
             }
         });
@@ -320,7 +323,7 @@ public class AutoAT_ILT2 extends Robot {
 
     public void detectProp() {
         RobotLog.ii(TAG, "Setup detectProp");
-        delay(3);
+        // delay(3);
         distanceTask = new DistanceSensorTask(this, leftSensor, rightSensor, telemetry, 0, 8, 8 ,
                 5,false) {
             @Override
@@ -365,7 +368,7 @@ public class AutoAT_ILT2 extends Robot {
                 {
                     RobotLog.i("Drove to the object");
                     whereAmI.setValue("At the object");
-                    releaseOuttake();
+                   // pixelHolder.setPosition(PIXEL_RELEASE);
 
                 }
             }
@@ -610,6 +613,7 @@ public class AutoAT_ILT2 extends Robot {
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         clawServo = hardwareMap.servo.get("clawServo");
+        pixelHolderServo = hardwareMap.servo.get("pixelHolderServo");
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -637,6 +641,8 @@ public class AutoAT_ILT2 extends Robot {
         drivetrain.resetEncoders();
 
         clawServo.setPosition(CLAW_GRAB);
+        pixelHolderServo.setPosition(PIXEL_GRAB);
+
 
         //motor will try to tun at the targeted velocity
         drivetrain.encodersOn();
