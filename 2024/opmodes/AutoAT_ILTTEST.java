@@ -22,8 +22,8 @@ import team25core.Robot;
 import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
-@Autonomous(name = "AutoAT_ILT2")
-public class AutoAT_ILT2 extends Robot {
+@Autonomous(name = "AutoAT_ILTTEST")
+public class AutoAT_ILTTEST extends Robot {
 
     private ElapsedTime timer;
 
@@ -56,10 +56,14 @@ public class AutoAT_ILT2 extends Robot {
     private DeadReckonPath middlePixelBoardPath;
     private FourWheelDirectDrivetrain drivetrain;
 
-    private static final double CLAW_GRAB = 0.8;
+    private static final double CLAW_GRAB = 1;
     private static final double CLAW_RELEASE = 0.5;
+    private static final double PIXEL_GRAB = .05;
+    private static final double PIXEL_RELEASE = .95;
 
     private Servo clawServo;
+    private Servo pixelHolderServo;
+
 
     private DistanceSensorTask distanceTask;
     private final static String TAG = "PROP";
@@ -71,8 +75,8 @@ public class AutoAT_ILT2 extends Robot {
     public String position;
     private DeadReckonPath outtakePath;
 
-    public static double OUTTAKE_DISTANCE = 2;
-    public static double OUTTAKE_SPEED = 0.7;
+    public static double OUTTAKE_DISTANCE = 20;
+    public static double OUTTAKE_SPEED = -.9;
 
     public static double LIFT_DISTANCE = 20;
     public static double LIFT_SPEED = .6;
@@ -195,8 +199,8 @@ public class AutoAT_ILT2 extends Robot {
             case BUTTON_B_DOWN:
                 alliance = AllianceColor.RED;
                 allianceTlm.setValue(AllianceColor.RED);
-//                if (tagPosition == TagPosition.LEFT) {
-//                    desiredTagID = 4;
+  //              if (tagPosition == TagPosition.LEFT) {
+ //                   desiredTagID = 4;
 //                } else if (tagPosition == TagPosition.MIDDLE){
 //                    desiredTagID = 5;
 //                } else { // tagPosition is RIGHT
@@ -267,7 +271,9 @@ public class AutoAT_ILT2 extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     RobotLog.i("finished placing pixel");
+                    pixelHolderServo.setPosition(PIXEL_RELEASE);
                     releaseOuttake();
+
                 }
             }
         });
@@ -333,6 +339,8 @@ public class AutoAT_ILT2 extends Robot {
                         //position = "left";
                         // turn counter clockwise to drop off pixel
                         driveToTeamProp(leftPropPath);
+                       // pixelHolderServo.setPosition(PIXEL_RELEASE);
+
                         break;
                     case RIGHT_DISTANCE:
                         tagPosition = TagPosition.RIGHT;
@@ -376,6 +384,7 @@ public class AutoAT_ILT2 extends Robot {
         this.addTask(new DeadReckonTask(this, outtakePath, outtakeDrivetrain) {
             @Override
             public void handleEvent(RobotEvent e) {
+                pixelHolderServo.setPosition(PIXEL_RELEASE);
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     whereAmI.setValue("released purple pixel");
@@ -610,6 +619,8 @@ public class AutoAT_ILT2 extends Robot {
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         clawServo = hardwareMap.servo.get("clawServo");
+        pixelHolderServo = hardwareMap.servo.get("pixelHolderServo");
+
 
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -637,6 +648,8 @@ public class AutoAT_ILT2 extends Robot {
         drivetrain.resetEncoders();
 
         clawServo.setPosition(CLAW_GRAB);
+        pixelHolderServo.setPosition(PIXEL_GRAB);
+
 
         //motor will try to tun at the targeted velocity
         drivetrain.encodersOn();
@@ -736,11 +749,14 @@ public class AutoAT_ILT2 extends Robot {
 
         // turn counter clock-wise to in order to drop pixel
         leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37, -0.5);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 3, 0.5);
 
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, -0.5);
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 13, 0.45); // changed distance from 11 to 13
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 78, 0.5);
+
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
+
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, 0.45); // changed distance from 11 to 13
+     //   driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 78, -0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 30.5, -0.5);
 
         leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);

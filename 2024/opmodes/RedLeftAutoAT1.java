@@ -55,7 +55,7 @@ public class RedLeftAutoAT1 extends Robot {
     private DeadReckonPath middlePixelBoardPath;
     private FourWheelDirectDrivetrain drivetrain;
 
-    private static final double CLAW_GRAB = 0.2;
+    private static final double CLAW_GRAB = 1;
     private static final double CLAW_RELEASE = 0.5;
 
     private Servo clawServo;
@@ -71,8 +71,8 @@ public class RedLeftAutoAT1 extends Robot {
     public String position;
     private DeadReckonPath outtakePath;
 
-    public static double OUTTAKE_DISTANCE = 2;
-    public static double OUTTAKE_SPEED = 0.7;
+    public static double OUTTAKE_DISTANCE = 20;
+    public static double OUTTAKE_SPEED =- 0.7;
 
     public static double LIFT_DISTANCE = 26;
     public static double LIFT_SPEED = .6;

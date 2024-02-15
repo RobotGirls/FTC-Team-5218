@@ -22,8 +22,8 @@ import team25core.Robot;
 import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
-@Autonomous(name = "AutoAT_ILTTEST")
-public class AutoAT_ILTTEST extends Robot {
+@Autonomous(name = "AutoAT_ILTRED")
+public class AutoAT_ILTRED extends Robot {
 
     private ElapsedTime timer;
 
@@ -531,7 +531,7 @@ public class AutoAT_ILTTEST extends Robot {
 
     // FIXME fix up with Cindy later to clean up
     public AprilTagDetection findAprilTagData() {
-        if (desiredTagID == 1) {
+        if (desiredTagID == 4) {
             while (objDetectionTask.getAprilTag(desiredTagID) == null) {
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
 
@@ -548,7 +548,7 @@ public class AutoAT_ILTTEST extends Robot {
             backRight.setPower(0);
             driveToBoard(driveToBoardPath);
 
-        } else if (desiredTagID == 3) {
+        } else if (desiredTagID == 6) {
             while (objDetectionTask.getAprilTag(desiredTagID) == null) {
 
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
@@ -566,7 +566,7 @@ public class AutoAT_ILTTEST extends Robot {
             backRight.setPower(0);
             driveToBoard(driveToBoardPath);
 
-        } else if (desiredTagID == 2){
+        } else if (desiredTagID == 5){
             while (objDetectionTask.getAprilTag(desiredTagID) == null) {
 
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
@@ -733,51 +733,61 @@ public class AutoAT_ILTTEST extends Robot {
         driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8.5, -0.25);
 
         // drives closer to lines to better detect distance
-        driveToLinesPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 11, 0.25);
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, .75, -0.25);
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 9.75, -0.25);
 
-        // turn clockwise and go staight to drop pixel
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.5, 0.5);
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
 
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .7, -0.5);
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11, -0.5); // changed distance from 9 to 11
+        driveToLinesPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12.75, 0.25);
+
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS,1 , 0.5);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
+
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, -0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, 0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
+//        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 13, 0.5);
+//        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.2, -0.5);
+
+
+
+        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
+        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 7, 0.5);
+
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 38, 0.5);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .75, 0.5);
+
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1.25, 0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1.5, -0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11.5, -0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 77, -0.5);
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
 
+
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
-
-        // turn counter clock-wise to in order to drop pixel
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37, -0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 3, 0.5);
+        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, 0.5);
 
 
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
 
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, 0.45); // changed distance from 11 to 13
-     //   driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 78, -0.5);
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 30.5, -0.5);
 
-        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, -0.5);
-
-        // just goes backwards in order to drop the pixel
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.5, -0.5);
 
-        // driveFromMiddlePropPath goes straight, goes backwards to avoid hitting the prop,
-        // then strafes to the right, then goes forward,
-        // then turns clockwise to the right, then goes backwards
-        // FIXME collapse the two straight commands; above and below
+
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .3, 0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11, 0.3); // changed distance from 9 to 11
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, -0.3);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12, 0.5);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 38, 0.5);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 37, -0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.5, -0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 38, -0.5);
+
+
 
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, -0.5);
+        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, 0.5);
+
+
+
 
     }
 }

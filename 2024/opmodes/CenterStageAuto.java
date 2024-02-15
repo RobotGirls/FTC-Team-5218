@@ -55,10 +55,13 @@ public class CenterStageAuto extends Robot {
     private DeadReckonPath middlePixelBoardPath;
     private FourWheelDirectDrivetrain drivetrain;
 
-    private static final double CLAW_GRAB = 0.2;
+    private static final double CLAW_GRAB = 1;
     private static final double CLAW_RELEASE = 0.5;
+    private static final double PIXEL_GRAB = 0;
+    private static final double PIXEL_RELEASE = 1;
 
     private Servo clawServo;
+    private Servo pixelHolderServo;
 
     private DistanceSensorTask distanceTask;
     private final static String TAG = "PROP";
@@ -297,12 +300,15 @@ public class CenterStageAuto extends Robot {
                         locationTlm.setValue("left");
                         position ="left";
                         driveToLeftProp(leftPropPath);
+                        pixelHolderServo.setPosition(PIXEL_RELEASE);
+
                         break;
                     case RIGHT_DISTANCE:
                         position ="right";
                         //RobotLog.ii(TAG, " right distance %d", event.distance);
                         locationTlm.setValue("right");
                         driveToRightProp(rightPropPath);
+                        pixelHolderServo.setPosition(PIXEL_RELEASE);
 
 
                         break;
@@ -310,6 +316,7 @@ public class CenterStageAuto extends Robot {
                         locationTlm.setValue("middle");
                         position ="middle";
                         driveToMiddleProp(middlePropPath);
+                        pixelHolderServo.setPosition(PIXEL_RELEASE);
 
 
                         break;
@@ -585,6 +592,8 @@ public class CenterStageAuto extends Robot {
 
 
         clawServo.setPosition(CLAW_GRAB);
+        pixelHolderServo.setPosition(PIXEL_GRAB);
+
 
 
         //motor will try to tun at the targeted velocity
@@ -615,6 +624,8 @@ public class CenterStageAuto extends Robot {
         liftMotorDrivetrain = new OneWheelDirectDrivetrain(liftMotor);
         liftMotorDrivetrain.resetEncoders();
         liftMotorDrivetrain.encodersOn();
+        pixelHolderServo = hardwareMap.servo.get("pixelHolderServo");
+
 
 
         // telemetry shown on the phone
