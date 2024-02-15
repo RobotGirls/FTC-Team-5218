@@ -56,8 +56,8 @@ public class AutoAT_ILT2 extends Robot {
     private DeadReckonPath middlePixelBoardPath;
     private FourWheelDirectDrivetrain drivetrain;
 
-    private static final double CLAW_GRAB = 0.5;
-    private static final double CLAW_RELEASE = 0.2;
+    private static final double CLAW_GRAB = 1; // originally 0.5
+    private static final double CLAW_RELEASE = 0.5; // originally 0.2
     private static final double PIXEL_RELEASE = .95;
     private static final double PIXEL_GRAB = 0.05;
 
