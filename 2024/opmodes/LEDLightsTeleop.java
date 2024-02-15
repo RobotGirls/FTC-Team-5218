@@ -39,7 +39,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-
+import com.qualcomm.robotcore.hardware.LightSensor;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import team25core.GamepadTask;
@@ -48,8 +48,13 @@ import team25core.OneWheelDriveTask;
 import team25core.RobotEvent;
 import team25core.StandardFourMotorRobot;
 import team25core.TouchSensorTask;
+import team25core.vision.apriltags.LightSensorTask;
+
+import team25core.LightSensorCriteria;
+
 import team25core.TwoStickMechanumControlScheme;
 import team25core.TeleopDriveTask;
+import team25core.vision.apriltags.LightSensorTask;
 
 
 @TeleOp(name = "LEDLightsTeleop")
@@ -69,6 +74,8 @@ public class LEDLightsTeleop extends StandardFourMotorRobot {
     RevBlinkinLedDriver.BlinkinPattern blueLED;
 
     protected TouchSensor touchSensor;
+    protected LightSensor lightSensor;
+
 
     private static final double DRONE_SET_LEFT = 0.95;
     private static final double DRONE_SET_RIGHT = 0;
@@ -111,6 +118,7 @@ public class LEDLightsTeleop extends StandardFourMotorRobot {
         pinkLED = RevBlinkinLedDriver.BlinkinPattern.HOT_PINK;
         blueLED = RevBlinkinLedDriver.BlinkinPattern.SKY_BLUE;
         blinkinLedDriver.setPattern(blueLED);
+        lightSensor = hardwareMap.get(LightSensor.class, "lightSensor");
 
         touchSensor = hardwareMap.get(TouchSensor.class, "touchSensor");
         //mechanisms
@@ -277,6 +285,22 @@ public class LEDLightsTeleop extends StandardFourMotorRobot {
                 }
             }
         });
+//        this.addTask(new LightSensorTask(this, lightSensor) {
+//            public void handleEvent(RobotEvent e) {
+//              //  LightSensorTask.LightSensorEvent = (LightSensorTask.LightSensorEvent) e;
+//
+//            //    switch (LightSensorEvent.kind) {
+//                    case LIGHT_SENSOR_BLACK:
+//                        blinkinLedDriver.setPattern(pinkLED);
+//                        break;
+//                    case LIGHT_SENSOR_WHITE:
+//                        blinkinLedDriver.setPattern(blueLED);
+//                        break;
+//                    default:
+//                        break;
+//                }
+//            }
+//        });
         this.addTask(new TouchSensorTask(this, touchSensor) {
             public void handleEvent(RobotEvent e) {
                 TouchSensorTask.TouchSensorEvent touchSensorEvent = (TouchSensorTask.TouchSensorEvent) e;
