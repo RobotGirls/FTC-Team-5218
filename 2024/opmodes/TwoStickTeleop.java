@@ -72,6 +72,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private static final double CLAW_OPEN = 0.6;
     private static final double CLAW_CLOSE =1;
 
+
     private BNO055IMU imu;
 
     private Servo clawServo;
