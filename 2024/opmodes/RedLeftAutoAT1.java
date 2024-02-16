@@ -55,8 +55,8 @@ public class RedLeftAutoAT1 extends Robot {
     private DeadReckonPath middlePixelBoardPath;
     private FourWheelDirectDrivetrain drivetrain;
 
-    private static final double CLAW_GRAB = 0.5;
-    private static final double CLAW_RELEASE = 0.2;
+    private static final double CLAW_GRAB = 1;
+    private static final double CLAW_RELEASE = 0.5;
 
     private Servo clawServo;
 
@@ -71,11 +71,11 @@ public class RedLeftAutoAT1 extends Robot {
     public String position;
     private DeadReckonPath outtakePath;
 
-    public static double OUTTAKE_DISTANCE = 2;
-    public static double OUTTAKE_SPEED = 0.7;
+    public static double OUTTAKE_DISTANCE = 20;
+    public static double OUTTAKE_SPEED = -0.7;
 
-    public static double LIFT_DISTANCE = 26;
-    public static double LIFT_SPEED = .6;
+    public static double LIFT_DISTANCE = 20;
+    public static double LIFT_SPEED = .8;
 
 
     private Telemetry.Item locationTlm;
@@ -722,7 +722,7 @@ public class RedLeftAutoAT1 extends Robot {
 
 
         leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
-        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 7, 0.5);
+        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, 0.9);
 
         rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 38, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .75, 0.5);
@@ -743,7 +743,7 @@ public class RedLeftAutoAT1 extends Robot {
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.5, -0.5);
 
 
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .3, 0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, -0.3);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12, 0.5);
