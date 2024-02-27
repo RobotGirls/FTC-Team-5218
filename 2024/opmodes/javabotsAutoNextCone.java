@@ -31,6 +31,7 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package opmodes;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -59,7 +60,7 @@ import team25core.vision.apriltags.AprilTagDetectionTask;
 
 @Config
 @Autonomous(name = "javabotsAutoNextCone2")
-//@Disabled
+@Disabled
 public class javabotsAutoNextCone extends Robot {
 
     private DcMotor frontLeft;

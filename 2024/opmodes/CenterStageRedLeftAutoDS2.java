@@ -1,6 +1,7 @@
 package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -16,6 +17,8 @@ import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
 @Autonomous(name = "CSRedLeftAutoDS2")
+@Disabled
+
 public class CenterStageRedLeftAutoDS2 extends Robot {
 
     private DcMotor frontLeft;

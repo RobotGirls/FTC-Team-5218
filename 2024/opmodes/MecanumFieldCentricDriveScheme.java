@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -18,7 +19,7 @@ import team25core.TeleopDriveTask;
 
 
 public class MecanumFieldCentricDriveScheme implements JoystickDriveControlScheme {
-
+@Disabled
     /*
      * An Andymark 40 native spin direction is counterclockwise.
      */

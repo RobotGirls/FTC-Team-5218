@@ -1,6 +1,7 @@
 package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,6 +23,7 @@ import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
 @Autonomous(name = "BlueRightAutoW/AT")
+@Disabled
 public class CenterStageAuto extends Robot {
 
     private ElapsedTime timer;
@@ -55,7 +57,7 @@ public class CenterStageAuto extends Robot {
     private DeadReckonPath middlePixelBoardPath;
     private FourWheelDirectDrivetrain drivetrain;
 
-    private static final double CLAW_GRAB = 0.2;
+    private static final double CLAW_GRAB = 1;
     private static final double CLAW_RELEASE = 0.5;
 
     private Servo clawServo;
@@ -71,10 +73,10 @@ public class CenterStageAuto extends Robot {
     public String position;
     private DeadReckonPath outtakePath;
 
-    public static double OUTTAKE_DISTANCE = 2;
-    public static double OUTTAKE_SPEED = 0.7;
+    public static double OUTTAKE_DISTANCE = 20;
+    public static double OUTTAKE_SPEED = -0.7;
 
-    public static double LIFT_DISTANCE = 25;
+    public static double LIFT_DISTANCE = 20;
     public static double LIFT_SPEED = .6;
 
 
@@ -346,17 +348,17 @@ public class CenterStageAuto extends Robot {
                     whereAmI.setValue("released purple pixel");
                     if(position.equals("left"))
                     {
-                        delay(1000);
+                       // delay(1000);
                         driveAwayFromLeftProp(driveFromLeftPropPath);
                     }
                     else if(position.equals("right"))
                     {
-                        delay(1000);
+                       // delay(1000);
                         driveAwayFromRightProp(driveFromRightPropPath);
                     }
                     else
                     {
-                        delay(1000);
+                       // delay(1000);
                         driveAwayFromMiddleProp(driveFromMiddlePropPath);
 
                     }
@@ -678,7 +680,7 @@ public class CenterStageAuto extends Robot {
         driveToBoardPath = new DeadReckonPath();
         driveToBoardPath.stop();
 
-        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, 0.25);
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 2, 0.25);
         driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8.5, -0.25);
 
 
@@ -713,10 +715,10 @@ public class CenterStageAuto extends Robot {
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.5, -0.5);
 
 
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .3, 0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, 0.3);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12, 0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 13, 0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 38, 0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 37, -0.5);
 

@@ -41,6 +41,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -59,7 +60,7 @@ import team25core.TankMechanumControlSchemeReverse;
 import team25core.TeleopDriveTask;
 
 @TeleOp(name = "OGControlsTeleop")
-//@Disabled
+@Disabled
 public class OGControlsTeleop extends StandardFourMotorRobot {
 
 

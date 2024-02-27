@@ -1,6 +1,7 @@
 package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -14,6 +15,7 @@ import team25core.Robot;
 import team25core.RobotEvent;
 
 @Autonomous(name = "AprilTagAuto1")
+@Disabled
 public class AprilTagAuto extends Robot {
     private ObjectDetectionNewTask objDetectionTask;
     private final static String TAG = "Prop";

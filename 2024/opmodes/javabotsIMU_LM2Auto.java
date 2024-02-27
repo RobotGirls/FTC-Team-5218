@@ -33,6 +33,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package opmodes;
 
 import static opmodes.IMUDriveAutoTest.TURN_SPEED;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -59,7 +60,7 @@ import team25core.vision.apriltags.AprilTagDetectionTask;
 
 
 @Autonomous(name = "javabotsIMU_LM2Auto3")
-//@Disabled
+@Disabled
 @Config
 public class javabotsIMU_LM2Auto extends Robot {
 

@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -53,7 +54,7 @@ import team25core.TeleopDriveTask;
 
 
 @TeleOp(name = "LEDLightsTeleop")
-//@Disabled
+@Disabled
 public class LEDLightsTeleop extends StandardFourMotorRobot {
 
     private TeleopDriveTask drivetask;

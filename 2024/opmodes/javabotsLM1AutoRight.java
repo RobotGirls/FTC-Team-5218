@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.openftc.apriltag.AprilTagDetection;
@@ -51,7 +52,7 @@ import team25core.vision.apriltags.AprilTagDetectionTask;
 
 
 @Autonomous(name = "javabotsLM1AutoRight")
-//@Disabled
+@Disabled
 //@Config
 public class javabotsLM1AutoRight extends Robot {
 

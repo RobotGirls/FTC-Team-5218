@@ -39,6 +39,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.openftc.apriltag.AprilTagDetection;
@@ -56,7 +57,7 @@ import team25core.vision.apriltags.AprilTagDetectionTask;
 
 @Config
 @Autonomous(name = "javabotsAutoILT9_Blue")
-//@Disabled
+@Disabled
 public class javabotsAutoILT_Blue extends Robot {
 
     private DcMotor frontLeft;

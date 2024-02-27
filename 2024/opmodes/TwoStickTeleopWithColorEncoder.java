@@ -34,6 +34,7 @@
 package opmodes;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -52,7 +53,7 @@ import team25core.sensors.color.RGBColorSensorMotorTask;
 import team25core.sensors.color.RGBColorSensorTask;
 
 @TeleOp(name = "TwoStickTeleopWithColorEncoder")
-//@Disabled
+@Disabled
 public class TwoStickTeleopWithColorEncoder extends StandardFourMotorRobot {
 
     private TeleopDriveTask drivetask;

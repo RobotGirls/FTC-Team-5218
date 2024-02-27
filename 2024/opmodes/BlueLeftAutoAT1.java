@@ -1,6 +1,7 @@
 package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -22,6 +23,7 @@ import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
 @Autonomous(name = "BlueLeftAutoW/AT1")
+@Disabled
 public class BlueLeftAutoAT1 extends Robot {
 
     private ElapsedTime timer;
@@ -56,8 +58,9 @@ public class BlueLeftAutoAT1 extends Robot {
     private DeadReckonPath middlePixelBoardPath;
     private FourWheelDirectDrivetrain drivetrain;
 
-    private static final double CLAW_GRAB = 0.2;
-    private static final double CLAW_RELEASE = 0.5;
+    private static final double CLAW_GRAB = .6;
+    private static final double CLAW_RELEASE = .9;
+
 
     private Servo clawServo;
 

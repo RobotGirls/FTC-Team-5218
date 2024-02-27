@@ -1,6 +1,7 @@
 package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -18,6 +19,7 @@ import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
 @Autonomous(name = "BoardAuto")
+@Disabled
 public class CenterstageAutoAprilTags extends Robot {
 
     private ObjectDetectionNewTask objDetectionTask;

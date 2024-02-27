@@ -69,8 +69,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private static final int HANGING_FULLY_RETRACTED_RIGHT = 5;
     private static final int HANGING_FULLY_EXTENDED_LEFT = 6900;
     private static final int HANGING_FULLY_RETRACTED_LEFT = 5;
-    private static final double CLAW_CLOSE = 1;
-    private static final double CLAW_OPEN = 0.5;
+    private static final double CLAW_CLOSE = .6;
+    private static final double CLAW_OPEN = .9;
 
     private BNO055IMU imu;
 
@@ -204,7 +204,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
                         //pertains to slowmode
 
 
-                            drivetask.slowDown(1);
+                            drivetask.slowDown(.8);
                             currentlySlow = false;
 
 

@@ -1,9 +1,11 @@
 package opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -16,8 +18,9 @@ import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
 @Autonomous(name = "CSRedRightAutoDS")
-public class CenterStageRedRightAutoDS1 extends Robot {
+@Disabled
 
+public class CenterStageRedRightAutoDS1 extends Robot {
     private DcMotor frontLeft;
     private DcMotor frontRight;
     private DcMotor backLeft;

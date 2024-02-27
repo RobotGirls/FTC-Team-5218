@@ -37,6 +37,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -49,7 +50,7 @@ import team25core.TwoStickMechanumControlScheme;
 import team25core.TeleopDriveTask;
 
 @TeleOp(name = "CenterStageTeleop")
-//@Disabled
+@Disabled
 public class CenterStageTeleop extends StandardFourMotorRobot {
 
 

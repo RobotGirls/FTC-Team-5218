@@ -4,6 +4,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
         import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
         import com.qualcomm.robotcore.hardware.DcMotor;
         import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
         import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -19,7 +20,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
         import opmodes.MecanumFieldCentricDriveScheme;
 
 @TeleOp(name = "powerplayteleop")
-//@Disabled
+@Disabled
 public class PowerPlayTeleop extends StandardFourMotorRobot {
 
 

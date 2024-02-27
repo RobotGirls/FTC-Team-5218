@@ -39,6 +39,8 @@ import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -57,7 +59,7 @@ import team25core.sensors.color.RGBColorSensorMotorTask;
 import team25core.sensors.color.SingleShotColorSensorTask;
 
 @TeleOp(name = "TwoStickTeleopWithColorSensor")
-//@Disabled
+@Disabled
 public class TwoStickTeleopWithColorSensor extends StandardFourMotorRobot {
 
     private TeleopDriveTask drivetask;

@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.RobotLog;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import team25core.Robot;
 import team25core.RobotEvent;
@@ -11,6 +12,7 @@ import team25core.RunToEncoderValueTask;
 
 @Config
 @Autonomous(name = "LiftTest")
+@Disabled
 public class LiftTest extends Robot {
 
     public static int REV_40_TO_1_COUNTS_PER_REV = 1120;
