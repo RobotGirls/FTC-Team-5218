@@ -39,7 +39,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import team25core.GamepadTask;
 import team25core.MechanumGearedDrivetrain;
 import team25core.OneWheelDriveTask;
@@ -50,7 +50,7 @@ import team25core.TeleopDriveTask;
 
 
 @TeleOp(name = "HangTest")
-//@Disabled
+@Disabled
 public class HangTest extends StandardFourMotorRobot {
 
     private TeleopDriveTask drivetask;
