@@ -78,7 +78,7 @@ public class AutoAT_ILTTEST extends Robot {
     public static double OUTTAKE_DISTANCE = 16;
     public static double OUTTAKE_SPEED = -.9;
 
-    public static double LIFT_DISTANCE = 18.5;
+    public static double LIFT_DISTANCE = 17.5;
     public static double LIFT_SPEED = .6;
 
     private GamepadTask gamepad;
@@ -736,7 +736,7 @@ public class AutoAT_ILTTEST extends Robot {
 
         driveToBoardPath = new DeadReckonPath();
         driveToBoardPath.stop();
-        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5.25, 0.25);
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, 0.25);
         driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8.5, -0.25);
 
         // drives closer to lines to better detect distance

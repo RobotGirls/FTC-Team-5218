@@ -21,14 +21,14 @@ import team25core.Robot;
 import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
-@Autonomous(name = "ILTBLUELEFT")
-public class BlueLeftAutoAT extends Robot {
+@Autonomous(name = "ILTBLUELEFT1")
+public class ILTBLUELEFT1 extends Robot {
 
     private ElapsedTime timer;
 
 
     private DcMotor frontLeft;
-    private double aprilTagSpeed = 0.1;
+    private double aprilTagSpeed = 0.2;
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor backRight;
@@ -347,7 +347,7 @@ public class BlueLeftAutoAT extends Robot {
                     whereAmI.setValue("released purple pixel");
                     if(position.equals("left"))
                     {
-                       // delay(1000);
+                        //delay(1000);
                         driveAwayFromLeftProp(driveFromLeftPropPath);
                     }
                     else if(position.equals("right"))
@@ -393,11 +393,6 @@ public class BlueLeftAutoAT extends Robot {
             }
         });
     }
-
-
-
-
-
 
     public void findAprilTag() {
         RobotLog.ii(TAG, "Setup findAprilTag");
@@ -699,7 +694,8 @@ public class BlueLeftAutoAT extends Robot {
 
 
         leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, 0.5);
+        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10 , -0.5);
+        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
 
         rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.85, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
@@ -710,7 +706,8 @@ public class BlueLeftAutoAT extends Robot {
 //        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
 
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, 0.5);
+        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, -0.5);
+        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
 
 
 
@@ -728,7 +725,8 @@ public class BlueLeftAutoAT extends Robot {
 
 
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, 0.5);
+        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, -0.5);
+        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
 
 
 

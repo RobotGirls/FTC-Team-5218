@@ -15,25 +15,25 @@ import team25core.DeadReckonPath;
 import team25core.DeadReckonTask;
 import team25core.DistanceSensorTask;
 import team25core.FourWheelDirectDrivetrain;
+import team25core.GamepadTask;
 import team25core.ObjectDetectionNewTask;
 import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
 import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
-@Autonomous(name = "ILTBLUELEFT")
-public class BlueLeftAutoAT extends Robot {
+@Autonomous(name = "ILTBLUERIGHT2")
+public class ILTBLUERIGHT2 extends Robot {
 
     private ElapsedTime timer;
 
-
     private DcMotor frontLeft;
-    private double aprilTagSpeed = 0.1;
+    private double aprilTagSpeed = 0.2;
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor backRight;
     private DcMotor outtake;
-    final double DESIRED_DISTANCE = 1.0; //  this is how close the camera should get to the target (inches)
+    final double DESIRED_DISTANCE = 0.5; //  this is how close the camera should get to the target (inches)
 
     final double SPEED_GAIN  =  0.02  ;   //  Forward Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     final double STRAFE_GAIN =  0.015 ;   //  Strafe Speed Control "Gain".  eg: Ramp up to 25% power at a 25 degree Yaw error.   (0.25 / 25.0)
@@ -56,32 +56,57 @@ public class BlueLeftAutoAT extends Robot {
     private DeadReckonPath middlePixelBoardPath;
     private FourWheelDirectDrivetrain drivetrain;
 
-    private static final double CLAW_GRAB = 1;
-    private static final double CLAW_RELEASE = 0.5;
+    private static final double CLAW_GRAB = .6;
+    private static final double CLAW_RELEASE = .9;
+    private static final double PIXEL_GRAB = .05;
+    private static final double PIXEL_RELEASE = .95;
 
     private Servo clawServo;
+    private Servo pixelHolderServo;
+
 
     private DistanceSensorTask distanceTask;
     private final static String TAG = "PROP";
     private DistanceSensor rightSensor;
     private DistanceSensor leftSensor;
-    private Telemetry.Item tagIdTlm;
     private Telemetry.Item rightSensorTlm;
     private Telemetry.Item leftSensorTlm;
 
     public String position;
     private DeadReckonPath outtakePath;
 
-    public static double OUTTAKE_DISTANCE = 20;
-    public static double OUTTAKE_SPEED = -0.7;
+    public static double OUTTAKE_DISTANCE = 16;
+    public static double OUTTAKE_SPEED = -.9;
 
-    public static double LIFT_DISTANCE = 20;
+    public static double LIFT_DISTANCE = 17.5;
     public static double LIFT_SPEED = .6;
 
+    private GamepadTask gamepad;
 
     private Telemetry.Item locationTlm;
     private Telemetry.Item whereAmI;
     private Telemetry.Item eventTlm;
+    private Telemetry.Item tagIDTlm;
+    private Telemetry.Item allianceTlm;
+    private Telemetry.Item tagPositionTlm;
+
+    private enum AllianceColor {
+        BLUE,
+        RED
+    }
+
+    private enum TagPosition {
+        LEFT,
+        MIDDLE,
+        RIGHT
+    }
+
+    // -------------------------------------------------------------
+    // the next three lines have to match each other
+    private int desiredTagID = 2;     // Choose the tag you want to approach or set to -1 for ANY tag.
+    private AllianceColor alliance = AllianceColor.BLUE;
+    private TagPosition tagPosition = TagPosition.MIDDLE;
+    // -------------------------------------------------------------
 
     private DeadReckonPath driveFromMiddlePropPath;
     private DeadReckonPath driveFromLeftPropPath;
@@ -96,8 +121,6 @@ public class BlueLeftAutoAT extends Robot {
     private DeadReckonPath driveToLinesPath;
     private DeadReckonPath driveToBoardPath;
 
-
-
     private DeadReckonPath liftToBoardPath;
 
     double rightDistance;
@@ -107,7 +130,6 @@ public class BlueLeftAutoAT extends Robot {
     double maxDistance;
 
     private ObjectDetectionNewTask objDetectionTask;
-    private int desiredTagID;     // Choose the tag you want to approach or set to -1 for ANY tag.
     private AprilTagDetection desiredTag = null;     // Used to hold the data for a detected AprilTag
 
     private final float APRIL_TAG_DECIMATION = 2;
@@ -129,13 +151,103 @@ public class BlueLeftAutoAT extends Robot {
          */
         if (e instanceof DeadReckonTask.DeadReckonEvent) {
             RobotLog.i("Completed path segment %d", ((DeadReckonTask.DeadReckonEvent)e).segment_num);
+        } else if (e instanceof GamepadTask.GamepadEvent) {
+            GamepadTask.GamepadEvent event = (GamepadTask.GamepadEvent) e ;
+            handleGamepadSelection(event);
+            whereAmI.setValue("inside GamePadTask");
         }
     }
-    public void driveToProp(DeadReckonPath driveToLinesPath)
-    {
-        whereAmI.setValue("in driveToProp");
-        RobotLog.i("drives straight onto the launch line");
 
+    public void updateDesiredTagID(TagPosition tagPosition, AllianceColor alliance) {
+
+        int delta = 0;
+        if (alliance == AllianceColor.RED) {
+            delta = 3;
+        }
+
+        if (tagPosition == TagPosition.LEFT) {
+            desiredTagID = 1 + delta;
+        } else if (tagPosition == TagPosition.RIGHT){
+            desiredTagID = 3 + delta;
+        } else { // tagPosition is middle
+            desiredTagID = 2 + delta;
+        }
+
+        if (objDetectionTask != null) {
+            objDetectionTask.setDesiredTagID(desiredTagID);
+
+        }
+        tagIDTlm.setValue(desiredTagID);
+        tagPositionTlm.setValue(tagPosition);
+    }
+
+    public void handleGamepadSelection(GamepadTask.GamepadEvent selection) {
+        whereAmI.setValue("inside handleGamepadSelection");
+        switch (selection.kind) {
+            case BUTTON_X_DOWN:
+                alliance = AllianceColor.BLUE;
+                allianceTlm.setValue(AllianceColor.BLUE);
+//                if (tagPosition == TagPosition.LEFT) {
+//                    desiredTagID = 1;
+//                } else if (tagPosition == TagPosition.MIDDLE){
+//                    desiredTagID = 2;
+//                } else { // tagPosition is RIGHT
+//                    desiredTagID = 3;
+//                }
+                whereAmI.setValue("inside BUTTON_X_DOWN");
+                break;
+            case BUTTON_B_DOWN:
+                alliance = AllianceColor.RED;
+                allianceTlm.setValue(AllianceColor.RED);
+  //              if (tagPosition == TagPosition.LEFT) {
+ //                   desiredTagID = 4;
+//                } else if (tagPosition == TagPosition.MIDDLE){
+//                    desiredTagID = 5;
+//                } else { // tagPosition is RIGHT
+//                    desiredTagID = 6;
+//                }
+                whereAmI.setValue("inside BUTTON_B_DOWN");
+                break;
+            case DPAD_LEFT_DOWN:
+                tagPosition = TagPosition.LEFT;
+                tagPositionTlm.setValue(tagPosition);
+                whereAmI.setValue("inside DPAD_LEFT_DOWN");
+//                if (alliance == AllianceColor.BLUE) {
+//                    desiredTagID = 1;
+//                } else { //alliance color is RED
+//                    desiredTagID = 4;
+//                }
+
+                break;
+            case DPAD_UP_DOWN:
+                tagPosition = TagPosition.MIDDLE;
+                tagPositionTlm.setValue(tagPosition);
+                whereAmI.setValue("inside DPAD_UP_DOWN");
+//                if (alliance == AllianceColor.BLUE) {
+//                    desiredTagID = 2;
+//                } else { // alliance color is RED
+//                    desiredTagID = 5;
+//                }
+                break;
+            case DPAD_RIGHT_DOWN:
+                tagPosition = TagPosition.RIGHT;
+                tagPositionTlm.setValue(tagPosition);
+                whereAmI.setValue("inside DPAD_RIGHT_DOWN");
+//                if (alliance == AllianceColor.BLUE) {
+//                    desiredTagID = 3;
+//                } else { // alliance color is RED
+//                    desiredTagID = 6;
+//                }
+                break;
+        }
+        updateDesiredTagID(tagPosition, alliance);
+    }
+
+    public void driveToPropLines(DeadReckonPath driveToLinesPath)
+    {
+        whereAmI.setValue("in driveToPropLines");
+        RobotLog.i("drives straight onto the launch line");
+        // drivesToLinesPath drives forward to better detect the distance of the team prop
         this.addTask(new DeadReckonTask(this, driveToLinesPath, drivetrain){
             @Override
             public void handleEvent(RobotEvent e) {
@@ -145,16 +257,13 @@ public class BlueLeftAutoAT extends Robot {
                     RobotLog.i("finished parking");
                     detectProp();
                     addTask(distanceTask);
-
-
-
                 }
             }
         });
     }
-    public void driveToMiddleProp(DeadReckonPath propPath) {
-        whereAmI.setValue("in driveToSignalZone");
-        RobotLog.i("drives straight onto the launch line");
+    public void driveToTeamProp(DeadReckonPath propPath) {
+        whereAmI.setValue("in driveToTeamProp");
+        RobotLog.i("drives towards the team prop in preparation for pixel drop");
 
         this.addTask(new DeadReckonTask(this, propPath, drivetrain) {
             @Override
@@ -162,6 +271,7 @@ public class BlueLeftAutoAT extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     RobotLog.i("finished placing pixel");
+                    pixelHolderServo.setPosition(PIXEL_RELEASE);
                     releaseOuttake();
 
                 }
@@ -169,44 +279,14 @@ public class BlueLeftAutoAT extends Robot {
         });
     }
 
-    public void driveToRightProp(DeadReckonPath propPath) {
-        whereAmI.setValue("in driveToSignalZone");
-        RobotLog.i("drives straight onto the launch line");
+    public void driveToBackStage(DeadReckonPath driveFromPropPath) {
+        try{
+            Thread.sleep(4000);
 
-        this.addTask(new DeadReckonTask(this, propPath, drivetrain) {
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE) {
-                    RobotLog.i("finished placing pixel");
-                    releaseOuttake();
-
-                }
-            }
-        });
-    }
-
-    public void driveToLeftProp(DeadReckonPath propPath) {
-        whereAmI.setValue("in driveToLeftProp");
-        RobotLog.i("drives straight onto the line");
-
-        this.addTask(new DeadReckonTask(this, propPath, drivetrain) {
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE) {
-                    releaseOuttake();
-                    RobotLog.i("finished placing pixel");
-
-
-                }
-            }
-        });
-    }
-
-    public void driveAwayFromMiddleProp(DeadReckonPath driveFromPropPath) {
-        whereAmI.setValue("in driveAwayFromProp");
-        RobotLog.i("drive from the prop to park");
+        } catch (InterruptedException e) {throw new RuntimeException(e);
+        }
+        whereAmI.setValue("in driveToBackStage");
+        RobotLog.i("drive from the prop to backstage");
 
         this.addTask(new DeadReckonTask(this, driveFromPropPath, drivetrain) {
             @Override
@@ -214,53 +294,17 @@ public class BlueLeftAutoAT extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     RobotLog.i("in park");
-                    findDesiredID();
-
-
-                }
-            }
-        });
-    }
-
-    public void driveAwayFromRightProp(DeadReckonPath driveFromRightPropPath) {
-        whereAmI.setValue("in driveAwayFromRightProp");
-        RobotLog.i("drive from the right pixel to park");
-
-        this.addTask(new DeadReckonTask(this, driveFromRightPropPath, drivetrain) {
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE) {
-                    RobotLog.i("in park");
-                    findDesiredID();
-
-                }
-            }
-        });
-    }
-
-    public void driveAwayFromLeftProp(DeadReckonPath driveFromLeftPropPath) {
-        whereAmI.setValue("in driveAwayFromLeftProp");
-        RobotLog.i("drive from the left pixel to park");
-
-        this.addTask(new DeadReckonTask(this, driveFromLeftPropPath, drivetrain) {
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE) {
-                    findDesiredID();
-
+                    findAprilTagData();
                 }
             }
         });
     }
 
     public void driveToPark(DeadReckonPath driveToParkPath) {
-        whereAmI.setValue("in driveAwayFromLeftProp");
+        whereAmI.setValue("in driveToProp");
         RobotLog.i("drive from the left pixel to park");
 
         this.addTask(new DeadReckonTask(this, driveToParkPath, drivetrain) {
-
 
             @Override
             public void handleEvent(RobotEvent e) {
@@ -288,7 +332,7 @@ public class BlueLeftAutoAT extends Robot {
     public void detectProp() {
         RobotLog.ii(TAG, "Setup detectProp");
         delay(3);
-        distanceTask = new DistanceSensorTask(this, leftSensor, rightSensor, telemetry, 0, 12, 8 ,
+        distanceTask = new DistanceSensorTask(this, leftSensor, rightSensor, telemetry, 0, 8, 8 ,
                 5,false) {
             @Override
             public void handleEvent(RobotEvent e) {
@@ -296,27 +340,30 @@ public class BlueLeftAutoAT extends Robot {
                 switch (event.kind) {
                     case LEFT_DISTANCE:
                         locationTlm.setValue("left");
-                        position ="left";
-                        driveToLeftProp(leftPropPath);
+                        tagPosition = TagPosition.LEFT;
+                        //position = "left";
+                        // turn counter clockwise to drop off pixel
+                        driveToTeamProp(leftPropPath);
+                       // pixelHolderServo.setPosition(PIXEL_RELEASE);
+
                         break;
                     case RIGHT_DISTANCE:
-                        position ="right";
+                        tagPosition = TagPosition.RIGHT;
+                        //position = "right";
                         //RobotLog.ii(TAG, " right distance %d", event.distance);
                         locationTlm.setValue("right");
-                        driveToRightProp(rightPropPath);
-
-
+                        // turn clockwise to drop off pixel
+                        driveToTeamProp(rightPropPath);
                         break;
                     case UNKNOWN:
                         locationTlm.setValue("middle");
-                        position ="middle";
-                        driveToMiddleProp(middlePropPath);
-
-
+                        tagPosition = TagPosition.MIDDLE;
+                        //position = "middle";
+                        // go straight to drop off pixel
+                        driveToTeamProp(middlePropPath);
                         break;
-
-
                 }
+                updateDesiredTagID(tagPosition, alliance);
             }
         };
     }
@@ -342,24 +389,24 @@ public class BlueLeftAutoAT extends Robot {
         this.addTask(new DeadReckonTask(this, outtakePath, outtakeDrivetrain) {
             @Override
             public void handleEvent(RobotEvent e) {
+                pixelHolderServo.setPosition(PIXEL_RELEASE);
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     whereAmI.setValue("released purple pixel");
-                    if(position.equals("left"))
+                    if(tagPosition == TagPosition.LEFT)
                     {
                        // delay(1000);
-                        driveAwayFromLeftProp(driveFromLeftPropPath);
+                        driveToBackStage(driveFromLeftPropPath);
                     }
-                    else if(position.equals("right"))
+                    else if(tagPosition == TagPosition.RIGHT)
                     {
-                       // delay(1000);
-                        driveAwayFromRightProp(driveFromRightPropPath);
+                        //delay(1000);
+                        driveToBackStage(driveFromRightPropPath);
                     }
-                    else
+                    else // MIDDLE
                     {
-                       // delay(1000);
-                        driveAwayFromMiddleProp(driveFromMiddlePropPath);
-
+                        //delay(1000);
+                        driveToBackStage(driveFromMiddlePropPath);
                     }
 
                 }
@@ -382,22 +429,17 @@ public class BlueLeftAutoAT extends Robot {
                     ElapsedTime localtimer2 = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
                     while(localtimer2.time() < 1000) {}
                 }
-                if (position.equals("left")) {
+                if (tagPosition == TagPosition.LEFT) {
                     driveToPark(leftBoardParkPath);
-                } else if (position.equals("right")) {
+                } else if (tagPosition == TagPosition.RIGHT) {
                     driveToPark(rightBoardParkPath);
-                } else {
+                } else { // tagPosition == TagPosition.MIDDLE
                     driveToPark(middleBoardParkPath);
 
                 }
             }
         });
     }
-
-
-
-
-
 
     public void findAprilTag() {
         RobotLog.ii(TAG, "Setup findAprilTag");
@@ -408,34 +450,44 @@ public class BlueLeftAutoAT extends Robot {
                 switch (event.kind) {
                     case APRIL_TAG_DETECTED:
                         RobotLog.ii(TAG, "AprilTag detected");
+                        // AprilTag information (x, y, z, pose numbers)
                         foundAprilTag = event.aprilTag;
+                        // AprilTag ID number
                         int foundAprilTagId = foundAprilTag.id;
                         break;
                 }
             }
         };
+        // initializes the AprilTag processor
         objDetectionTask.init(telemetry, hardwareMap);
+        // objectDetection only has 1000 ms to run its process before another task has its turn in timeslice
         objDetectionTask.rateLimit(100); // currently calling objDetectionTask every second
-        objDetectionTask.start();
+        objDetectionTask.start();  // instantiates the rate limiting timer
+        //start processing images; this uses a lot of computational resources so
+        // stop streaming if you aren't using AprilTag detection
         objDetectionTask.resumeStreaming();
+        // we are using Logitech C9-20
+        //Adjust Image Detection to trade-off detection range
         objDetectionTask.setAprilTagDecimation(APRIL_TAG_DECIMATION);
         objDetectionTask.doManualExposure(EXPOSURE_MS, GAIN); // Use low exposure time to reduce motion blur
         objDetectionTask.setDesiredTagID(desiredTagID);
+        tagIDTlm.setValue(desiredTagID);
+        // starts running the task in the timeslice
         addTask(objDetectionTask);
     }
 
 
     // find desired id for blue alliance (1, 2, or 3)
-    public void findDesiredID() {
-        if (position.equals("left")) {
-            desiredTagID = 1; // 4 on red
-        } else if (position.equals("right")) {
-            desiredTagID = 3; // 5 on red
-        } else {
-            desiredTagID = 2; // 6 on red
-        }
-        findAprilTagData();
-    }
+//    public void findDesiredID() {
+//        if (position.equals("left")) {
+//            desiredTagID = 1; // 4 on red
+//        } else if (position.equals("right")) {
+//            desiredTagID = 3; // 5 on red
+//        } else {
+//            desiredTagID = 2; // 6 on red
+//        }
+//        findAprilTagData();
+//    }
 
     public double alignWithAprilTag(){
             // Determine heading, range and Yaw (tag image rotation) error so we can use them to control the robot automatically.
@@ -482,15 +534,16 @@ public class BlueLeftAutoAT extends Robot {
         backRight.setPower(rightBackPower);
     }
 
+    // FIXME fix up with Cindy later to clean up
     public AprilTagDetection findAprilTagData() {
         if (desiredTagID == 1) {
             while (objDetectionTask.getAprilTag(desiredTagID) == null) {
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
 
-                frontLeft.setPower(-aprilTagSpeed);
-                frontRight.setPower(aprilTagSpeed);
-                backLeft.setPower(aprilTagSpeed);
-                backRight.setPower(-aprilTagSpeed);
+                frontLeft.setPower(aprilTagSpeed);
+                frontRight.setPower(-aprilTagSpeed);
+                backLeft.setPower(-aprilTagSpeed);
+                backRight.setPower(aprilTagSpeed);
             }
             telemetry.addData("inside findAprilTagData found ID ", desiredTagID);
             targetFound = true;
@@ -505,10 +558,10 @@ public class BlueLeftAutoAT extends Robot {
 
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
 
-                frontLeft.setPower(-aprilTagSpeed);
-                frontRight.setPower(aprilTagSpeed);
-                backLeft.setPower(aprilTagSpeed);
-                backRight.setPower(-aprilTagSpeed);
+                frontLeft.setPower(aprilTagSpeed);
+                frontRight.setPower(-aprilTagSpeed);
+                backLeft.setPower(-aprilTagSpeed);
+                backRight.setPower(aprilTagSpeed);
             }
             telemetry.addData("inside findAprilTagData found ID ", desiredTagID);
             targetFound = true;
@@ -523,10 +576,10 @@ public class BlueLeftAutoAT extends Robot {
 
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
 
-                frontLeft.setPower(-aprilTagSpeed);
-                frontRight.setPower(aprilTagSpeed);
-                backLeft.setPower(aprilTagSpeed);
-                backRight.setPower(-aprilTagSpeed);
+                frontLeft.setPower(aprilTagSpeed);
+                frontRight.setPower(-aprilTagSpeed);
+                backLeft.setPower(-aprilTagSpeed);
+                backRight.setPower(aprilTagSpeed);
 
             }
             desiredTag = objDetectionTask.getAprilTag(desiredTagID);
@@ -549,13 +602,12 @@ public class BlueLeftAutoAT extends Robot {
         //  the while loop to reduce redundancy
         return objDetectionTask.getAprilTag(desiredTagID);
     }
-    public void driveToBoard(DeadReckonPath driveToParkPath) {
+    public void driveToBoard(DeadReckonPath driveToBoardPath) {
+       // delay(4000);
         whereAmI.setValue("in driveToBoard");
         RobotLog.i("drive to board");
 
         this.addTask(new DeadReckonTask(this, driveToBoardPath, drivetrain) {
-
-
             @Override
             public void handleEvent(RobotEvent e) {
                 DeadReckonEvent path = (DeadReckonEvent) e;
@@ -573,33 +625,40 @@ public class BlueLeftAutoAT extends Robot {
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         clawServo = hardwareMap.servo.get("clawServo");
+        pixelHolderServo = hardwareMap.servo.get("pixelHolderServo");
+
+
+        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // FIXME. we can probably do this with drive train setCanonicalMotorDirection()
+        // redundant since this is consistent with canonical
+        frontLeft.setDirection(DcMotor.Direction.FORWARD);
+        backLeft.setDirection(DcMotor.Direction.FORWARD);
+        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        backRight.setDirection(DcMotor.Direction.REVERSE);
+
+        gamepad = new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1);
+        addTask(gamepad);
 
         rightSensor = hardwareMap.get(DistanceSensor.class, "rightSensor");
         leftSensor = hardwareMap.get(DistanceSensor.class, "leftSensor");
 
         // instantiating FourWheelDirectDrivetrain
         drivetrain = new FourWheelDirectDrivetrain(frontRight, backRight, frontLeft, backLeft);
-
-        detectProp();
+        // FIXME is the detectProp needed here?
+        // detectProp();
         //sets motors position to 0
         drivetrain.resetEncoders();
 
-
         clawServo.setPosition(CLAW_GRAB);
+        pixelHolderServo.setPosition(PIXEL_GRAB);
 
 
         //motor will try to tun at the targeted velocity
         drivetrain.encodersOn();
-
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         outtake = hardwareMap.get(DcMotor.class, "transportMotor");
         outtake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -617,13 +676,15 @@ public class BlueLeftAutoAT extends Robot {
         liftMotorDrivetrain.resetEncoders();
         liftMotorDrivetrain.encodersOn();
 
-
         // telemetry shown on the phone
+        telemetry.setAutoClear(false);
         whereAmI = telemetry.addData("location in code", "init");
-        tagIdTlm = telemetry.addData("tagId", "none");
+        tagIDTlm = telemetry.addData("tagId", desiredTagID);
         rightSensorTlm = telemetry.addData("rightSensor", "none");
         leftSensorTlm = telemetry.addData("leftSensor", "none");
         locationTlm = telemetry.addData("prop position", "none");
+        allianceTlm = telemetry.addData("Alliance:", alliance);
+        tagPositionTlm = telemetry.addData("Tag position: ", tagPosition);
 
         initPaths();
     }
@@ -632,15 +693,13 @@ public class BlueLeftAutoAT extends Robot {
     {
         timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         whereAmI.setValue("in Start");
-        driveToProp(driveToLinesPath);
+        // drives straight to lines where pixel will be placed in order be closer for distance sensing
+        driveToPropLines(driveToLinesPath);
         findAprilTag();
-        aprilTag = findAprilTagData();
+        //aprilTag = findAprilTagData();
     }
 
     public void initPaths() {
-
-
-
         leftPropPath = new DeadReckonPath();
         middlePropPath = new DeadReckonPath();
         rightPropPath = new DeadReckonPath();
@@ -652,8 +711,6 @@ public class BlueLeftAutoAT extends Robot {
         liftToBoardPath = new DeadReckonPath();
         liftToBoardPath.stop();
         liftToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, LIFT_DISTANCE, LIFT_SPEED);
-
-
 
         outtakePath = new DeadReckonPath();
         outtakePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, OUTTAKE_DISTANCE, OUTTAKE_SPEED);
@@ -678,60 +735,54 @@ public class BlueLeftAutoAT extends Robot {
 
         driveToBoardPath = new DeadReckonPath();
         driveToBoardPath.stop();
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, 0.25);
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8.5, -0.25);
 
-        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, .10, -0.25);
-        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, -0.25);
-
-
+        // drives closer to lines to better detect distance
         driveToLinesPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 13, 0.25);
 
-       // leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS,1 , 0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
+        // turn clockwise and go staight to drop pixel
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.5, 0.5);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
 
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, -0.5);
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.TURN,77 , 0.5);
-//        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 13, 0.5);
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -0.5);
-
-
-
-        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, 0.5);
-
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.85, 0.5);
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
-
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 13, -0.5);
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 1, 0.5);
-//        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .7, -0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12.5, 0.5); // changed distance from 9 to 11
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
 
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, 0.5);
+        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
+
+        // turn counter clock-wise to in order to drop pixel
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35.6, -0.5);
+       // leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 1, 0.5);
 
 
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .4, 0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.2, -0.5);
 
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11, -0.45); // changed distance from 11 to 13
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 78, -0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 35, -0.5);
 
+        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, -0.5);
+
+        // just goes backwards in order to drop the pixel
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.5, -0.5);
 
-
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 7, -0.5);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS,2 , -0.5);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.5, 0.5);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -0.5);
-       //driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS,10 , 0.5);
-//        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
-
+        // driveFromMiddlePropPath goes straight, goes backwards to avoid hitting the prop,
+        // then strafes to the right, then goes forward,
+        // then turns clockwise to the right, then goes backwards
+        // FIXME collapse the two straight commands; above and below
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .8, 0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 14, -0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 60, -0.3); // changed distance from 9 to 11
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 39, 0.5);
+       // driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 39, -0.5);
 
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, 0.5);
-
-
-
+        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, -0.5);
 
     }
 }
