@@ -77,7 +77,6 @@ public class ILTREDLEFT5 extends Robot {
     public static double LIFT_DISTANCE = 20;
     public static double LIFT_SPEED = .8;
 
-
     private Telemetry.Item locationTlm;
     private Telemetry.Item whereAmI;
     private Telemetry.Item eventTlm;
@@ -86,7 +85,6 @@ public class ILTREDLEFT5 extends Robot {
     private DeadReckonPath driveFromLeftPropPath;
     private DeadReckonPath driveFromRightPropPath;
     private DeadReckonPath driveToBoardPath;
-
 
     private DeadReckonPath leftBoardParkPath;
     private DeadReckonPath middleBoardParkPath;
@@ -98,10 +96,6 @@ public class ILTREDLEFT5 extends Robot {
     private DeadReckonPath driveToRightBoardPath;
     private DeadReckonPath driveToLeftBoardPath;
     private DeadReckonPath driveToMiddleBoardPath;
-
-
-
-
 
     private DeadReckonPath liftToBoardPath;
 
@@ -150,13 +144,11 @@ public class ILTREDLEFT5 extends Robot {
                     RobotLog.i("finished parking");
                     detectProp();
                     addTask(distanceTask);
-
-
-
                 }
             }
         });
     }
+
     public void driveToMiddleProp(DeadReckonPath propPath) {
         whereAmI.setValue("in driveToSignalZone");
         RobotLog.i("drives straight onto the launch line");
@@ -168,7 +160,6 @@ public class ILTREDLEFT5 extends Robot {
                 if (path.kind == EventKind.PATH_DONE) {
                     RobotLog.i("finished placing pixel");
                     releaseOuttake();
-
                 }
             }
         });
@@ -185,7 +176,6 @@ public class ILTREDLEFT5 extends Robot {
                 if (path.kind == EventKind.PATH_DONE) {
                     RobotLog.i("finished placing pixel");
                     releaseOuttake();
-
                 }
             }
         });
@@ -202,8 +192,6 @@ public class ILTREDLEFT5 extends Robot {
                 if (path.kind == EventKind.PATH_DONE) {
                     releaseOuttake();
                     RobotLog.i("finished placing pixel");
-
-
                 }
             }
         });
@@ -225,8 +213,6 @@ public class ILTREDLEFT5 extends Robot {
                 if (path.kind == EventKind.PATH_DONE) {
                     RobotLog.i("in park");
                     findDesiredID();
-
-
                 }
             }
         });
@@ -247,7 +233,6 @@ public class ILTREDLEFT5 extends Robot {
                 if (path.kind == EventKind.PATH_DONE) {
                     RobotLog.i("in park");
                     findDesiredID();
-
                 }
             }
         });
@@ -267,7 +252,6 @@ public class ILTREDLEFT5 extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     findDesiredID();
-
                 }
             }
         });
@@ -279,8 +263,6 @@ public class ILTREDLEFT5 extends Robot {
         RobotLog.i("drive from the left pixel to park");
 
         this.addTask(new DeadReckonTask(this, driveToParkPath, drivetrain) {
-
-
             @Override
             public void handleEvent(RobotEvent e) {
                 DeadReckonEvent path = (DeadReckonEvent) e;
@@ -290,6 +272,7 @@ public class ILTREDLEFT5 extends Robot {
             }
         });
     }
+
     private void delay(int delayInMsec) {
         this.addTask(new SingleShotTimerTask(this, delayInMsec) {
             @Override
@@ -297,11 +280,9 @@ public class ILTREDLEFT5 extends Robot {
                 SingleShotTimerEvent event = (SingleShotTimerEvent) e;
                 if (event.kind == EventKind.EXPIRED ) {
                     whereAmI.setValue("in delay task");
-
                 }
             }
         });
-
     }
 
     public void detectProp() {
@@ -323,25 +304,19 @@ public class ILTREDLEFT5 extends Robot {
                         //RobotLog.ii(TAG, " right distance %d", event.distance);
                         locationTlm.setValue("right");
                         driveToRightProp(rightPropPath);
-
-
                         break;
                     case UNKNOWN:
                         locationTlm.setValue("middle");
                         position ="middle";
                         driveToMiddleProp(middlePropPath);
-
-
                         break;
-
-
                 }
             }
         };
     }
+
     public void moveToObjectAndReleasePixel(DeadReckonPath path)
     {
-
         this.addTask(new DeadReckonTask(this, path, drivetrain ){
             @Override
             public void handleEvent(RobotEvent e) {
@@ -351,7 +326,6 @@ public class ILTREDLEFT5 extends Robot {
                     RobotLog.i("Drove to the object");
                     whereAmI.setValue("At the object");
                     releaseOuttake();
-
                 }
             }
         });
@@ -378,13 +352,9 @@ public class ILTREDLEFT5 extends Robot {
                     {
                        // delay(1000);
                         driveAwayFromMiddleProp(driveFromMiddlePropPath);
-
                     }
-
                 }
             }
-
-
         });
     }
 
@@ -407,16 +377,10 @@ public class ILTREDLEFT5 extends Robot {
                     driveToPark(rightBoardParkPath);
                 } else {
                     driveToPark(middleBoardParkPath);
-
                 }
             }
         });
     }
-
-
-
-
-
 
     public void findAprilTag() {
         RobotLog.ii(TAG, "Setup findAprilTag");
@@ -442,7 +406,6 @@ public class ILTREDLEFT5 extends Robot {
         objDetectionTask.setDesiredTagID(desiredTagID);
         addTask(objDetectionTask);
     }
-
 
     // find desired id for blue alliance (1, 2, or 3)
     public void findDesiredID() {
@@ -563,7 +526,6 @@ public class ILTREDLEFT5 extends Robot {
             driveToBoard(driveToBoardPath);
             telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
             desiredTag = objDetectionTask.getAprilTag(desiredTagID);
-
         }
 
         // FIXME later do the assignment of the AprilTag detection in
@@ -601,9 +563,7 @@ public class ILTREDLEFT5 extends Robot {
         //sets motors position to 0
         drivetrain.resetEncoders();
 
-
         clawServo.setPosition(CLAW_GRAB);
-
 
         //motor will try to tun at the targeted velocity
         drivetrain.encodersOn();
@@ -634,7 +594,6 @@ public class ILTREDLEFT5 extends Robot {
         liftMotorDrivetrain.resetEncoders();
         liftMotorDrivetrain.encodersOn();
 
-
         // telemetry shown on the phone
         whereAmI = telemetry.addData("location in code", "init");
         tagIdTlm = telemetry.addData("tagId", "none");
@@ -655,9 +614,6 @@ public class ILTREDLEFT5 extends Robot {
     }
 
     public void initPaths() {
-
-
-
         leftPropPath = new DeadReckonPath();
         middlePropPath = new DeadReckonPath();
         rightPropPath = new DeadReckonPath();
@@ -669,8 +625,6 @@ public class ILTREDLEFT5 extends Robot {
         liftToBoardPath = new DeadReckonPath();
         liftToBoardPath.stop();
         liftToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, LIFT_DISTANCE, LIFT_SPEED);
-
-
 
         outtakePath = new DeadReckonPath();
         outtakePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, OUTTAKE_DISTANCE, OUTTAKE_SPEED);
@@ -701,9 +655,6 @@ public class ILTREDLEFT5 extends Robot {
         driveToBoardPath = new DeadReckonPath();
         driveToBoardPath.stop();
 
-
-
-
         driveToLeftBoardPath = new DeadReckonPath();
         driveToLeftBoardPath.stop();
 
@@ -712,13 +663,10 @@ public class ILTREDLEFT5 extends Robot {
 //
 //        driveToMiddleBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8, -0.25);
 
-
-
 //        driveToRightBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 4, -0.25);
 //        driveToRightBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8, -0.25);
         driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 3.75, -0.25);
         driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 9.75, -0.25);
-
 
         driveToLinesPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12.75, 0.25);
 
@@ -735,8 +683,6 @@ public class ILTREDLEFT5 extends Robot {
 //        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 13, 0.5);
 //        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.2, -0.5);
 
-
-
         leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
         leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 13, -0.9);
 
@@ -749,15 +695,10 @@ public class ILTREDLEFT5 extends Robot {
         // driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 77, -0.5);
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
 
-
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 13, -0.5);
 
-
-
-
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.5, -0.5);
-
 
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
@@ -768,13 +709,8 @@ public class ILTREDLEFT5 extends Robot {
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.5, -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
 
-
-
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 13, -0.5);
-
-
-
 
     }
 }

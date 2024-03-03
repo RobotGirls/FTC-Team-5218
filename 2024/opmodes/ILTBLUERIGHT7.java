@@ -273,7 +273,6 @@ public class ILTBLUERIGHT7 extends Robot {
                     RobotLog.i("finished placing pixel");
                     pixelHolderServo.setPosition(PIXEL_RELEASE);
                     releaseOuttake();
-
                 }
             }
         });
@@ -408,11 +407,8 @@ public class ILTBLUERIGHT7 extends Robot {
                         //delay(1000);
                         driveToBackStage(driveFromMiddlePropPath);
                     }
-
                 }
             }
-
-
         });
     }
 
@@ -475,7 +471,6 @@ public class ILTBLUERIGHT7 extends Robot {
         // starts running the task in the timeslice
         addTask(objDetectionTask);
     }
-
 
     // find desired id for blue alliance (1, 2, or 3)
 //    public void findDesiredID() {
@@ -627,7 +622,6 @@ public class ILTBLUERIGHT7 extends Robot {
         clawServo = hardwareMap.servo.get("clawServo");
         pixelHolderServo = hardwareMap.servo.get("pixelHolderServo");
 
-
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -655,7 +649,6 @@ public class ILTBLUERIGHT7 extends Robot {
 
         clawServo.setPosition(CLAW_GRAB);
         pixelHolderServo.setPosition(PIXEL_GRAB);
-
 
         //motor will try to tun at the targeted velocity
         drivetrain.encodersOn();

@@ -753,7 +753,6 @@ public class ILTBLUERIGHT4 extends Robot {
         leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35.6, -0.5);
        // leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 1, 0.5);
 
-
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .4, 0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.2, -0.5);
 

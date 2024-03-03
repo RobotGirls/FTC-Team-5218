@@ -64,7 +64,6 @@ public class ILTBLUERIGHT6 extends Robot {
     private Servo clawServo;
     private Servo pixelHolderServo;
 
-
     private DistanceSensorTask distanceTask;
     private final static String TAG = "PROP";
     private DistanceSensor rightSensor;
@@ -407,8 +406,6 @@ public class ILTBLUERIGHT6 extends Robot {
 
                 }
             }
-
-
         });
     }
 
@@ -471,7 +468,6 @@ public class ILTBLUERIGHT6 extends Robot {
         // starts running the task in the timeslice
         addTask(objDetectionTask);
     }
-
 
     // find desired id for blue alliance (1, 2, or 3)
 //    public void findDesiredID() {
@@ -623,7 +619,6 @@ public class ILTBLUERIGHT6 extends Robot {
         clawServo = hardwareMap.servo.get("clawServo");
         pixelHolderServo = hardwareMap.servo.get("pixelHolderServo");
 
-
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -651,7 +646,6 @@ public class ILTBLUERIGHT6 extends Robot {
 
         clawServo.setPosition(CLAW_GRAB);
         pixelHolderServo.setPosition(PIXEL_GRAB);
-
 
         //motor will try to tun at the targeted velocity
         drivetrain.encodersOn();
@@ -753,7 +747,6 @@ public class ILTBLUERIGHT6 extends Robot {
         // turn counter clock-wise to in order to drop pixel
         leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35.6, -0.5);
        // leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 1, 0.5);
-
 
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .4, 0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.2, -0.5);

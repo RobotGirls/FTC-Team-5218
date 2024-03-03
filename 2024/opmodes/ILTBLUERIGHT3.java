@@ -649,7 +649,6 @@ public class ILTBLUERIGHT3 extends Robot {
         clawServo.setPosition(CLAW_GRAB);
         pixelHolderServo.setPosition(PIXEL_GRAB);
 
-
         //motor will try to tun at the targeted velocity
         drivetrain.encodersOn();
 
@@ -734,7 +733,7 @@ public class ILTBLUERIGHT3 extends Robot {
         // drives closer to lines to better detect distance
         driveToLinesPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 13, 0.25);
 
-        // turn clockwise and go staight to drop pixel
+        // turn clockwise and go straight to drop pixel
         rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.5, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
 
@@ -749,7 +748,6 @@ public class ILTBLUERIGHT3 extends Robot {
         // turn counter clock-wise to in order to drop pixel
         leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35.6, -0.5);
        // leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 1, 0.5);
-
 
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .4, 0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.2, -0.5);
