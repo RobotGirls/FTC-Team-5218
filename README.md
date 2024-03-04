@@ -8,6 +8,7 @@ AutoAT_ILTTEST.java is BLUE FAR
 RedRightAutoAT.java is RED NEAR
 RedLeftAutoAT1.java is RED FAR
 
-|| foo || bar || blah ||
+| foo | bar | blah |
+|-----|-----|------|
 | 1| 2 |3|
 | 1| 2 |3|
