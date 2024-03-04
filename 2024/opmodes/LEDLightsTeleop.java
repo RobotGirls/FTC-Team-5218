@@ -48,7 +48,7 @@ import team25core.MechanumGearedDrivetrain;
 import team25core.OneWheelDriveTask;
 import team25core.RobotEvent;
 import team25core.StandardFourMotorRobot;
-import team25core.TouchSensorTask;
+// import team25core.TouchSensorTask;
 import team25core.TwoStickMechanumControlScheme;
 import team25core.TeleopDriveTask;
 
@@ -278,22 +278,22 @@ public class LEDLightsTeleop extends StandardFourMotorRobot {
                 }
             }
         });
-        this.addTask(new TouchSensorTask(this, touchSensor) {
-            public void handleEvent(RobotEvent e) {
-                TouchSensorTask.TouchSensorEvent touchSensorEvent = (TouchSensorTask.TouchSensorEvent) e;
-
-                switch (touchSensorEvent.kind) {
-                    case TOUCH_SENSOR_PRESSED:
-                        blinkinLedDriver.setPattern(pinkLED);
-                        break;
-                    case TOUCH_SENSOR_RELEASED:
-                        blinkinLedDriver.setPattern(blueLED);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
+//        this.addTask(new TouchSensorTask(this, touchSensor) {
+//            public void handleEvent(RobotEvent e) {
+//                TouchSensorTask.TouchSensorEvent touchSensorEvent = (TouchSensorTask.TouchSensorEvent) e;
+//
+//                switch (touchSensorEvent.kind) {
+//                    case TOUCH_SENSOR_PRESSED:
+//                        blinkinLedDriver.setPattern(pinkLED);
+//                        break;
+//                    case TOUCH_SENSOR_RELEASED:
+//                        blinkinLedDriver.setPattern(blueLED);
+//                        break;
+//                    default:
+//                        break;
+//                }
+//            }
+//        });
     }
 
 }

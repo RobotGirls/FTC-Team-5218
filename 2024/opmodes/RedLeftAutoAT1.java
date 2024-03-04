@@ -15,6 +15,7 @@ import team25core.DeadReckonPath;
 import team25core.DeadReckonTask;
 import team25core.DistanceSensorTask;
 import team25core.FourWheelDirectDrivetrain;
+import team25core.GamepadTask;
 import team25core.ObjectDetectionNewTask;
 import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
@@ -125,6 +126,49 @@ public class RedLeftAutoAT1 extends Robot {
 
     private AprilTagDetection foundAprilTag;
 
+    // ===============================================
+    //  RED LEFT FAR FROM BACKDROP
+    // make sure all defaults align with each other**
+    private PassThrough passThrough = PassThrough.STAGEDOOR;
+    private ParkSide parkside = ParkSide.CENTER;
+    private Pause pause = Pause.NO;
+    private Alliance alliance = Alliance.RED;
+    private EdgeDirection edgeDirection = EdgeDirection.RIGHT;
+
+    private Telemetry.Item passThroughTlm;
+    private Telemetry.Item parksideTlm;
+    private Telemetry.Item pauseTlm;
+    private Telemetry.Item allianceTlm;
+    private Telemetry.Item edgeDirectionTlm;
+
+    private GamepadTask gamepad;
+
+    private enum PassThrough {
+        TRUSS,
+        STAGEDOOR
+    }
+
+    private enum ParkSide {
+        CENTER,
+        EDGE
+    }
+
+    private enum Pause {
+        YES,
+        NO
+    }
+
+    private enum Alliance {
+        RED,
+        BLUE
+    }
+    private enum EdgeDirection {
+        RIGHT,
+        LEFT
+    }
+
+    // ===============================================
+
     @Override
     public void handleEvent(RobotEvent e)
     {
@@ -134,8 +178,44 @@ public class RedLeftAutoAT1 extends Robot {
          */
         if (e instanceof DeadReckonTask.DeadReckonEvent) {
             RobotLog.i("Completed path segment %d", ((DeadReckonTask.DeadReckonEvent)e).segment_num);
+        } // ===================================
+        else if (e instanceof GamepadTask.GamepadEvent) {
+            GamepadTask.GamepadEvent event = (GamepadTask.GamepadEvent) e ;
+            handleGamepadSelection(event);
+            whereAmI.setValue("inside GamePadTask");
+        }
+        // ===========================
+    }
+
+    // ==========================================
+    // RED LEFT FAR FROM BACKDROP
+    // FIXME assign passthrough and pause button
+    public void handleGamepadSelection(GamepadTask.GamepadEvent selection) {
+        whereAmI.setValue("inside handleGamepadSelection");
+        switch (selection.kind) {
+            case BUTTON_X_DOWN:
+                if (alliance == Alliance.RED) {
+                    parkside = ParkSide.CENTER;
+                    edgeDirection = EdgeDirection.LEFT;
+                } else { // Alliance is BLUE
+                    parkside = ParkSide.EDGE;
+                    edgeDirection = EdgeDirection.LEFT;
+                }
+                whereAmI.setValue("inside BUTTON_X_DOWN");
+                break;
+            case BUTTON_B_DOWN:
+                if (alliance == Alliance.RED) {
+                    parkside = ParkSide.EDGE;
+                    edgeDirection = EdgeDirection.RIGHT;
+                } else { // Alliance is BLUE
+                    parkside = ParkSide.CENTER;
+                    edgeDirection = EdgeDirection.RIGHT;
+                }
+                break;
         }
     }
+    // ==================================
+
     public void driveToProp(DeadReckonPath driveToLinesPath)
     {
         whereAmI.setValue("in driveToProp");
@@ -627,6 +707,19 @@ public class RedLeftAutoAT1 extends Robot {
         rightSensorTlm = telemetry.addData("rightSensor", "none");
         leftSensorTlm = telemetry.addData("leftSensor", "none");
         locationTlm = telemetry.addData("prop position", "none");
+
+        // =========================
+        // RED LEFT FAR FROM BACKDROP
+        gamepad = new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1);
+        addTask(gamepad);
+
+        pauseTlm = telemetry.addData("pause", pause);
+        parksideTlm = telemetry.addData("parkside", parkside);
+        passThroughTlm = telemetry.addData("passThrough", passThrough);
+        allianceTlm = telemetry.addData("alliance", alliance);
+        edgeDirectionTlm = telemetry.addData("edgeDirection", edgeDirection);
+        // =========================
+
 
         initPaths();
     }
