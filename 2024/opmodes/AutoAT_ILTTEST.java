@@ -22,7 +22,7 @@ import team25core.Robot;
 import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
-@Autonomous(name = "ILTBLUERIGHT")
+@Autonomous(name = "ILTBLUERIGHTFAR")
 public class AutoAT_ILTTEST extends Robot {
 
     private ElapsedTime timer;
@@ -63,7 +63,6 @@ public class AutoAT_ILTTEST extends Robot {
 
     private Servo clawServo;
     private Servo pixelHolderServo;
-
 
     private DistanceSensorTask distanceTask;
     private final static String TAG = "PROP";

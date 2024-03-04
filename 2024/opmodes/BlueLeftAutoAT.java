@@ -22,11 +22,10 @@ import team25core.Robot;
 import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
-@Autonomous(name = "ILTBLUELEFT")
+@Autonomous(name = "ILTBLUELEFTNEAR")
 public class BlueLeftAutoAT extends Robot {
 
     private ElapsedTime timer;
-
 
     private DcMotor frontLeft;
     private double aprilTagSpeed = 0.1;

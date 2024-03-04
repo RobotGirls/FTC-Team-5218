@@ -685,6 +685,7 @@ public class ILTREDLEFT4 extends Robot {
 //        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 13, 0.5);
 //        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.2, -0.5);
 
+        // this is the path that parks on the RIGHT EDGE for RED FAR
         leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
         leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11, - 0.9);
         leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 2, -0.9);
@@ -698,6 +699,7 @@ public class ILTREDLEFT4 extends Robot {
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 77, -0.5);
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
 
+        // this is the path that parks on the RIGHT EDGE for RED FAR
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, -0.5);
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
@@ -711,6 +713,7 @@ public class ILTREDLEFT4 extends Robot {
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.5, -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 38, -0.5);
 
+        // this is the path that parks on the RIGHT EDGE for RED FAR
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, -0.5);
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);

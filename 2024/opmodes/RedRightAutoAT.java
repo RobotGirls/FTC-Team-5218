@@ -22,7 +22,7 @@ import team25core.Robot;
 import team25core.RobotEvent;
 import team25core.SingleShotTimerTask;
 
-@Autonomous(name = "ILTREDRIGHT")
+@Autonomous(name = "ILTREDRIGHTNEAR")
 public class RedRightAutoAT extends Robot {
 
     private ElapsedTime timer;
@@ -95,8 +95,6 @@ public class RedRightAutoAT extends Robot {
     private DeadReckonPath rightPropPath;
     private DeadReckonPath driveToLinesPath;
     private DeadReckonPath driveToBoardPath;
-
-
 
     private DeadReckonPath liftToBoardPath;
 
@@ -187,6 +185,7 @@ public class RedRightAutoAT extends Robot {
                     parkside = ParkSide.EDGE;
                     edgeDirection = EdgeDirection.LEFT;
                 }
+                parksideTlm.setValue(parkside);
                 whereAmI.setValue("inside BUTTON_X_DOWN");
                 break;
             case BUTTON_B_DOWN:
@@ -197,6 +196,7 @@ public class RedRightAutoAT extends Robot {
                     parkside = ParkSide.CENTER;
                     edgeDirection = EdgeDirection.RIGHT;
                 }
+                parksideTlm.setValue(parkside);
                 break;
         }
     }
@@ -652,16 +652,18 @@ public class RedRightAutoAT extends Robot {
         middlePropPath.stop();
         rightPropPath = new DeadReckonPath();
         rightPropPath.stop();
+
         outtakePath = new DeadReckonPath();
         outtakePath.stop();
 
         driveFromLeftPropPath = new DeadReckonPath();
         driveFromMiddlePropPath = new DeadReckonPath();
         driveFromRightPropPath = new DeadReckonPath();
-        driveToBoardPath = new DeadReckonPath();
         driveFromLeftPropPath.stop();
         driveFromMiddlePropPath.stop();
         driveFromRightPropPath.stop();
+
+        driveToBoardPath = new DeadReckonPath();
         driveToBoardPath.stop();
 
         liftToBoardPath = new DeadReckonPath();
