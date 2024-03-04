@@ -8,7 +8,9 @@ AutoAT_ILTTEST.java is BLUE FAR
 RedRightAutoAT.java is RED NEAR
 RedLeftAutoAT1.java is RED FAR
 
-| foo | bar | blah |
-|-----|-----|------|
-| 1| 2 |3|
-| 1| 2 |3|
+| Color | PassThrough | ParkSide | Pause| 
+|-----|-----|------|-------|
+| RED| L-Dpad is STAGEDOOR |X is CENTER|L-Bumper toggles pause|
+| RED|  R-Dpad is TRUSS |B is EDGE|L-Bumper toggles pause|
+| BLUE| L-Dpad is TRUSS |X is EDGE|L-Bumper toggles pause|
+| BLUE| R-Dpad is STAGEDOOR |B is CENTER|L-Bumper toggles pause|
