@@ -675,7 +675,6 @@ public class RedLeftAutoAT1 extends Robot {
         edgeDirectionTlm = telemetry.addData("edgeDirection", edgeDirection);
         // =========================
 
-
         initPaths();
     }
 
@@ -761,10 +760,6 @@ public class RedLeftAutoAT1 extends Robot {
             makeTrussPath();
         }
 
-        // strafes RIGHT to detect desired april tag
-        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, .75, -0.25);
-        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 9.75, -0.25);
-
         // drives forward and places pixel on backdrop/board
         liftToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, LIFT_DISTANCE, LIFT_SPEED);
 
@@ -791,17 +786,17 @@ public class RedLeftAutoAT1 extends Robot {
     }
 
     public void makeEdgeParkPath() {
-        // park in EDGE from LEFT April Tag (EDGE is right for RED NEAR)
+        // park in EDGE from LEFT April Tag (EDGE is right for RED FAR)
         leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
         leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11, - 0.9);
         leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 2, -0.9);
 
-        // park in EDGE from MIDDLE April Tag (EDGE is right for RED NEAR)
+        // park in EDGE from MIDDLE April Tag (EDGE is right for RED FAR)
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, -0.5);
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
 
-        // park in EDGE from RIGHT April Tag (EDGE is right for RED NEAR)
+        // park in EDGE from RIGHT April Tag (EDGE is right for RED FAR)
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, -0.5);
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
@@ -830,6 +825,10 @@ public class RedLeftAutoAT1 extends Robot {
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 25, -0.5);
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
 
+        // strafes LEFT to detect desired april tag for RED FAR after passing through TRUSS
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 3.75, -0.25);
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 9.75, -0.25);
+
     }
 
     public void makeStageDoorPath() {
@@ -853,6 +852,10 @@ public class RedLeftAutoAT1 extends Robot {
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11.5, -0.5);
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 77, -0.5);
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
+
+        // strafes RIGHT to detect desired april tag after passing through STAGEDOOR
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, .75, -0.25);
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 9.75, -0.25);
 
     }
 }

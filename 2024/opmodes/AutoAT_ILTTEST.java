@@ -89,10 +89,10 @@ public class AutoAT_ILTTEST extends Robot {
     private Telemetry.Item allianceTlm;
     private Telemetry.Item tagPositionTlm;
 
-    private enum AllianceColor {
-        BLUE,
-        RED
-    }
+//    private enum AllianceColor {
+//        BLUE,
+//        RED
+//    }
 
     private enum TagPosition {
         LEFT,
@@ -103,7 +103,7 @@ public class AutoAT_ILTTEST extends Robot {
     // -------------------------------------------------------------
     // the next three lines have to match each other
     private int desiredTagID = 2;     // Choose the tag you want to approach or set to -1 for ANY tag.
-    private AllianceColor alliance = AllianceColor.BLUE;
+    private Alliance alliance = Alliance.BLUE;
     private TagPosition tagPosition = TagPosition.MIDDLE;
     // -------------------------------------------------------------
 
@@ -141,6 +141,53 @@ public class AutoAT_ILTTEST extends Robot {
 
     private AprilTagDetection foundAprilTag;
 
+    // ===============================================
+    //  RED LEFT FAR FROM BACKDROP
+
+    // make sure all defaults align with each other**
+    private PassThrough passThrough = PassThrough.STAGEDOOR;
+    private ParkSide parkside = ParkSide.CENTER;
+    private Pause pause = Pause.NO;
+    // alliance is declared above
+//    private Alliance alliance = Alliance.BLUE;
+    private EdgeDirection edgeDirection = EdgeDirection.RIGHT; //
+
+    private Telemetry.Item passThroughTlm;
+    private Telemetry.Item parksideTlm;
+    private Telemetry.Item pauseTlm;
+    // allianceTlm is declared above
+//    private Telemetry.Item allianceTlm;
+    private Telemetry.Item edgeDirectionTlm;
+
+    // gamepad declared above
+//    private GamepadTask gamepad;
+
+    private enum PassThrough {
+        TRUSS,
+        STAGEDOOR
+    }
+
+    private enum ParkSide {
+        CENTER,
+        EDGE
+    }
+
+    private enum Pause {
+        YES,
+        NO
+    }
+
+    private enum Alliance {
+        RED,
+        BLUE
+    }
+    private enum EdgeDirection {
+        RIGHT,
+        LEFT
+    }
+
+    // ===============================================
+
     @Override
     public void handleEvent(RobotEvent e)
     {
@@ -157,10 +204,69 @@ public class AutoAT_ILTTEST extends Robot {
         }
     }
 
-    public void updateDesiredTagID(TagPosition tagPosition, AllianceColor alliance) {
+    // ==========================================
+    // RED LEFT FAR FROM BACKDROP
+    // FIXME assign passthrough and pause button
+    public void handleGamepadSelection(GamepadTask.GamepadEvent selection) {
+        whereAmI.setValue("inside handleGamepadSelection");
+        switch (selection.kind) {
+            case BUTTON_X_DOWN:
+                if (alliance == Alliance.RED) {
+                    parkside = ParkSide.CENTER;
+                    edgeDirection = EdgeDirection.LEFT;
+                } else { // Alliance is BLUE
+                    parkside = ParkSide.EDGE;
+                    edgeDirection = EdgeDirection.LEFT;
+                }
+                parksideTlm.setValue(parkside);
+                whereAmI.setValue("inside BUTTON_X_DOWN");
+                break;
+            case BUTTON_B_DOWN:
+                if (alliance == Alliance.RED) {
+                    parkside = ParkSide.EDGE;
+                    edgeDirection = EdgeDirection.RIGHT;
+                } else { // Alliance is BLUE
+                    parkside = ParkSide.CENTER;
+                    edgeDirection = EdgeDirection.RIGHT;
+                }
+                parksideTlm.setValue(parkside);
+                break;
+            case DPAD_LEFT_DOWN:
+                if (alliance == Alliance.RED) {
+                    passThrough = PassThrough.STAGEDOOR;
+
+                } else { // Alliance is BLUE
+                    passThrough = PassThrough.TRUSS;
+
+                }
+                passThroughTlm.setValue(passThrough);
+                break;
+            case DPAD_RIGHT_DOWN:
+                if (alliance == Alliance.RED) {
+                    passThrough = PassThrough.TRUSS;
+
+                } else { // Alliance is BLUE
+                    passThrough = PassThrough.STAGEDOOR;
+
+                }
+                passThroughTlm.setValue(passThrough);
+                break;
+            case LEFT_BUMPER_DOWN:
+                if (pause == Pause.NO) {
+                    pause = Pause.YES;
+                } else {
+                    pause = Pause.NO;
+                }
+                pauseTlm.setValue(pause);
+                break;
+        }
+    }
+    // ==================================
+
+    public void updateDesiredTagID(TagPosition tagPosition, Alliance alliance) {
 
         int delta = 0;
-        if (alliance == AllianceColor.RED) {
+        if (alliance == Alliance.RED) {
             delta = 3;
         }
 
@@ -178,68 +284,6 @@ public class AutoAT_ILTTEST extends Robot {
         }
         tagIDTlm.setValue(desiredTagID);
         tagPositionTlm.setValue(tagPosition);
-    }
-
-    public void handleGamepadSelection(GamepadTask.GamepadEvent selection) {
-        whereAmI.setValue("inside handleGamepadSelection");
-        switch (selection.kind) {
-            case BUTTON_X_DOWN:
-                alliance = AllianceColor.BLUE;
-                allianceTlm.setValue(AllianceColor.BLUE);
-//                if (tagPosition == TagPosition.LEFT) {
-//                    desiredTagID = 1;
-//                } else if (tagPosition == TagPosition.MIDDLE){
-//                    desiredTagID = 2;
-//                } else { // tagPosition is RIGHT
-//                    desiredTagID = 3;
-//                }
-                whereAmI.setValue("inside BUTTON_X_DOWN");
-                break;
-            case BUTTON_B_DOWN:
-                alliance = AllianceColor.RED;
-                allianceTlm.setValue(AllianceColor.RED);
-  //              if (tagPosition == TagPosition.LEFT) {
- //                   desiredTagID = 4;
-//                } else if (tagPosition == TagPosition.MIDDLE){
-//                    desiredTagID = 5;
-//                } else { // tagPosition is RIGHT
-//                    desiredTagID = 6;
-//                }
-                whereAmI.setValue("inside BUTTON_B_DOWN");
-                break;
-            case DPAD_LEFT_DOWN:
-                tagPosition = TagPosition.LEFT;
-                tagPositionTlm.setValue(tagPosition);
-                whereAmI.setValue("inside DPAD_LEFT_DOWN");
-//                if (alliance == AllianceColor.BLUE) {
-//                    desiredTagID = 1;
-//                } else { //alliance color is RED
-//                    desiredTagID = 4;
-//                }
-
-                break;
-            case DPAD_UP_DOWN:
-                tagPosition = TagPosition.MIDDLE;
-                tagPositionTlm.setValue(tagPosition);
-                whereAmI.setValue("inside DPAD_UP_DOWN");
-//                if (alliance == AllianceColor.BLUE) {
-//                    desiredTagID = 2;
-//                } else { // alliance color is RED
-//                    desiredTagID = 5;
-//                }
-                break;
-            case DPAD_RIGHT_DOWN:
-                tagPosition = TagPosition.RIGHT;
-                tagPositionTlm.setValue(tagPosition);
-                whereAmI.setValue("inside DPAD_RIGHT_DOWN");
-//                if (alliance == AllianceColor.BLUE) {
-//                    desiredTagID = 3;
-//                } else { // alliance color is RED
-//                    desiredTagID = 6;
-//                }
-                break;
-        }
-        updateDesiredTagID(tagPosition, alliance);
     }
 
     public void driveToPropLines(DeadReckonPath driveToLinesPath)
@@ -345,7 +389,6 @@ public class AutoAT_ILTTEST extends Robot {
                         // turn counter clockwise to drop off pixel
                         driveToTeamProp(leftPropPath);
                        // pixelHolderServo.setPosition(PIXEL_RELEASE);
-
                         break;
                     case RIGHT_DISTANCE:
                         tagPosition = TagPosition.RIGHT;
@@ -367,6 +410,7 @@ public class AutoAT_ILTTEST extends Robot {
             }
         };
     }
+
     public void moveToObjectAndReleasePixel(DeadReckonPath path)
     {
 
@@ -394,25 +438,37 @@ public class AutoAT_ILTTEST extends Robot {
                 if (path.kind == EventKind.PATH_DONE) {
                     whereAmI.setValue("released purple pixel");
                     if(tagPosition == TagPosition.LEFT)
-                    {
-                        delay(1000);
+                    {   // FIXME not sure whether the pause will delay properly,
+                        // if delay still not working, talk to Cindy
+                        if (pause == Pause.NO) {
+                            delay(1000);
+                        } else {
+                            delay(10000);
+                        }
                         driveToBackStage(driveFromLeftPropPath);
                     }
                     else if(tagPosition == TagPosition.RIGHT)
-                    {
-                        delay(1000);
+                    {   // FIXME not sure whether the pause will delay properly,
+                        // if delay still not working, talk to Cindy
+                        if (pause == Pause.NO) {
+                            delay(1000);
+                        } else {
+                            delay(10000);
+                        }
                         driveToBackStage(driveFromRightPropPath);
                     }
                     else // MIDDLE
-                    {
-                        delay(1000);
+                    {   // FIXME not sure whether the pause will delay properly,
+                        // if delay still not working, talk to Cindy
+                        if (pause == Pause.NO) {
+                            delay(1000);
+                        } else {
+                            delay(10000);
+                        }
                         driveToBackStage(driveFromMiddlePropPath);
                     }
-
                 }
             }
-
-
         });
     }
 
@@ -686,6 +742,20 @@ public class AutoAT_ILTTEST extends Robot {
         allianceTlm = telemetry.addData("Alliance:", alliance);
         tagPositionTlm = telemetry.addData("Tag position: ", tagPosition);
 
+        // =========================
+        // BLUE RIGHT FAR FROM BACKDROP
+//        gamepad specified above
+//        gamepad = new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1);
+//        addTask(gamepad);
+
+        pauseTlm = telemetry.addData("pause", pause);
+        parksideTlm = telemetry.addData("parkside", parkside);
+        passThroughTlm = telemetry.addData("passThrough", passThrough);
+        // allianceTlm specified above
+//        allianceTlm = telemetry.addData("alliance", alliance);
+        edgeDirectionTlm = telemetry.addData("edgeDirection", edgeDirection);
+        // =========================
+
         initPaths();
     }
 
@@ -700,77 +770,152 @@ public class AutoAT_ILTTEST extends Robot {
     }
 
     public void initPaths() {
+
+        driveToLinesPath = new DeadReckonPath();
+        driveToLinesPath.stop();
+
         leftPropPath = new DeadReckonPath();
         middlePropPath = new DeadReckonPath();
         rightPropPath = new DeadReckonPath();
-
-        leftBoardParkPath = new DeadReckonPath();
-        middleBoardParkPath = new DeadReckonPath();
-        rightBoardParkPath= new DeadReckonPath();
-
-        liftToBoardPath = new DeadReckonPath();
-        liftToBoardPath.stop();
-        liftToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, LIFT_DISTANCE, LIFT_SPEED);
-
-        outtakePath = new DeadReckonPath();
-        outtakePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, OUTTAKE_DISTANCE, OUTTAKE_SPEED);
-
         leftPropPath.stop();
         middlePropPath.stop();
         rightPropPath.stop();
 
-        leftBoardParkPath.stop();
-        middleBoardParkPath.stop();
-        rightBoardParkPath.stop();
-
-        driveToLinesPath = new DeadReckonPath();
-        driveToLinesPath.stop();
-        driveFromMiddlePropPath = new DeadReckonPath();
-        driveFromMiddlePropPath.stop();
+        outtakePath = new DeadReckonPath();
+        outtakePath.stop();
 
         driveFromLeftPropPath = new DeadReckonPath();
-        driveFromLeftPropPath.stop();
+        driveFromMiddlePropPath = new DeadReckonPath();
         driveFromRightPropPath = new DeadReckonPath();
+        driveFromLeftPropPath.stop();
+        driveFromMiddlePropPath.stop();
         driveFromRightPropPath.stop();
 
         driveToBoardPath = new DeadReckonPath();
         driveToBoardPath.stop();
-        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, 0.25);
-        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8.5, -0.25);
+
+        liftToBoardPath = new DeadReckonPath();
+        liftToBoardPath.stop();
+
+        leftBoardParkPath = new DeadReckonPath();
+        middleBoardParkPath = new DeadReckonPath();
+        rightBoardParkPath= new DeadReckonPath();
+        leftBoardParkPath.stop();
+        middleBoardParkPath.stop();
+        rightBoardParkPath.stop();
 
         // drives closer to lines to better detect distance
         driveToLinesPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 13, 0.25);
+
+        // turn counter clock-wise to in order to drop pixel
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35.6, -0.5);
+
+        // just goes backwards in order to drop the pixel
+        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.5, -0.5);
 
         // turn clockwise and go staight to drop pixel
         rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.5, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
 
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .7, -0.5);
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12.5, -0.5); // changed distance from 9 to 11
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
+        // outtake pixel onto spike/line
+        outtakePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, OUTTAKE_DISTANCE, OUTTAKE_SPEED);
 
+        if (passThrough == PassThrough.STAGEDOOR) {
+            makeStageDoorPath();
+        } else { // PassThrough.TRUSS
+            makeTrussPath();
+        }
+
+        // drives forward and places pixel on backdrop/board
+        liftToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, LIFT_DISTANCE, LIFT_SPEED);
+
+        if (parkside == ParkSide.CENTER) {
+            makeCenterParkPath();
+        } else { // ParkSide.EDGE
+            makeEdgeParkPath();
+        }
+
+    }
+
+    public void makeCenterParkPath() {
+        // park in CENTER from LEFT April Tag
+        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, -0.5);
+
+        // park in CENTER from MIDDLE April Tag
+        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, -0.5);
+
+        // park in CENTER from RIGHT April Tag
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
 
-        // turn counter clock-wise to in order to drop pixel
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35.6, -0.5);
-       // leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 1, 0.5);
+    }
 
-
+    public void makeEdgeParkPath() {
+        // park in EDGE from LEFT April Tag (EDGE is LEFT for BLUE FAR)
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .4, 0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.2, -0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11, -0.45); // changed distance from 11 to 13
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 78, -0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 35, -0.5);
 
+        // park in EDGE from MIDDLE April Tag (EDGE is LEFT for BLUE FAR)
+        // FIXME collapse the two straight commands; above and below
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .8, 0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12, -0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, -0.3); // changed distance from 9 to 11
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 39, 0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 39, -0.5);
+
+        // park in EDGE from RIGHT April Tag (EDGE is LEFT for BLUE FAR)
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .7, -0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12.5, 0.5); // changed distance from 9 to 11
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
+
+    }
+
+    public void makeTrussPath() {
+        // drives to left april tag through TRUSS
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .4, 0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.2, -0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 14, -0.45); // changed distance from 11 to 13
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 78, -0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 34, -0.5);
+
+        // drives to middle april tag through TRUSS
+        // driveFromMiddlePropPath goes straight, goes backwards to avoid hitting the prop,
+        // then strafes to the right, then goes forward,
+        // then turns clockwise to the right, then goes backwards
+        // FIXME collapse the two straight commands; above and below
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .8, 0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 37, -0.3); // changed distance from 9 to 11
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 33, 0.5);
+
+        // drives to right april tag through TRUSS
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .7, -0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12.5, 0.5); // changed distance from 9 to 11
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
+
+        // strafes RIGHT to detect desired april tag for BLUE FAR after passing through TRUSS
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5.5, -0.25);
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8.5, -0.25);
+
+    }
+
+    public void makeStageDoorPath() {
+        // drives to left april tag through STAGEDOOR
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .4, 0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.2, -0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11, 0.45); // changed distance from 11 to 13
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 78, -0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 35, -0.5);
 
-        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, -0.5);
-
-        // just goes backwards in order to drop the pixel
-        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.5, -0.5);
-
+        // drives to middle april tag through STAGEDOOR
         // driveFromMiddlePropPath goes straight, goes backwards to avoid hitting the prop,
         // then strafes to the right, then goes forward,
         // then turns clockwise to the right, then goes backwards
@@ -782,8 +927,16 @@ public class AutoAT_ILTTEST extends Robot {
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 39, 0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 39, -0.5);
 
-        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, -0.5);
+        // drives to right april tag through STAGEDOOR
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .7, -0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12.5, -0.5); // changed distance from 9 to 11
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
+
+        // strafes LEFT to detect desired april tag after passing through STAGEDOOR
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, 0.25);
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8.5, -0.25);
 
     }
+
 }
