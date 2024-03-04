@@ -206,7 +206,7 @@ public class RedRightAutoAT extends Robot {
     public void driveToSpikes(DeadReckonPath driveToLinesPath)
     {
         whereAmI.setValue("in driveToSpikes");
-        RobotLog.i("drives straight onto the launch line");
+        RobotLog.i("drives straight closer to spikes/line");
 
         this.addTask(new DeadReckonTask(this, driveToLinesPath, drivetrain){
             @Override
@@ -214,10 +214,9 @@ public class RedRightAutoAT extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE)
                 {
-                    RobotLog.i("finished parking");
+                    RobotLog.i("finished driving closer to spikes");
                     detectProp();
                     addTask(distanceTask);
-
                 }
             }
         });
@@ -231,7 +230,7 @@ public class RedRightAutoAT extends Robot {
             public void handleEvent(RobotEvent e) {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
-                    RobotLog.i("finished placing pixel");
+                    RobotLog.i("about to place pixel");
                     releaseOuttake();
 
                 }
@@ -250,7 +249,6 @@ public class RedRightAutoAT extends Robot {
                 if (path.kind == EventKind.PATH_DONE) {
                     RobotLog.i("at backstage");
                     findDesiredID();
-
                 }
             }
         });
@@ -377,19 +375,19 @@ public class RedRightAutoAT extends Robot {
                     if (parkside == ParkSide.CENTER) {
                         driveToPark(leftBoardParkPath);
                     } else { // park on EDGE which is right for RED NEAR
-                        driveToPark(fromLeftATtoEdgePath); // FIXME create path
+                        driveToPark(fromLeftATtoEdgePath);
                     }
                 } else if (position.equals("right")) { // we are at the RIGHT April Tag for the RED NEAR
                     if (parkside == ParkSide.CENTER) {
                         driveToPark(rightBoardParkPath);
                     } else { // park on EDGE which is right for RED NEAR
-                        driveToPark(fromRightATtoEdgePath); // FIXME create path
+                        driveToPark(fromRightATtoEdgePath);
                     }
                 } else { // we are at the MIDDLE April Tag for the RED NEAR
                     if (parkside == ParkSide.CENTER) {
                         driveToPark(middleBoardParkPath);
                     } else { // park on EDGE which is right for RED NEAR
-                        driveToPark(fromMiddleATtoEdgePath); // FIXME create path
+                        driveToPark(fromMiddleATtoEdgePath);
                     }
                 }
             }

@@ -15,6 +15,7 @@ import team25core.DeadReckonPath;
 import team25core.DeadReckonTask;
 import team25core.DistanceSensorTask;
 import team25core.FourWheelDirectDrivetrain;
+import team25core.GamepadTask;
 import team25core.ObjectDetectionNewTask;
 import team25core.OneWheelDirectDrivetrain;
 import team25core.Robot;
@@ -96,8 +97,6 @@ public class BlueLeftAutoAT extends Robot {
     private DeadReckonPath driveToLinesPath;
     private DeadReckonPath driveToBoardPath;
 
-
-
     private DeadReckonPath liftToBoardPath;
 
     double rightDistance;
@@ -120,6 +119,42 @@ public class BlueLeftAutoAT extends Robot {
 
     private AprilTagDetection foundAprilTag;
 
+    // ===============================================
+    //  LEFT BLUE NEAR BACKDROP
+
+    // paths from spot in front of April Tag on the Back Drop to Park on the EDGE
+    // (instead of parking on CENTER)
+    DeadReckonPath fromLeftATtoEdgePath;
+    DeadReckonPath fromMiddleATtoEdgePath;
+    DeadReckonPath fromRightATtoEdgePath;
+
+    // make sure all defaults align with each other**
+    private ParkSide parkside = ParkSide.CENTER;
+    private Alliance alliance = Alliance.BLUE;
+    private EdgeDirection edgeDirection = EdgeDirection.LEFT;
+
+    private Telemetry.Item parksideTlm;
+    private Telemetry.Item allianceTlm;
+    private Telemetry.Item edgeDirectionTlm;
+
+    private GamepadTask gamepad;
+
+    private enum ParkSide {
+        CENTER,
+        EDGE
+    }
+
+    private enum Alliance {
+        RED,
+        BLUE
+    }
+    private enum EdgeDirection {
+        RIGHT,
+        LEFT
+    }
+
+    // ===============================================
+
     @Override
     public void handleEvent(RobotEvent e)
     {
@@ -129,12 +164,47 @@ public class BlueLeftAutoAT extends Robot {
          */
         if (e instanceof DeadReckonTask.DeadReckonEvent) {
             RobotLog.i("Completed path segment %d", ((DeadReckonTask.DeadReckonEvent)e).segment_num);
+        } // =============================
+        else if (e instanceof GamepadTask.GamepadEvent) {
+            GamepadTask.GamepadEvent event = (GamepadTask.GamepadEvent) e ;
+            handleGamepadSelection(event);
+            whereAmI.setValue("inside GamePadTask");
+        }
+        // ================================
+    }
+
+    // ==========================================
+    // BLUE LEFT NEAR BACKDROP
+    public void handleGamepadSelection(GamepadTask.GamepadEvent selection) {
+        whereAmI.setValue("inside handleGamepadSelection");
+        switch (selection.kind) {
+            case BUTTON_X_DOWN:
+                if (alliance == Alliance.RED) {
+                    parkside = ParkSide.CENTER;
+                    edgeDirection = EdgeDirection.LEFT;
+                } else { // Alliance is BLUE
+                    parkside = ParkSide.EDGE;
+                    edgeDirection = EdgeDirection.LEFT;
+                }
+                whereAmI.setValue("inside BUTTON_X_DOWN");
+                break;
+            case BUTTON_B_DOWN:
+                if (alliance == Alliance.RED) {
+                    parkside = ParkSide.EDGE;
+                    edgeDirection = EdgeDirection.RIGHT;
+                } else { // Alliance is BLUE
+                    parkside = ParkSide.CENTER;
+                    edgeDirection = EdgeDirection.RIGHT;
+                }
+                break;
         }
     }
-    public void driveToProp(DeadReckonPath driveToLinesPath)
+    // ==================================
+
+    public void driveToSpikes(DeadReckonPath driveToLinesPath)
     {
-        whereAmI.setValue("in driveToProp");
-        RobotLog.i("drives straight onto the launch line");
+        whereAmI.setValue("in driveToSpikes");
+        RobotLog.i("drives straight closer to spikes/line");
 
         this.addTask(new DeadReckonTask(this, driveToLinesPath, drivetrain){
             @Override
@@ -142,26 +212,23 @@ public class BlueLeftAutoAT extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE)
                 {
-                    RobotLog.i("finished parking");
+                    RobotLog.i("finished  driving closer to spikes");
                     detectProp();
                     addTask(distanceTask);
-
-
-
                 }
             }
         });
     }
-    public void driveToMiddleProp(DeadReckonPath propPath) {
-        whereAmI.setValue("in driveToSignalZone");
-        RobotLog.i("drives straight onto the launch line");
+    public void headsTowardsProp(DeadReckonPath propPath) {
+        whereAmI.setValue("in headsTowardsProp");
+        RobotLog.i("head towards prop on spikes");
 
         this.addTask(new DeadReckonTask(this, propPath, drivetrain) {
             @Override
             public void handleEvent(RobotEvent e) {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
-                    RobotLog.i("finished placing pixel");
+                    RobotLog.i("about to place pixel");
                     releaseOuttake();
 
                 }
@@ -169,94 +236,24 @@ public class BlueLeftAutoAT extends Robot {
         });
     }
 
-    public void driveToRightProp(DeadReckonPath propPath) {
-        whereAmI.setValue("in driveToSignalZone");
-        RobotLog.i("drives straight onto the launch line");
-
-        this.addTask(new DeadReckonTask(this, propPath, drivetrain) {
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE) {
-                    RobotLog.i("finished placing pixel");
-                    releaseOuttake();
-
-                }
-            }
-        });
-    }
-
-    public void driveToLeftProp(DeadReckonPath propPath) {
-        whereAmI.setValue("in driveToLeftProp");
-        RobotLog.i("drives straight onto the line");
-
-        this.addTask(new DeadReckonTask(this, propPath, drivetrain) {
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE) {
-                    releaseOuttake();
-                    RobotLog.i("finished placing pixel");
-
-
-                }
-            }
-        });
-    }
-
-    public void driveAwayFromMiddleProp(DeadReckonPath driveFromPropPath) {
+    public void driveAwayFromProp(DeadReckonPath driveFromPropPath) {
         whereAmI.setValue("in driveAwayFromProp");
-        RobotLog.i("drive from the prop to park");
+        RobotLog.i("drive from the prop to backstage");
 
         this.addTask(new DeadReckonTask(this, driveFromPropPath, drivetrain) {
             @Override
             public void handleEvent(RobotEvent e) {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
-                    RobotLog.i("in park");
+                    RobotLog.i("at backstage");
                     findDesiredID();
-
-
-                }
-            }
-        });
-    }
-
-    public void driveAwayFromRightProp(DeadReckonPath driveFromRightPropPath) {
-        whereAmI.setValue("in driveAwayFromRightProp");
-        RobotLog.i("drive from the right pixel to park");
-
-        this.addTask(new DeadReckonTask(this, driveFromRightPropPath, drivetrain) {
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE) {
-                    RobotLog.i("in park");
-                    findDesiredID();
-
-                }
-            }
-        });
-    }
-
-    public void driveAwayFromLeftProp(DeadReckonPath driveFromLeftPropPath) {
-        whereAmI.setValue("in driveAwayFromLeftProp");
-        RobotLog.i("drive from the left pixel to park");
-
-        this.addTask(new DeadReckonTask(this, driveFromLeftPropPath, drivetrain) {
-            @Override
-            public void handleEvent(RobotEvent e) {
-                DeadReckonEvent path = (DeadReckonEvent) e;
-                if (path.kind == EventKind.PATH_DONE) {
-                    findDesiredID();
-
                 }
             }
         });
     }
 
     public void driveToPark(DeadReckonPath driveToParkPath) {
-        whereAmI.setValue("in driveAwayFromLeftProp");
+        whereAmI.setValue("in driveToPark");
         RobotLog.i("drive from the left pixel to park");
 
         this.addTask(new DeadReckonTask(this, driveToParkPath, drivetrain) {
@@ -297,25 +294,19 @@ public class BlueLeftAutoAT extends Robot {
                     case LEFT_DISTANCE:
                         locationTlm.setValue("left");
                         position ="left";
-                        driveToLeftProp(leftPropPath);
+                        headsTowardsProp(leftPropPath);
                         break;
                     case RIGHT_DISTANCE:
                         position ="right";
                         //RobotLog.ii(TAG, " right distance %d", event.distance);
                         locationTlm.setValue("right");
-                        driveToRightProp(rightPropPath);
-
-
+                        headsTowardsProp(rightPropPath);
                         break;
                     case UNKNOWN:
                         locationTlm.setValue("middle");
                         position ="middle";
-                        driveToMiddleProp(middlePropPath);
-
-
+                        headsTowardsProp(middlePropPath);
                         break;
-
-
                 }
             }
         };
@@ -348,24 +339,20 @@ public class BlueLeftAutoAT extends Robot {
                     if(position.equals("left"))
                     {
                        // delay(1000);
-                        driveAwayFromLeftProp(driveFromLeftPropPath);
+                        driveAwayFromProp(driveFromLeftPropPath);
                     }
                     else if(position.equals("right"))
                     {
                        // delay(1000);
-                        driveAwayFromRightProp(driveFromRightPropPath);
+                        driveAwayFromProp(driveFromRightPropPath);
                     }
                     else
                     {
                        // delay(1000);
-                        driveAwayFromMiddleProp(driveFromMiddlePropPath);
-
+                        driveAwayFromProp(driveFromMiddlePropPath);
                     }
-
                 }
             }
-
-
         });
     }
 
@@ -383,21 +370,27 @@ public class BlueLeftAutoAT extends Robot {
                     while(localtimer2.time() < 1000) {}
                 }
                 if (position.equals("left")) {
-                    driveToPark(leftBoardParkPath);
+                    if (parkside == ParkSide.CENTER) {
+                        driveToPark(leftBoardParkPath);
+                    } else { // park on EDGE which is left for BLUE NEAR
+                        driveToPark(fromLeftATtoEdgePath);
+                    }
                 } else if (position.equals("right")) {
-                    driveToPark(rightBoardParkPath);
+                    if (parkside == ParkSide.CENTER) {
+                        driveToPark(rightBoardParkPath);
+                    } else { // park on EDGE which is left for BLUE NEAR
+                        driveToPark(fromRightATtoEdgePath);
+                    }
                 } else {
-                    driveToPark(middleBoardParkPath);
-
+                    if (parkside == ParkSide.CENTER) {
+                        driveToPark(middleBoardParkPath);
+                    } else { // park on EDGE which is left for BLUE NEAR
+                        driveToPark(fromMiddleATtoEdgePath);
+                    }
                 }
             }
         });
     }
-
-
-
-
-
 
     public void findAprilTag() {
         RobotLog.ii(TAG, "Setup findAprilTag");
@@ -584,9 +577,7 @@ public class BlueLeftAutoAT extends Robot {
         //sets motors position to 0
         drivetrain.resetEncoders();
 
-
         clawServo.setPosition(CLAW_GRAB);
-
 
         //motor will try to tun at the targeted velocity
         drivetrain.encodersOn();
@@ -617,13 +608,22 @@ public class BlueLeftAutoAT extends Robot {
         liftMotorDrivetrain.resetEncoders();
         liftMotorDrivetrain.encodersOn();
 
-
         // telemetry shown on the phone
         whereAmI = telemetry.addData("location in code", "init");
         tagIdTlm = telemetry.addData("tagId", "none");
         rightSensorTlm = telemetry.addData("rightSensor", "none");
         leftSensorTlm = telemetry.addData("leftSensor", "none");
         locationTlm = telemetry.addData("prop position", "none");
+
+        // =========================
+        // BLUE LEFT NEAR BACKDROP
+        gamepad = new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1);
+        addTask(gamepad);
+
+        parksideTlm = telemetry.addData("parkside", parkside);
+        allianceTlm = telemetry.addData("alliance", alliance);
+        edgeDirectionTlm = telemetry.addData("edgeDirection", edgeDirection);
+        // =========================
 
         initPaths();
     }
@@ -632,106 +632,119 @@ public class BlueLeftAutoAT extends Robot {
     {
         timer = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
         whereAmI.setValue("in Start");
-        driveToProp(driveToLinesPath);
+        driveToSpikes(driveToLinesPath);
         findAprilTag();
         aprilTag = findAprilTagData();
     }
 
     public void initPaths() {
 
-
+        driveToLinesPath = new DeadReckonPath();
+        driveToLinesPath.stop();
 
         leftPropPath = new DeadReckonPath();
         middlePropPath = new DeadReckonPath();
         rightPropPath = new DeadReckonPath();
-
-        leftBoardParkPath = new DeadReckonPath();
-        middleBoardParkPath = new DeadReckonPath();
-        rightBoardParkPath= new DeadReckonPath();
-
-        liftToBoardPath = new DeadReckonPath();
-        liftToBoardPath.stop();
-        liftToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, LIFT_DISTANCE, LIFT_SPEED);
-
-
-
-        outtakePath = new DeadReckonPath();
-        outtakePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, OUTTAKE_DISTANCE, OUTTAKE_SPEED);
-
         leftPropPath.stop();
         middlePropPath.stop();
         rightPropPath.stop();
 
+        outtakePath = new DeadReckonPath();
+        outtakePath.stop();
+
+        driveFromLeftPropPath = new DeadReckonPath();
+        driveFromLeftPropPath.stop();
+        driveFromMiddlePropPath = new DeadReckonPath();
+        driveFromMiddlePropPath.stop();
+        driveFromRightPropPath = new DeadReckonPath();
+        driveFromRightPropPath.stop();
+        driveToBoardPath = new DeadReckonPath();
+        driveToBoardPath.stop();
+
+        liftToBoardPath = new DeadReckonPath();
+        liftToBoardPath.stop();
+
+        leftBoardParkPath = new DeadReckonPath();
+        middleBoardParkPath = new DeadReckonPath();
+        rightBoardParkPath= new DeadReckonPath();
         leftBoardParkPath.stop();
         middleBoardParkPath.stop();
         rightBoardParkPath.stop();
 
-        driveToLinesPath = new DeadReckonPath();
-        driveToLinesPath.stop();
-        driveFromMiddlePropPath = new DeadReckonPath();
-        driveFromMiddlePropPath.stop();
+        fromLeftATtoEdgePath = new DeadReckonPath();
+        fromMiddleATtoEdgePath = new DeadReckonPath();
+        fromRightATtoEdgePath = new DeadReckonPath();
+        fromLeftATtoEdgePath.stop();
+        fromMiddleATtoEdgePath.stop();
+        fromRightATtoEdgePath.stop();
 
-        driveFromLeftPropPath = new DeadReckonPath();
-        driveFromLeftPropPath.stop();
-        driveFromRightPropPath = new DeadReckonPath();
-        driveFromRightPropPath.stop();
-
-        driveToBoardPath = new DeadReckonPath();
-        driveToBoardPath.stop();
-
-        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, .10, -0.25);
-        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, -0.25);
-
-
+        // drives to lines to better see the team prop
         driveToLinesPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 13, 0.25);
 
-       // leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS,1 , 0.5);
+        // drives to left spike/line to prepare to drop pixel
         leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
         leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
 
+        // drives forward to middle spike/line to prepare to drop pixel
+        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.5, -0.5);
+
+        // drives to right spike/line to prepare to drop pixel
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.85, 0.5);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
+
+        // outtake pixel onto spike/line
+        outtakePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, OUTTAKE_DISTANCE, OUTTAKE_SPEED);
+
+        // drives to left april tag
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, -0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.TURN,77 , 0.5);
-//        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 13, 0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -0.5);
 
-
-
-        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, 0.5);
-
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.85, 0.5);
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
-
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 13, -0.5);
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 1, 0.5);
-//        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 3, -0.5);
-
-        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, 0.5);
-
-
-
-
-        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.5, -0.5);
-
-
+        // drives to middle april tag
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 7, -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS,2 , -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.5, 0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -0.5);
-       //driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS,10 , 0.5);
-//        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
 
+        // drives to right april tag
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 13, -0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 1, 0.5);
 
+        // strafes LEFT to detect desired april tag
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, .10, -0.25);
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, -0.25);
+
+        // drives forward and places pixel on backdrop/board
+        liftToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, LIFT_DISTANCE, LIFT_SPEED);
+
+        // park in CENTER from LEFT April Tag
+        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, 0.5);
+
+        // park in CENTER from MIDDLE April Tag
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, 0.5);
 
+        // park in CENTER from RIGHT April Tag
+        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, 0.5);
 
+        // park in EDGE from LEFT April Tag (EDGE is left for BLUE NEAR)
+        fromLeftATtoEdgePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 4, 0.5);
+        fromLeftATtoEdgePath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, -0.5);
 
+        // park in EDGE from MIDDLE April Tag (EDGE is left for BLUE NEAR)
+        fromMiddleATtoEdgePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        fromMiddleATtoEdgePath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, -0.5);
+
+        // park in EDGE from RIGHT April Tag (EDGE is left for BLUE NEAR)
+        fromRightATtoEdgePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, -0.25);
+        fromRightATtoEdgePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        fromRightATtoEdgePath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, -0.5);
 
     }
 }
