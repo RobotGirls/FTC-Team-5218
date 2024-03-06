@@ -747,7 +747,7 @@ public class ILTBLUERIGHT4 extends Robot {
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
 
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
+        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, 0.5);
 
         // turn counter clock-wise to in order to drop pixel
         leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35.6, -0.5);
@@ -761,7 +761,7 @@ public class ILTBLUERIGHT4 extends Robot {
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 35, -0.5);
 
         leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, -0.5);
+        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, 0.5);
 
         // just goes backwards in order to drop the pixel
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.5, -0.5);
@@ -778,7 +778,7 @@ public class ILTBLUERIGHT4 extends Robot {
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 39, -0.5);
 
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, -0.5);
+        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, 0.5);
 
     }
 }
