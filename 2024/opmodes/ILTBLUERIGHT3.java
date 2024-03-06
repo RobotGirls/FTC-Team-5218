@@ -727,7 +727,7 @@ public class ILTBLUERIGHT3 extends Robot {
 
         driveToBoardPath = new DeadReckonPath();
         driveToBoardPath.stop();
-        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5.5, -0.25);
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, .5, -0.25);
         driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8.5, -0.25);
 
         // drives closer to lines to better detect distance
@@ -737,10 +737,10 @@ public class ILTBLUERIGHT3 extends Robot {
         rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.5, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
 
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .7, -0.5);
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12.5, 0.5); // changed distance from 9 to 11
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, -0.5);
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12.25, 0.5); // changed distance from 9 to 11
+        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32.5, -0.5);
 
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
         rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
@@ -749,11 +749,15 @@ public class ILTBLUERIGHT3 extends Robot {
         leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35.6, -0.5);
        // leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 1, 0.5);
 
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .4, 0.5);
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.2, -0.5);
+
+
+
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
+
 
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 14, -0.45); // changed distance from 11 to 13
-        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 78, -0.5);
+        driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 77.5, -0.5);
         driveFromLeftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 34, -0.5);
 
         leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
@@ -761,6 +765,7 @@ public class ILTBLUERIGHT3 extends Robot {
 
         // just goes backwards in order to drop the pixel
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.5, -0.5);
+        //middlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
 
         // driveFromMiddlePropPath goes straight, goes backwards to avoid hitting the prop,
         // then strafes to the right, then goes forward,
@@ -768,12 +773,12 @@ public class ILTBLUERIGHT3 extends Robot {
         // FIXME collapse the two straight commands; above and below
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .8, 0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -0.5);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 37, -0.3); // changed distance from 9 to 11
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 40, -0.3); // changed distance from 9 to 11
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 33, 0.5);
        // driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 39, -0.5);
 
         middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-       // middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, -0.5);
+        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, -0.5);
 
     }
 }

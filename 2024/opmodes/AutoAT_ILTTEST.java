@@ -902,13 +902,18 @@ public class AutoAT_ILTTEST extends Robot {
     }
 
     public void makeEdgeParkPath() {
-        // park in EDGE from LEFT April Tag
+        // park in EDGE from LEFT April Tag (EDGE is LEFT for BLUE FAR)
         leftBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        leftBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, -0.5);
+        leftBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, 0.5);
 
-        // park in EDGE from MIDDLE April Tag
+        // park in EDGE from MIDDLE April Tag (EDGE is LEFT for BLUE FAR)
+        // FIXME collapse the two straight commands; above and below
         middleBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
         middleBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, 0.5);
+        // park in EDGE from RIGHT April Tag (EDGE is LEFT for BLUE FAR)
+        rightBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        rightBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5, 0.5);
+
 
         // park in EDGE from RIGHT April Tag
         rightBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
@@ -917,30 +922,29 @@ public class AutoAT_ILTTEST extends Robot {
 
     public void makeTrussPath() {
         // drives to left april tag through TRUSS
-        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .4, 0.5);
-        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2.2, -0.5);
-        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 14, -0.45); // changed distance from 11 to 13
-        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.TURN, 78, -0.5);
-        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 34, -0.5);
 
+        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
+        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
+        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 14, -0.45); // changed distance from 11 to 13
+        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.TURN, 77.5, -0.5);
+        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 34, -0.5);;
         // drives to middle april tag through TRUSS
         // driveFromMiddlePropPath goes straight, goes backwards to avoid hitting the prop,
         // then strafes to the right, then goes forward,
         // then turns clockwise to the right, then goes backwards
         // FIXME collapse the two straight commands; above and below
+
         driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .8, 0.5);
         driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -0.5);
-        driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 37, -0.3); // changed distance from 9 to 11
+        driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 40, -0.3); // changed distance from 9 to 11
         driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.TURN, 33, 0.5);
-
         // drives to right april tag through TRUSS
-        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
-        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .7, -0.5);
-        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12.5, 0.5); // changed distance from 9 to 11
-        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
-
+        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
+        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, -0.5);
+        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12.25, 0.5); // changed distance from 9 to 11
+        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32.5, -0.5);
         // strafes RIGHT to detect desired april tag for BLUE FAR after passing through TRUSS
-        driveToBoardPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 5.5, -0.25);
+        driveToBoardPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, .5, -0.25);
         driveToBoardPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8.5, -0.25);
 
     }
