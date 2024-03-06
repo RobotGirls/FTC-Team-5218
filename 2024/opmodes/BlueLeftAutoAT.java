@@ -87,13 +87,11 @@ public class BlueLeftAutoAT extends Robot {
     private DeadReckonPath driveFromLeftPropPath;
     private DeadReckonPath driveFromRightPropPath;
 
-    private DeadReckonPath leftBoardParkPath;
-    private DeadReckonPath middleBoardParkPath;
-    private DeadReckonPath rightBoardParkPath;
     private DeadReckonPath leftPropPath;
     private DeadReckonPath middlePropPath;
     private DeadReckonPath rightPropPath;
     private DeadReckonPath driveToLinesPath;
+
     private DeadReckonPath driveToBoardPath;
 
     private DeadReckonPath liftToBoardPath;
@@ -123,9 +121,16 @@ public class BlueLeftAutoAT extends Robot {
 
     // paths from spot in front of April Tag on the Back Drop to Park on the EDGE
     // (instead of parking on CENTER)
-    DeadReckonPath fromLeftATtoEdgePath;
-    DeadReckonPath fromMiddleATtoEdgePath;
-    DeadReckonPath fromRightATtoEdgePath;
+
+    DeadReckonPath leftBoardParkPathCenter;
+    DeadReckonPath middleBoardParkPathCenter;
+    DeadReckonPath rightBoardParkPathCenter;
+    DeadReckonPath leftBoardParkPathEdge;
+    DeadReckonPath middleBoardParkPathEdge;
+    DeadReckonPath rightBoardParkPathEdge;
+//    DeadReckonPath fromLeftATtoEdgePath;
+//    DeadReckonPath fromMiddleATtoEdgePath;
+//    DeadReckonPath fromRightATtoEdgePath;
 
     // make sure all defaults align with each other**
     private ParkSide parkside = ParkSide.CENTER;
@@ -268,16 +273,11 @@ public class BlueLeftAutoAT extends Robot {
         });
     }
     private void delay(int delayInMsec) {
-        this.addTask(new SingleShotTimerTask(this, delayInMsec) {
-            @Override
-            public void handleEvent(RobotEvent e) {
-                SingleShotTimerEvent event = (SingleShotTimerEvent) e;
-                if (event.kind == EventKind.EXPIRED ) {
-                    whereAmI.setValue("in delay task");
+        try{
+            Thread.sleep(delayInMsec);
 
-                }
-            }
-        });
+        } catch (InterruptedException e) {throw new RuntimeException(e);
+        }
 
     }
 
@@ -370,21 +370,21 @@ public class BlueLeftAutoAT extends Robot {
                 }
                 if (position.equals("left")) {
                     if (parkside == ParkSide.CENTER) {
-                        driveToPark(leftBoardParkPath);
+                        driveToPark(leftBoardParkPathCenter);
                     } else { // park on EDGE which is left for BLUE NEAR
-                        driveToPark(fromLeftATtoEdgePath);
+                        driveToPark(leftBoardParkPathEdge);
                     }
                 } else if (position.equals("right")) {
                     if (parkside == ParkSide.CENTER) {
-                        driveToPark(rightBoardParkPath);
+                        driveToPark(rightBoardParkPathCenter);
                     } else { // park on EDGE which is left for BLUE NEAR
-                        driveToPark(fromRightATtoEdgePath);
+                        driveToPark(rightBoardParkPathEdge);
                     }
-                } else {
+                } else { // MIDDLE
                     if (parkside == ParkSide.CENTER) {
-                        driveToPark(middleBoardParkPath);
+                        driveToPark(middleBoardParkPathCenter);
                     } else { // park on EDGE which is left for BLUE NEAR
-                        driveToPark(fromMiddleATtoEdgePath);
+                        driveToPark(middleBoardParkPathEdge);
                     }
                 }
             }
@@ -663,19 +663,25 @@ public class BlueLeftAutoAT extends Robot {
         liftToBoardPath = new DeadReckonPath();
         liftToBoardPath.stop();
 
-        leftBoardParkPath = new DeadReckonPath();
-        middleBoardParkPath = new DeadReckonPath();
-        rightBoardParkPath= new DeadReckonPath();
-        leftBoardParkPath.stop();
-        middleBoardParkPath.stop();
-        rightBoardParkPath.stop();
+        leftBoardParkPathCenter = new DeadReckonPath();
+        middleBoardParkPathCenter = new DeadReckonPath();
+        rightBoardParkPathCenter = new DeadReckonPath();
+        leftBoardParkPathCenter.stop();
+        middleBoardParkPathCenter.stop();
+        rightBoardParkPathCenter.stop();
+        leftBoardParkPathEdge = new DeadReckonPath();
+        middleBoardParkPathEdge = new DeadReckonPath();
+        rightBoardParkPathEdge = new DeadReckonPath();
+        leftBoardParkPathEdge.stop();
+        middleBoardParkPathEdge.stop();
+        rightBoardParkPathEdge.stop();
 
-        fromLeftATtoEdgePath = new DeadReckonPath();
-        fromMiddleATtoEdgePath = new DeadReckonPath();
-        fromRightATtoEdgePath = new DeadReckonPath();
-        fromLeftATtoEdgePath.stop();
-        fromMiddleATtoEdgePath.stop();
-        fromRightATtoEdgePath.stop();
+//        fromLeftATtoEdgePath = new DeadReckonPath();
+//        fromMiddleATtoEdgePath = new DeadReckonPath();
+//        fromRightATtoEdgePath = new DeadReckonPath();
+//        fromLeftATtoEdgePath.stop();
+//        fromMiddleATtoEdgePath.stop();
+//        fromRightATtoEdgePath.stop();
 
         // drives to lines to better see the team prop
         driveToLinesPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 13, 0.25);
@@ -721,29 +727,29 @@ public class BlueLeftAutoAT extends Robot {
         liftToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, LIFT_DISTANCE, LIFT_SPEED);
 
         // park in CENTER from LEFT April Tag
-        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        leftBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, 0.5);
+        leftBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        leftBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, 0.5);
 
         // park in CENTER from MIDDLE April Tag
-        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        middleBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, 0.5);
+        middleBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        middleBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, 0.5);
 
         // park in CENTER from RIGHT April Tag
-        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        rightBoardParkPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, 0.5);
+        rightBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        rightBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, 0.5);
 
         // park in EDGE from LEFT April Tag (EDGE is left for BLUE NEAR)
-        fromLeftATtoEdgePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 4, 0.5);
-        fromLeftATtoEdgePath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, -0.5);
+        leftBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 4, 0.5);
+        leftBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 10, -0.5);
 
         // park in EDGE from MIDDLE April Tag (EDGE is left for BLUE NEAR)
-        fromMiddleATtoEdgePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        fromMiddleATtoEdgePath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, -0.5);
+        middleBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        middleBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, -0.5);
 
         // park in EDGE from RIGHT April Tag (EDGE is left for BLUE NEAR)
-        fromRightATtoEdgePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, -0.25);
-        fromRightATtoEdgePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        fromRightATtoEdgePath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, -0.5);
+        rightBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, -0.25);
+        rightBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
+        rightBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, -0.5);
 
     }
 }
