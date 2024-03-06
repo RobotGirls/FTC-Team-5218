@@ -618,10 +618,18 @@ public class AutoAT_ILTTEST extends Robot {
             while (objDetectionTask.getAprilTag(desiredTagID) == null) {
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
 
-                frontLeft.setPower(aprilTagSpeed);
-                frontRight.setPower(-aprilTagSpeed);
-                backLeft.setPower(-aprilTagSpeed);
-                backRight.setPower(aprilTagSpeed);
+                if (passThrough == PassThrough.STAGEDOOR) {
+                    frontLeft.setPower(aprilTagSpeed);
+                    frontRight.setPower(-aprilTagSpeed);
+                    backLeft.setPower(-aprilTagSpeed);
+                    backRight.setPower(aprilTagSpeed);
+                } else { // TRUSS
+                    frontLeft.setPower(-aprilTagSpeed);
+                    frontRight.setPower(aprilTagSpeed);
+                    backLeft.setPower(aprilTagSpeed);
+                    backRight.setPower(-aprilTagSpeed);
+                }
+
             }
             telemetry.addData("inside findAprilTagData found ID ", desiredTagID);
             targetFound = true;
@@ -640,10 +648,17 @@ public class AutoAT_ILTTEST extends Robot {
 
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
 
-                frontLeft.setPower(aprilTagSpeed);
-                frontRight.setPower(-aprilTagSpeed);
-                backLeft.setPower(-aprilTagSpeed);
-                backRight.setPower(aprilTagSpeed);
+                if (passThrough == PassThrough.STAGEDOOR) {
+                    frontLeft.setPower(aprilTagSpeed);
+                    frontRight.setPower(-aprilTagSpeed);
+                    backLeft.setPower(-aprilTagSpeed);
+                    backRight.setPower(aprilTagSpeed);
+                } else { // TRUSS
+                    frontLeft.setPower(-aprilTagSpeed);
+                    frontRight.setPower(aprilTagSpeed);
+                    backLeft.setPower(aprilTagSpeed);
+                    backRight.setPower(-aprilTagSpeed);
+                }
             }
             telemetry.addData("inside findAprilTagData found ID ", desiredTagID);
             targetFound = true;
@@ -662,10 +677,17 @@ public class AutoAT_ILTTEST extends Robot {
 
                 telemetry.addData("inside findAprilTagData looking for ID ", desiredTagID);
 
-                frontLeft.setPower(aprilTagSpeed);
-                frontRight.setPower(-aprilTagSpeed);
-                backLeft.setPower(-aprilTagSpeed);
-                backRight.setPower(aprilTagSpeed);
+                if (passThrough == PassThrough.STAGEDOOR) {
+                    frontLeft.setPower(aprilTagSpeed);
+                    frontRight.setPower(-aprilTagSpeed);
+                    backLeft.setPower(-aprilTagSpeed);
+                    backRight.setPower(aprilTagSpeed);
+                } else { // TRUSS
+                    frontLeft.setPower(-aprilTagSpeed);
+                    frontRight.setPower(aprilTagSpeed);
+                    backLeft.setPower(aprilTagSpeed);
+                    backRight.setPower(-aprilTagSpeed);
+                }
 
             }
             desiredTag = objDetectionTask.getAprilTag(desiredTagID);
