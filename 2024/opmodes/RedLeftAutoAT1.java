@@ -818,48 +818,43 @@ public class RedLeftAutoAT1 extends Robot {
         driveToLinesPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 12.75, 0.25);
 
         // drives to left spike/line to prepare to drop pixel
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS,1 , 0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
+//        leftPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS,1 , 0.5);
+        leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37, -0.5);
         leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
 
         // drives forward to middle spike/line to prepare to drop pixel
-        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.5, -0.5);
+        middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.25, -0.5);
 
         // drives to right spike/line to prepare to drop pixel
-        rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 38, 0.5);
+        rightPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37, 0.5);
         rightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .75, 0.5);
 
         // outtake pixel onto spike/line
         outtakePath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, OUTTAKE_DISTANCE, OUTTAKE_SPEED);
 
-        if (passThrough == PassThrough.STAGEDOOR) {
-            makeStageDoorPath();
-        } else { // PassThrough.TRUSS
-            makeTrussPath();
-        }
+        makeStageDoorPath();
+        makeTrussPath();
 
         // drives forward and places pixel on backdrop/board
         liftToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, LIFT_DISTANCE, LIFT_SPEED);
 
-        if (parkside == ParkSide.CENTER) {
-            makeCenterParkPath();
-        } else { // ParkSide.EDGE
-            makeEdgeParkPath();
-        }
+        makeCenterParkPath();
+        makeEdgeParkPath();
+
     }
 
     public void makeCenterParkPath() {
         // park in CENTER from LEFT April Tag
         leftBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
-        leftBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, 0.9);
+        leftBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, -0.9);
 
         // park in CENTER from MIDDLE April Tag
         middleBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        middleBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, 0.5);
+        middleBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 9, -0.5);
 
         // park in CENTER from RIGHT April Tag
         rightBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        rightBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, 0.5);
+        rightBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 6, -0.5);
 
     }
 
@@ -883,31 +878,32 @@ public class RedLeftAutoAT1 extends Robot {
 
     public void makeTrussPath() {
         // drives to left april tag through TRUSS
-        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
+        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .1, 0.5);
         driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, -0.5);
-        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 14, -0.5);
-        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.TURN, 77, -0.5);
-        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
+        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 11.5, -0.5);
+//        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.TURN, 77, -0.5);
+        driveFromLeftPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 30, -0.5);
 
         // drives to middle april tag through TRUSS
-        driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1, 0.5);
-        driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
-        driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 9.5, -0.5);
-        driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 40, 0.5); // changed distance from 9 to 11
-        driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.TURN, 37.5, -0.5);
-        driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
+        driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .25, 0.5);
+//        driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
+        driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 9.75, -0.5);
+        driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 37, 0.5); // changed distance from 9 to 11
+        driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.TURN, 37, -0.5);
+//        driveFromMiddlePropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, -0.5);
 
 
         // drives to right april tag through TRUSS
-        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1.25, 0.5);
+        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .25, 0.5);
         driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 1.5, -0.5);
-        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, 0.5);
-        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.TURN, 77, -0.5);
-        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 32, -0.5);
+        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, 0.5);
+//        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.TURN, 77, -0.5);
+        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 28, 0.5);
+        driveFromRightPropPathTruss.addSegment(DeadReckonPath.SegmentType.TURN, 75, -0.5);
 
         // strafes LEFT to detect desired april tag for RED FAR after passing through TRUSS
-        driveToBoardPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 3.75, -0.25);
-        driveToBoardPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 9.75, -0.25);
+        driveToBoardPathTruss.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 3.5, 0.25);
+        driveToBoardPathTruss.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 9, -0.25);
 
     }
 
