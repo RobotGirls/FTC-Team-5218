@@ -62,6 +62,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     //added field centric
     private Telemetry.Item buttonTlm;
 
+
     private static final double DRONE_SET_LEFT = 0.95;
     private static final double DRONE_SET_RIGHT = 0;
     private static final double DRONE_RELEASE = 0.5;
@@ -71,6 +72,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     private static final int HANGING_FULLY_RETRACTED_LEFT = 5;
     private static final double CLAW_OPEN = 0.6;
     private static final double CLAW_CLOSE =1;
+
+    private Telemetry.Item showLiftEncoderValuesTlm;
 
 
     private BNO055IMU imu;
@@ -100,6 +103,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
     @Override
     public void init() {
         super.init();
+        showLiftEncoderValuesTlm = telemetry.addData("Lift encoder values: ", 0);
+
 
         //mechanisms
         hangingMotorLeft = hardwareMap.get(DcMotor.class,"hangingMotorLeft");
@@ -157,6 +162,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         //telemetry
         buttonTlm = telemetry.addData("buttonState", "unknown");
 
+
         TwoStickMechanumControlScheme scheme = new TwoStickMechanumControlScheme(gamepad1);
         drivetrain = new MechanumGearedDrivetrain(motorMap);
         drivetrain.setNoncanonicalMotorDirection();
@@ -191,6 +197,7 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         this.addTask(new GamepadTask(this, GamepadTask.GamepadNumber.GAMEPAD_1) {
             public void handleEvent(RobotEvent e) {
                 GamepadEvent gamepadEvent = (GamepadEvent) e;
+                showLiftEncoderValuesTlm.setValue(liftMotor.getCurrentPosition());
 
                 switch (gamepadEvent.kind) {
                     case BUTTON_X_DOWN:
