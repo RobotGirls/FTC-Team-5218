@@ -30,7 +30,7 @@ public class BlueLeftAutoAT1 extends Robot {
 
 
     private DcMotor frontLeft;
-    private double aprilTagSpeed = 0.1;
+    private double aprilTagSpeed = 0.255;
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor backRight;
@@ -379,19 +379,21 @@ public class BlueLeftAutoAT1 extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     RobotLog.i("liftedToBoard");
-                    ElapsedTime localtimer1 = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-                    while(localtimer1.time() < 1000) {}
+//                    ElapsedTime localtimer1 = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+//                    while(localtimer1.time() < 1000) {}
+                    delay(500);
                     clawServo.setPosition(CLAW_RELEASE);
-                    ElapsedTime localtimer2 = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-                    while(localtimer2.time() < 1000) {}
-                }
-                if (position.equals("left")) {
-                    driveToPark(leftBoardParkPath);
-                } else if (position.equals("right")) {
-                    driveToPark(rightBoardParkPath);
-                } else {
-                    driveToPark(middleBoardParkPath);
+                    delay(500);
+//                    ElapsedTime localtimer2 = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
+//                    while(localtimer2.time() < 1000) {}
+                    if (position.equals("left")) {
+                        driveToPark(leftBoardParkPath);
+                    } else if (position.equals("right")) {
+                        driveToPark(rightBoardParkPath);
+                    } else {
+                        driveToPark(middleBoardParkPath);
 
+                    }
                 }
             }
         });

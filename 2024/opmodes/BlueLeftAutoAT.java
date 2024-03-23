@@ -28,7 +28,7 @@ public class BlueLeftAutoAT extends Robot {
     private ElapsedTime timer;
 
     private DcMotor frontLeft;
-    private double aprilTagSpeed = 0.1;
+    private double aprilTagSpeed = 0.255;
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor backRight;
@@ -56,8 +56,8 @@ public class BlueLeftAutoAT extends Robot {
     private DeadReckonPath middlePixelBoardPath;
     private FourWheelDirectDrivetrain drivetrain;
 
-    private static final double CLAW_GRAB = 1;
-    private static final double CLAW_RELEASE = 0.5;
+    private static final double CLAW_GRAB = .6;
+    private static final double CLAW_RELEASE = .9;
 
     private Servo clawServo;
 
@@ -75,7 +75,7 @@ public class BlueLeftAutoAT extends Robot {
     public static double OUTTAKE_DISTANCE = 20;
     public static double OUTTAKE_SPEED = -0.7;
 
-    public static double LIFT_DISTANCE = 20;
+    public static double LIFT_DISTANCE = 17;
     public static double LIFT_SPEED = .6;
 
 
@@ -266,7 +266,7 @@ public class BlueLeftAutoAT extends Robot {
             @Override
             public void handleEvent(RobotEvent e) {
                 DeadReckonEvent path = (DeadReckonEvent) e;
-                delay(6000);
+              //  delay(6000);
                 if (path.kind == EventKind.PATH_DONE) {
                 }
             }
@@ -284,7 +284,7 @@ public class BlueLeftAutoAT extends Robot {
     public void detectProp() {
         RobotLog.ii(TAG, "Setup detectProp");
         delay(3);
-        distanceTask = new DistanceSensorTask(this, leftSensor, rightSensor, telemetry, 0, 12, 8 ,
+        distanceTask = new DistanceSensorTask(this, leftSensor, rightSensor, telemetry, 0, 7, 8 ,
                 5,false) {
             @Override
             public void handleEvent(RobotEvent e) {
@@ -362,31 +362,30 @@ public class BlueLeftAutoAT extends Robot {
                 DeadReckonEvent path = (DeadReckonEvent) e;
                 if (path.kind == EventKind.PATH_DONE) {
                     RobotLog.i("liftedToBoard");
-                    ElapsedTime localtimer1 = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-                    while(localtimer1.time() < 1000) {}
+                    delay(500);
                     clawServo.setPosition(CLAW_RELEASE);
-                    ElapsedTime localtimer2 = new ElapsedTime(ElapsedTime.Resolution.MILLISECONDS);
-                    while(localtimer2.time() < 1000) {}
+               delay(250);
+                    if (position.equals("left")) {
+                        if (parkside == ParkSide.CENTER) {
+                            driveToPark(leftBoardParkPathCenter);
+                        } else { // park on EDGE which is left for BLUE NEAR
+                            driveToPark(leftBoardParkPathEdge);
+                        }
+                    } else if (position.equals("right")) {
+                        if (parkside == ParkSide.CENTER) {
+                            driveToPark(rightBoardParkPathCenter);
+                        } else { // park on EDGE which is left for BLUE NEAR
+                            driveToPark(rightBoardParkPathEdge);
+                        }
+                    } else { // MIDDLE
+                        if (parkside == ParkSide.CENTER) {
+                            driveToPark(middleBoardParkPathCenter);
+                        } else { // park on EDGE which is left for BLUE NEAR
+                            driveToPark(middleBoardParkPathEdge);
+                        }
+                    }
                 }
-                if (position.equals("left")) {
-                    if (parkside == ParkSide.CENTER) {
-                        driveToPark(leftBoardParkPathCenter);
-                    } else { // park on EDGE which is left for BLUE NEAR
-                        driveToPark(leftBoardParkPathEdge);
-                    }
-                } else if (position.equals("right")) {
-                    if (parkside == ParkSide.CENTER) {
-                        driveToPark(rightBoardParkPathCenter);
-                    } else { // park on EDGE which is left for BLUE NEAR
-                        driveToPark(rightBoardParkPathEdge);
-                    }
-                } else { // MIDDLE
-                    if (parkside == ParkSide.CENTER) {
-                        driveToPark(middleBoardParkPathCenter);
-                    } else { // park on EDGE which is left for BLUE NEAR
-                        driveToPark(middleBoardParkPathEdge);
-                    }
-                }
+
             }
         });
     }
@@ -688,7 +687,7 @@ public class BlueLeftAutoAT extends Robot {
 
         // drives to left spike/line to prepare to drop pixel
         leftPropPath.addSegment(DeadReckonPath.SegmentType.TURN, 35, -0.5);
-        leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
+       // leftPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
 
         // drives forward to middle spike/line to prepare to drop pixel
         middlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 0.5, -0.5);
@@ -709,34 +708,40 @@ public class BlueLeftAutoAT extends Robot {
 
         // drives to middle april tag
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 7, -0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS,2 , -0.5);
         driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.TURN, 37.5, 0.5);
-        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -0.5);
+        driveFromMiddlePropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 10, -0.8);
 
         // drives to right april tag
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, .5, 0.5);
         driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 13, -0.5);
-        driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 1, 0.5);
+       // driveFromRightPropPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 1, 0.5);
 
         // strafes LEFT to detect desired april tag
-        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, .10, -0.25);
-        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, -0.25);
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, .8, 0.25);
+        driveToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 8, -0.25);
 
         // drives forward and places pixel on backdrop/board
         liftToBoardPath.addSegment(DeadReckonPath.SegmentType.STRAIGHT, LIFT_DISTANCE, LIFT_SPEED);
 
         // park in CENTER from LEFT April Tag
         leftBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        leftBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, 0.5);
+        leftBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 8, 0.9);
+        leftBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType. STRAIGHT, 5, -0.9);
+
 
         // park in CENTER from MIDDLE April Tag
         middleBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        middleBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 12, 0.5);
+        middleBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 13, 0.9);
+        middleBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, -0.5);
+
 
         // park in CENTER from RIGHT April Tag
         rightBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 2, 0.5);
-        rightBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, 0.5);
+        rightBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, 0.9);
+        rightBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 5, -0.5);
+     //   rightBoardParkPathCenter.addSegment(DeadReckonPath.SegmentType.SIDEWAYS, 15, 0.9);
 
         // park in EDGE from LEFT April Tag (EDGE is left for BLUE NEAR)
         leftBoardParkPathEdge.addSegment(DeadReckonPath.SegmentType.STRAIGHT, 4, 0.5);
