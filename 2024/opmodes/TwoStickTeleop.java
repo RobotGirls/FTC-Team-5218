@@ -52,7 +52,7 @@ import team25core.TeleopDriveTask;
 @TeleOp(name = "TwoStickTeleop")
 //@Disabled
 public class TwoStickTeleop extends StandardFourMotorRobot {
-    
+
     private TeleopDriveTask drivetask;
 
     private enum Direction {
@@ -75,13 +75,13 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
 
     private Servo clawServo;
 
-    private DcMotor hangingMotor;
-    private DcMotor liftMotor;
-
-//    private DcMotor intakeMotor;
-    private DcMotor transportMotor;
+//    private DcMotor hangingMotor;
+//    private DcMotor liftMotor;
+//
+////    private DcMotor intakeMotor;
+//    private DcMotor transportMotor;
     private boolean currentlySlow = false;
-    private OneWheelDriveTask liftMotorTask;
+//    private OneWheelDriveTask liftMotorTask;
 
     MecanumFieldCentricDriveScheme scheme;
 
@@ -129,8 +129,8 @@ public class TwoStickTeleop extends StandardFourMotorRobot {
         hangingMotor.setPower(0.75);
         liftMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-//        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intakeMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        intakeMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         transportMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         transportMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
